@@ -1,0 +1,5 @@
+com\printkaari\message\utils\ReadConfigurationFile.class
+com\printkaari\message\exception\MailNotSentException.class
+com\printkaari\message\model\MailMessage.class
+com\printkaari\message\service\MailServiceImpl.class
+com\printkaari\message\service\MailService.class

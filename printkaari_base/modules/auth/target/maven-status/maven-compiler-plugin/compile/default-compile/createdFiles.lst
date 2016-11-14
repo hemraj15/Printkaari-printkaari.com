@@ -1,0 +1,6 @@
+com\printkaari\auth\service\SystemRoles.class
+com\prinktaakri\auth\util\AuthorizationUtil.class
+com\printkaari\auth\service\UserDetailsServiceImpl.class
+com\printkaari\auth\service\token\CustomTokenEnhancer.class
+com\printkaari\auth\exception\AuthenticationException.class
+com\printkaari\auth\service\UserDetailsImpl.class
