@@ -24,7 +24,6 @@ public class ProductDto {
 	private String	createdBy;
 	private String	lastModifiedBy;
 	private String	status;
-	private ProductCatagory catagory;
 	
 	public Long getId() {
 		return id;
@@ -68,12 +67,6 @@ public class ProductDto {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public ProductCatagory getCatagory() {
-		return catagory;
-	}
-	public void setCatagory(ProductCatagory catagory) {
-		this.catagory = catagory;
-	}
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -91,8 +84,6 @@ public class ProductDto {
 		builder.append(lastModifiedBy);
 		builder.append(", status=");
 		builder.append(status);
-		builder.append(", catagory=");
-		builder.append(catagory);
 		builder.append("]");
 		return builder.toString();
 	}
