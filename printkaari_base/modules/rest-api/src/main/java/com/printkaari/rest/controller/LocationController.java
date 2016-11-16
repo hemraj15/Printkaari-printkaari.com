@@ -17,7 +17,7 @@ import com.printkaari.rest.model.ErrorResponse;
 import com.printkaari.rest.service.LocationService;
 
 @RestController
-@RequestMapping("/countries")
+@RequestMapping("/location")
 public class LocationController {
 
 	private Logger			LOGGER	= LoggerFactory.getLogger(LocationController.class);
@@ -26,7 +26,7 @@ public class LocationController {
 	private LocationService	locationService;
 
 	@ResponseBody
-	@RequestMapping(method = RequestMethod.GET)
+	@RequestMapping(value = "/countries",method = RequestMethod.GET)
 	public Object fetchAllCountries(HttpServletResponse response) {
 		Object data = null;
 		try {
@@ -44,7 +44,7 @@ public class LocationController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/{countryId}/states", method = RequestMethod.GET)
+	@RequestMapping(value = "/country/{countryId}/states", method = RequestMethod.GET)
 	public Object fetchAllStatesByCountry(@PathVariable Long countryId,
 	        HttpServletResponse response) {
 		Object data = null;

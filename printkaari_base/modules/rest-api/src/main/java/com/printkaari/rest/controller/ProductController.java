@@ -68,15 +68,15 @@ public class ProductController {
 		
 		//@Secured(value = { SystemRoles.ADMIN,SystemRoles.CUSTOMER})
 				@RequestMapping(value = "/category/{categoryId}", method = RequestMethod.GET)
-				public Object fetchAllProductsByCategoryId(@PathVariable Long catId
+				public Object fetchAllProductsByCategoryId(@PathVariable Long categoryId
 				        , HttpServletResponse response) {
 					LOGGER.info(">> fetchAllProductsByCategoryId");
 					
-					LOGGER.info(">> fetchAllProductsByCategoryId for category : "+catId);
+					LOGGER.info(">> fetchAllProductsByCategoryId for category : "+categoryId);
 					Object data = null;
 					try {
 						LOGGER.info("fetchAllProductsByCategoryId <<");
-						data = prodService.fetchAllProductsByCategoryId(catId);
+						data = prodService.fetchAllProductsByCategoryId(categoryId);
 						
 						LOGGER.info("Get All Product data size "+data);
 					}
@@ -97,8 +97,8 @@ public class ProductController {
 				}
 				
 				//@Secured(value = { SystemRoles.ADMIN,SystemRoles.CUSTOMER})
-				@RequestMapping(value = "/category/{categoryId}", method = RequestMethod.GET)
-				public Object fetchAllProductCategories(@PathVariable String status
+				@RequestMapping(value = "/categories", method = RequestMethod.GET)
+				public Object fetchAllProductCategories(@RequestParam String status
 				        , HttpServletResponse response) {
 					LOGGER.info(">> fetchAllProductCategories");
 					

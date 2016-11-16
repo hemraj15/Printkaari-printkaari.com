@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class StateDto {
 	Long			id;
 	String			name;
+	@JsonInclude(Include.NON_EMPTY)
 	List<CityDto>	cityDtos	= new ArrayList<>();
 
 	public Long getId() {

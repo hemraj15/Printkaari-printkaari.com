@@ -33,7 +33,8 @@ public class ProductDaoImpl extends GenericDaoImpl<Product, Long> implements Pro
 	
 		Criteria crit=getCriteria().add(Restrictions.eq("status", status))
 				      .setProjection(Projections.projectionList().add(Projections.property("id"),"id")
-				      .add(Projections.property("name"),"name"))
+				      .add(Projections.property("name"),"name")
+				      .add(Projections.property("status"),"status"))
 				      .setResultTransformer(Transformers.aliasToBean(ProductDto.class));
 		prodDtos = crit.list();
 				
@@ -48,7 +49,8 @@ public class ProductDaoImpl extends GenericDaoImpl<Product, Long> implements Pro
 	
 		Criteria crit=getCriteria().createAlias("catagory", "cat").add(Restrictions.eq("cat.id", catId))
 				      .setProjection(Projections.projectionList().add(Projections.property("id"),"id")
-				      .add(Projections.property("name"),"name"))
+				      .add(Projections.property("name"),"name")
+				      .add(Projections.property("status"),"status"))
 				      .setResultTransformer(Transformers.aliasToBean(ProductDto.class));
 		prodDtos = crit.list();
 				

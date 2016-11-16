@@ -6,14 +6,19 @@ package com.printkaari.data.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * @author Hemraj
  *
  */
+@JsonInclude(Include.NON_NULL)
 public class ProductCategoryDto {
 	
 	private Long id;
 	private String name;
+	 @JsonInclude(Include.NON_EMPTY)
 	private List<ProductDto> prodDtos= new ArrayList<>();
 	
 	public Long getId() {

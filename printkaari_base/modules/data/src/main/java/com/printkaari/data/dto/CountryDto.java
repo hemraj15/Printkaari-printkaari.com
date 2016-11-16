@@ -9,18 +9,22 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 /**
  * @author Hemraj
  * 
- * */
+ */
 
 @JsonInclude(Include.NON_NULL)
 public class CountryDto {
-private Integer id;
-	
+	private Long id;
+
 	private String name;
-	
-	private List<StateDto> states=new ArrayList<>();
-	
-	
-	public void setId(Integer id) {
+
+	@JsonInclude(Include.NON_EMPTY)
+	private List<StateDto> states = new ArrayList<>();
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -32,12 +36,25 @@ private Integer id;
 		this.name = name;
 	}
 
-	public List<StateDto> getStateDtos() {
+	public List<StateDto> getStates() {
 		return states;
 	}
 
-	public void setStateDtos(List<StateDto> states) {
+	public void setStates(List<StateDto> states) {
 		this.states = states;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("CountryDto [id=");
+		builder.append(id);
+		builder.append(", name=");
+		builder.append(name);
+		builder.append(", states=");
+		builder.append(states);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

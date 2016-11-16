@@ -91,7 +91,7 @@ public class LocationServiceImpl implements LocationService {
 						}
 
 					}
-					countryDto.setStateDtos(stateDtos);
+					countryDto.setStates(stateDtos);
 				}
 				countryDtos.add(countryDto);
 				LOGGER.debug("<<< Country Dtos :" + countryDtos);
