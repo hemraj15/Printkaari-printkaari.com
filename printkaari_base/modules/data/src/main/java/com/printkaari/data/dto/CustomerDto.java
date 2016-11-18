@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.printkaari.data.dao.entity.City;
@@ -21,8 +22,11 @@ public class CustomerDto {
 	private String	email;
 	private String	contactNumber;
 	private AddressDto addressDto;
+	@JsonInclude(Include.NON_EMPTY)
 	private Set<OrderDto> orderDtos=new HashSet<>();
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date	addedDate;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date	modifiedDate;
 	private String	status;
 	

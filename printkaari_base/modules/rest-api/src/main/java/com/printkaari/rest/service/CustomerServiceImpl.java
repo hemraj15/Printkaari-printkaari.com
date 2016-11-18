@@ -31,12 +31,12 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	@Transactional
-	public List<CustomerDto> fetchAllCandidatesByModifiedDate(Integer records) throws DatabaseException {
+	public List<CustomerDto> fetchAllCustomerByModifyDate(Integer records) throws DatabaseException {
 		List<CustomerDto> customerDtos = null;
 		Integer toIndex = records;
 
 		try {
-			customerDtos = customerDao.fetchAllCandidatesByModifiedDate(0, toIndex,
+			customerDtos = customerDao.fetchAllCustomerByModifyDate(0, toIndex,
 			        CommonStatus.ACTIVE.toString());
 
 		} 
@@ -69,6 +69,13 @@ public class CustomerServiceImpl implements CustomerService {
 			  }
 		
 		return orderDtos;
+	}
+
+	@Override
+	public List<CustomerDto> fetchAllCandidatesByModifiedDate(Integer records) throws DatabaseException {
+
+
+		return null;
 	}
 
 }

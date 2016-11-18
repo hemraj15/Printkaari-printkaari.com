@@ -5,9 +5,9 @@ package com.printkaari.data.dto;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.printkaari.data.dao.entity.ProductCatagory;
 
 /**
  * @author Hemraj
@@ -19,7 +19,9 @@ public class ProductDto {
 
 	private Long	id;
 	private String	name;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date	dateCreated;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	protected Date	dateUpdated;
 	private String	createdBy;
 	private String	lastModifiedBy;

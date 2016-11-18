@@ -339,7 +339,7 @@ public class UserServiceImpl implements UserService {
 		        .getProperty("forgot.password.url");
 
 		MailMessage mailHtmlMessage = new MailMessage();
-		mailHtmlMessage.setSubject("Welcome to Assessment!");
+		mailHtmlMessage.setSubject("Welcome to Printkaari!");
 		mailHtmlMessage.setContent("<h2>Hello " + firstName + " " + lastName
 		        + "!</h2><h3>Please click on below link to reset your password</h3>" + " <a href="
 		        + MessageFormat.format(url, PasswordUtils.encode(email)) + ">"

@@ -28,16 +28,16 @@ public class CustomerController {
 	@Autowired
 	private CustomerService	customerService;
 
-	@Secured(value = { SystemRoles.ADMIN})
+	//@Secured(value = { SystemRoles.ADMIN})
 	@RequestMapping(value = "/recent", method = RequestMethod.GET)
-	public Object fetchAllCandidatesByModifyDate(
+	public Object fetchAllCustomerByModifyDate(
 	        @RequestParam(value = "records", required = true) Integer records,
 	        HttpServletRequest request, HttpServletResponse response) {
 		LOGGER.info(">> fetchAllCandidatesByModifiedDate");
 		Object data = null;
 		try {
 			LOGGER.info("fetchCandidates <<");
-			data = customerService.fetchAllCandidatesByModifiedDate(records);
+			data = customerService.fetchAllCustomerByModifyDate(records);
 		}
 		catch (DatabaseException e) {
 			LOGGER.error(e.getMessage(), e);

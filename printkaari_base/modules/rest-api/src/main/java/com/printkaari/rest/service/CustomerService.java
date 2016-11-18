@@ -11,4 +11,6 @@ public interface CustomerService {
 
 	Object fetchAllOrdersByCustomerId(Long customerId)throws DatabaseException;
 
+	Object fetchAllCustomerByModifyDate(Integer records)throws DatabaseException;
+
 }
