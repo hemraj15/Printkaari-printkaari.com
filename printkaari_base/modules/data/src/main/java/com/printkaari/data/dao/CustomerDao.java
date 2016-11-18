@@ -16,4 +16,6 @@ public interface CustomerDao extends GenericDao<Customer, Long> {
 
 	CustomerDto fetchAllOrdersByCustomerId(Long customerId);
 
+	List<CustomerDto> fetchAllCustomerByModifyDate(int from, Integer toIndex, String status);
+
 }

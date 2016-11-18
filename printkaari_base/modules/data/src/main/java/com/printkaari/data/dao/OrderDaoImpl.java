@@ -21,20 +21,20 @@ import com.printkaari.data.dto.OrderDto;
 @Repository
 public class OrderDaoImpl extends GenericDaoImpl<Order, Long> implements OrderDao{
 
-	@SuppressWarnings("unchecked")
+	
 	@Override
 	public List<OrderDto> fetchAllOrdersByCustomerId(Long customerId) {
 	
 		List<OrderDto> dtos=null;
 		
-		String orderQuerry="SELECT ord.id AS orderId,ord.status AS orderStatus,ord.price AS orderValue,ord.customer_id AS customerId ,"
+	/*	String orderQuerry="SELECT ord.id AS orderId,ord.status AS orderStatus,ord.price AS orderValue,ord.customer_id AS customerId ,"
 		+"prd.id AS productId,prd.name AS productName "+
 				" FROM cust_order ord,products prd where  ord.customer_id=?";
 				//+  "SELECT ord.id,ord.status,ord.price,ord.customer_id AS customerId ,prd.id,prd.name "+
 		//" FROM Order ord,Product prd where ord.customer_id=?";
 		
 		dtos=getSession().createSQLQuery(orderQuerry).setParameter(0, customerId).setResultTransformer(Transformers.aliasToBean(OrderDto.class)).list();
-		
+		*/
 		/*Criteria crit=getSession().createCriteria(Order.class,"ord").createAlias("products","product").createAlias("customer","cust");
 		
 		crit.add(Restrictions.eq("cust.id", customerId));
@@ -50,9 +50,18 @@ public class OrderDaoImpl extends GenericDaoImpl<Order, Long> implements OrderDa
 	     .setResultTransformer(Transformers.aliasToBean(OrderDto.class));// here is the priblem
 		 */
 		
+		Criteria crit=getCriteria().add(Restrictions.eq("customer.id", customerId))
+				      .setProjection(Projections.projectionList()
+				      .add(Projections.property("id"),"id")
+				      .add(Projections.property("orderPrice"),"orderPrice")
+				      .add(Projections.property("dateCreated"),"dateCreated")
+				      .add(Projections.property("dateUpdated"),"dateUpdated")
+				      .add(Projections.property("status"),"status"))
+				      .setResultTransformer(Transformers.aliasToBean(OrderDto.class));
+		         
 		 
-		 System.out.println("order dto list for customer ----- > "+dtos.size());
-		 //dtos=crit.list();
+		// System.out.println("order dto list for customer ----- > "+dtos.size());
+		 dtos=crit.list();
 		
 		System.out.println("order dto list for customer "+customerId);
 		return dtos;

@@ -5,9 +5,9 @@ package com.printkaari.data.dto;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.printkaari.data.dao.entity.ProductCatagory;
 
 /**
  * @author Hemraj
@@ -19,12 +19,13 @@ public class ProductDto {
 
 	private Long	id;
 	private String	name;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date	dateCreated;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	protected Date	dateUpdated;
 	private String	createdBy;
 	private String	lastModifiedBy;
 	private String	status;
-	private ProductCatagory catagory;
 	
 	public Long getId() {
 		return id;
@@ -68,12 +69,6 @@ public class ProductDto {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public ProductCatagory getCatagory() {
-		return catagory;
-	}
-	public void setCatagory(ProductCatagory catagory) {
-		this.catagory = catagory;
-	}
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -91,8 +86,6 @@ public class ProductDto {
 		builder.append(lastModifiedBy);
 		builder.append(", status=");
 		builder.append(status);
-		builder.append(", catagory=");
-		builder.append(catagory);
 		builder.append("]");
 		return builder.toString();
 	}

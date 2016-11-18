@@ -26,23 +26,6 @@ public class CustomerDaoImpl extends GenericDaoImpl<Customer, Long> implements C
 		return getCriteria().add(Restrictions.eq("email", email));
 	}
 	
-	@Override
-	public List<CustomerDto> fetchAllCandidatesByModifiedDate(Integer fromIndex, Integer toIndex,
-	        String status) {
-		List<CustomerDto> customerDtos = null;
-		Criteria criteria = getCriteria().add(Restrictions.eq("status", status))
-		        .addOrder(Order.desc("dateUpdated")).setFirstResult(fromIndex)
-		        .setMaxResults(toIndex)
-		        .setProjection(
-		                Projections.projectionList().add(Projections.property("id"), "candidateId")
-		                        .add(Projections.property("firstName"), "firstName")
-		                        .add(Projections.property("email"), "email"))
-		        .setResultTransformer(Transformers.aliasToBean(CustomerDto.class));
-		customerDtos = criteria.list();
-
-		return customerDtos;
-
-	}
 
 	@Override
 	public CustomerDto fetchAllOrdersByCustomerId(Long customerId) {
@@ -74,6 +57,28 @@ public class CustomerDaoImpl extends GenericDaoImpl<Customer, Long> implements C
 			
 		
 		return null;
+	}
+
+	@Override
+	public List<CustomerDto> fetchAllCandidatesByModifiedDate(Integer fromIndex, Integer toIndex, String status) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<CustomerDto> fetchAllCustomerByModifyDate(int from, Integer toIndex, String status) {
+		List<CustomerDto> customerDtos = null;
+		Criteria criteria = getCriteria().add(Restrictions.eq("status", status))
+		        .addOrder(Order.desc("dateUpdated")).setFirstResult(from)
+		        .setMaxResults(toIndex)
+		        .setProjection(
+		                Projections.projectionList().add(Projections.property("id"), "customerId")
+		                        .add(Projections.property("firstName"), "firstName")
+		                        .add(Projections.property("email"), "email"))
+		        .setResultTransformer(Transformers.aliasToBean(CustomerDto.class));
+		customerDtos = criteria.list();
+
+		return customerDtos;
 	}
 
 }

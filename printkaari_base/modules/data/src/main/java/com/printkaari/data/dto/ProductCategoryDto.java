@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package com.printkaari.data.dto;
 
 import java.util.ArrayList;
@@ -8,53 +11,47 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * @author Hemraj
- * 
+ *
  */
-
 @JsonInclude(Include.NON_NULL)
-public class CountryDto {
+public class ProductCategoryDto {
+	
 	private Long id;
-
 	private String name;
-
-	@JsonInclude(Include.NON_EMPTY)
-	private List<StateDto> states = new ArrayList<>();
-
+	 @JsonInclude(Include.NON_EMPTY)
+	private List<ProductDto> prodDtos= new ArrayList<>();
+	
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public List<StateDto> getStates() {
-		return states;
+	public List<ProductDto> getProdDtos() {
+		return prodDtos;
 	}
-
-	public void setStates(List<StateDto> states) {
-		this.states = states;
+	public void setProdDtos(List<ProductDto> prodDtos) {
+		this.prodDtos = prodDtos;
 	}
-
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("CountryDto [id=");
+		builder.append("ProductCategoryDto [id=");
 		builder.append(id);
 		builder.append(", name=");
 		builder.append(name);
-		builder.append(", states=");
-		builder.append(states);
+		builder.append(", prodDtos=");
+		builder.append(prodDtos);
 		builder.append("]");
 		return builder.toString();
 	}
+	
+	
 
 }

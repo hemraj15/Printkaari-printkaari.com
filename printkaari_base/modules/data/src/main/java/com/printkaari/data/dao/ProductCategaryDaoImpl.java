@@ -3,9 +3,18 @@
  */
 package com.printkaari.data.dao;
 
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.printkaari.data.dao.entity.ProductCatagory;
+import com.printkaari.data.dto.ProductCategoryDto;
 
 /**
  * @author Hemraj
@@ -13,5 +22,22 @@ import com.printkaari.data.dao.entity.ProductCatagory;
  */
 @Repository
 public class ProductCategaryDaoImpl extends GenericDaoImpl<ProductCatagory, Long> implements ProductCategaryDao {
+	private Logger				LOGGER	= LoggerFactory.getLogger(ProductCategaryDaoImpl.class);
+	
+	@Override
+	public List<ProductCategoryDto> fetchAllProductsCategories(String status) {
+		List<ProductCategoryDto> prodCatDtos=null;
+		
+	
+				LOGGER.info(">> getStateDaoList");
+	
+		Criteria criteria = getCriteria().add(Restrictions.eq("status", status))
+		        .setProjection(Projections.projectionList().add(Projections.property("id"), "id")
+		                .add(Projections.property("name"), "name"))
+		        .setResultTransformer(Transformers.aliasToBean(ProductCategoryDto.class));
+		prodCatDtos = criteria.list();
+		LOGGER.debug("<< getStateDaoList" + prodCatDtos.toString());
+		return prodCatDtos;
+	}
 
 }

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -19,12 +20,15 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class OrderDto {
 
 	private Long			id;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date			dateCreated;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	protected Date			dateUpdated;
 	private String			createdBy;
 	private String			lastModified;
 	private String			status;
 	private Double			orderPrice;
+	@JsonInclude(Include.NON_EMPTY)
 	private Set<ProductDto>	productDto	= new HashSet<>();
 	private CustomerDto custDto;
 

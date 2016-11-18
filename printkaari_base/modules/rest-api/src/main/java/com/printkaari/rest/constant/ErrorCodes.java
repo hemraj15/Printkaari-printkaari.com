@@ -185,4 +185,6 @@ public class ErrorCodes {
 	public static final String	EMPLOYEE_NOT_FOUND_ERROR				= "employee_not_found_error";
 	public static final String	CUSTOMER_NOT_FOUND_ERROR				= "customer_not_found_error";
 
+	public static final String PRODUCT_LIST_EMPTY = "product_list_empty";
+
 }
