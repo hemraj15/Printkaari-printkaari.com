@@ -8,19 +8,20 @@
 </head>
 <body>
 <!-- <form action="tests/signUpPage" method="get"> -->
-	<center>
-		<%-- <h1>Request Time ${serverTime}.</h1> --%>
-	
-		<h1>Welcome to Printkaari REST API Portal</h1>
-		
-		<h2>
-			This portal does not contain any UI or Web Application, it's just a
-			REST API to cater Printkaari Business Requirements. To visit
-			Printkaari App, please visit <a href="http://54.88.190.151:9000">Printkaari
-				UI Website</a>
-		</h2>
-	</center>
-	<!-- <input type="submit" value="submit">
-	</form> -->
+        <center>
+                <%-- <h1>Request Time ${serverTime}.</h1> --%>
+
+                <h1>Welcome to Printkaari REST API Portal</h1>
+
+                <h2>
+                        This portal does not contain any UI or Web Application, it's just a
+                        REST API to cater Printkaari Business Requirements. To visit
+                        Printkaari App, please visit <a href="http://www.printkaari.com/">Printkaari
+                                UI Website </a> and for Demo please visit <a href="http://www.printkaari.com/demo">Printkaari UI Demo Website </a>
+                </h2>
+        </center>
+        <!-- <input type="submit" value="submit">
+        </form> -->
 </body>
 </html>
+
