@@ -46,7 +46,7 @@ public class SignUpController {
 	private PrintStoreService	printStoreService;
 
 	@ResponseBody
-	@RequestMapping(value = "/initiate", method = RequestMethod.POST)
+	@RequestMapping(value = "/initiate", method = RequestMethod.POST,consumes="application/json")
 
 	public Object initiate(@RequestBody @Valid SignUpStep1Form signUpstep1Form,
 	        BindingResult result, HttpServletResponse response) {
@@ -99,7 +99,7 @@ public class SignUpController {
 	
 	
 	@ResponseBody
-	@RequestMapping(value = "/complete", method = RequestMethod.POST)
+	@RequestMapping(value = "/complete", method = RequestMethod.POST,consumes="application/json")
 	public Object complete(@RequestBody @Valid SignUpStep2Form signUpStep2Form,
 	        BindingResult result, HttpServletRequest request, HttpServletResponse response) {
 		Object data = null;

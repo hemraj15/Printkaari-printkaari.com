@@ -26,9 +26,9 @@ public class RestClientUtils {
 
 	public static void main(String[] agrs) {
 
-		System.out.println(RestClientUtils.autoLogin("check@i-techsoftware.com", "check123",
+		System.out.println(RestClientUtils.autoLogin("hemraj.it12@gmail.com", "Hemraj@123",
 		        "password", "printkaari_app", "printkaari_app_s3cr3t", "read,write,trust",
-		        "localhost", "8080"));
+		        "162.220.61.86", "8080"));
 	}
 
 }

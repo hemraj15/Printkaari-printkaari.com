@@ -35,7 +35,7 @@ public class PasswordController {
 	private UserService	userService;
 
 	@ResponseBody
-	@RequestMapping(value = "/forgot", method = RequestMethod.POST)
+	@RequestMapping(value = "/forgot", method = RequestMethod.POST,consumes="application/json")
 	public Object forgotPassword(@RequestParam String emailId, HttpServletRequest request,
 	        HttpServletResponse response) {
 		Object data = null;
@@ -62,7 +62,7 @@ public class PasswordController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/reset", method = RequestMethod.PUT)
+	@RequestMapping(value = "/reset", method = RequestMethod.PUT,consumes="application/json")
 	public Object resetPassword(@RequestBody @Valid ResetPasswordForm resetPasswordForm,
 	        BindingResult result, HttpServletResponse response) {
 		Object data = null;
