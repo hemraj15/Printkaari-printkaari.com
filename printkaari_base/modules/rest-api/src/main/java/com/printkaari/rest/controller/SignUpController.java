@@ -46,8 +46,9 @@ public class SignUpController {
 	private PrintStoreService	printStoreService;
 
 	@ResponseBody
-	@RequestMapping(value = "/initiate", method = RequestMethod.POST,consumes="application/json")
-
+	//@Consumes("application/json")
+	@RequestMapping(value = "/initiate", method = RequestMethod.POST ,consumes="application/json")
+	
 	public Object initiate(@RequestBody @Valid SignUpStep1Form signUpstep1Form,
 	        BindingResult result, HttpServletResponse response) {
 		Object data = null;
@@ -218,3 +219,4 @@ public class SignUpController {
 	}
 
 }
+
