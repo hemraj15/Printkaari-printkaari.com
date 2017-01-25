@@ -3,7 +3,6 @@
  */
 package com.printkaari.rest.controller;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.form.LoginForm;
 import com.printkaari.rest.model.ErrorResponse;
-import com.printkaari.rest.service.PrintStoreService;
 import com.printkaari.rest.service.UserService;
 import com.printkaari.rest.utils.ErrorUtils;
 import com.printkaari.rest.utils.PasswordUtils;
@@ -60,9 +58,9 @@ public class LoginController {
 			/*String pwd=request.getParameter("passowrd");
 			String userId=request.getParameter("userName");*/
 			LOGGER.info("Password entered :"+loginForm.getPassword());
-			LOGGER.info("user Name :"+loginForm.getUserName());
+			LOGGER.info("user Name :"+loginForm.getUsername());
 			
-			data = userService.loginUser(PasswordUtils.encode(loginForm.getUserName()),loginForm.getPassword());
+			data = userService.loginUser(PasswordUtils.encode(loginForm.getUsername()),loginForm.getPassword());
 			
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
