@@ -1,10 +1,5 @@
 package com.printkaari.rest.utils;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -23,18 +18,9 @@ public class RestClientUtils {
 		map.add("username", aUserName);
 		map.add("password", aPassword);
 		map.add("scope", aScope);
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		
-		final HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<MultiValueMap<String, Object>>(map ,
-		        headers);
 
-		//ResponseEntity<String> responseEntity = rest.exchange("http://" + aHost + ":" + aPort + "/printkaari-api/oauth/token", HttpMethod.POST, entity,String.class);
-		
-		//System.out.println("response"+responseEntity);
-		
-		String result = rest.postForObject("http://" + aHost + ":" + aPort + "/printkaari-api/oauth/token", map, String.class);
+		String result = rest.postForObject(
+		        "http://" + aHost + ":" + aPort + "/printkaari-api/oauth/token", map, String.class);
 		return result;
 	}
 
@@ -42,7 +28,7 @@ public class RestClientUtils {
 
 		System.out.println(RestClientUtils.autoLogin("hemraj.it12@gmail.com", "Hemraj@123",
 		        "password", "printkaari_app", "printkaari_app_s3cr3t", "read,write,trust",
-		        "localhost", "8080"));
+		        "162.220.61.86", "8080"));
 	}
 
 }
