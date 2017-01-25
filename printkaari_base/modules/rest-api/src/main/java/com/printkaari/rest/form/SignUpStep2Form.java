@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.printkaari.data.dao.entity.Address;
 import com.printkaari.rest.constant.ErrorCodes;
 
 /**

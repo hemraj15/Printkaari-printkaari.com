@@ -383,10 +383,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public String loginUser(String token, String tempPassword) throws InstanceNotFoundException {
+	public String loginUser(String token, String password) throws InstanceNotFoundException {
+		LOGGER.info("User Srevice impl token :"+token);
+		LOGGER.debug("User Srevice impl password :"+password);
+		
 		Properties props = ReadConfigurationFile.getProperties("auth_server.properties");
 		String authTokenResponse = RestClientUtils.autoLogin(PasswordUtils.decode(token),
-		        tempPassword, props.getProperty("aGrantType"), props.getProperty("aClientId"),
+				password, props.getProperty("aGrantType"), props.getProperty("aClientId"),
 		        props.getProperty("aClientSecret"), props.getProperty("aScope"),
 		        props.getProperty("aHost"), props.getProperty("aPort"));
 		LOGGER.debug("Auth token response " + authTokenResponse);
