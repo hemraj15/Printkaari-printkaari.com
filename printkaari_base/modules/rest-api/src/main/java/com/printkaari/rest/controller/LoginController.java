@@ -61,7 +61,7 @@ public class LoginController {
 			LOGGER.info("user Name :"+loginForm.getUsername());
 			
 			data = userService.loginUser(PasswordUtils.encode(loginForm.getUsername()),loginForm.getPassword());
-			
+			LOGGER.info("login data response :"+data);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			data = new ErrorResponse();
