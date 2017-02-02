@@ -2,6 +2,8 @@ package com.printkaari.rest.service;
 
 import java.util.List;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import com.printkaari.data.dto.UserDto;
 import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.message.exception.MailNotSentException;
@@ -24,5 +26,7 @@ public interface UserService {
 
 	List<UserDto> recruiterDTOList() throws EmptyListException;
 
-	String loginUser(String token, String email) throws InstanceNotFoundException;
+	String loginUser(String token, String email) throws InstanceNotFoundException, UsernameNotFoundException, PasswordException, Exception;
+
+	String autoLoginUser(String token, String password) throws InstanceNotFoundException;
 }

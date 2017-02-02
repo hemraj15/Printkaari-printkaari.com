@@ -195,4 +195,6 @@ public class ErrorCodes {
 
 	public static final String	LOGIN_USER_PASSWORD_EMPTY				= "login_user_password_empty";
 
+	public static final String	PASSWORD_INVALID						= "password_invalid";
+
 }

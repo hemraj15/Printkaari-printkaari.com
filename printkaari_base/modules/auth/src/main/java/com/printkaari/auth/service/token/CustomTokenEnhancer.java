@@ -25,6 +25,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
 		additionalInfo.put("full_name", user.getFirstName() + " " + user.getLastName());
 		//additionalInfo.put("company_id", user.getCompany().getId());
 		additionalInfo.put("username", user.getEmailId());
+		additionalInfo.put("userType", user.getUserType());
 		List<String> roles = new ArrayList<>();
 		for (Role role : user.getRoles()) {
 			roles.add(role.getName());

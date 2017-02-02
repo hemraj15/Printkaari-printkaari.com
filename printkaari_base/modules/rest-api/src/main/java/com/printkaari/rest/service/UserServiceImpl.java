@@ -8,6 +8,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ import com.printkaari.rest.constant.UserTypes;
 import com.printkaari.rest.exception.EmptyListException;
 import com.printkaari.rest.exception.PasswordException;
 import com.printkaari.rest.exception.SignUpException;
+import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.ResetPasswordForm;
 import com.printkaari.rest.form.SignUpStep1Form;
 import com.printkaari.rest.utils.PasswordUtils;
@@ -381,10 +383,47 @@ public class UserServiceImpl implements UserService {
 
 		return userDtos;
 	}
+	@Override
+	@Transactional
+	public String loginUser(String token, String password) throws UsernameNotFoundException, PasswordException, Exception {
+		LOGGER.info("User Srevice impl token :"+token);
+		LOGGER.debug("User Srevice impl password :"+password);
+		
+		validateLoginRequest( token,password);
+		Properties props = ReadConfigurationFile.getProperties("auth_server.properties");
+		String authTokenResponse = RestClientUtils.autoLogin(PasswordUtils.decode(token),
+				password, props.getProperty("aGrantType"), props.getProperty("aClientId"),
+		        props.getProperty("aClientSecret"), props.getProperty("aScope"),
+		        props.getProperty("aHost"), props.getProperty("aPort"));
+		LOGGER.debug("Auth token response " + authTokenResponse);
+		
+		
+		return authTokenResponse;
+	}
+	private void validateLoginRequest(String token, String password) throws Exception ,PasswordException {
+		try {
+			User user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(PasswordUtils.decode(token)));
+			if (user==null) {
+				
+				throw new UserNotFoundException("No user found with this Email",
+				        ErrorCodes.USER_NOT_FOUND_ERROR);
+			}
+			else if(!(user.getPassword().equals(PasswordUtils.encode(password)))){
+				
+				throw new PasswordException("Invalid Password ",
+				        ErrorCodes.PASSWORD_INVALID);
+			}
+		} catch (InstanceNotFoundException e) {
+			LOGGER.debug("validate user error : User not found "+e.getMessage());
+			throw new UserNotFoundException("No user found with this Email",
+			        ErrorCodes.USER_NOT_FOUND_ERROR);
+		}
+		
+	}
 
 	@Override
 	@Transactional
-	public String loginUser(String token, String password) throws InstanceNotFoundException {
+	public String autoLoginUser(String token, String password) throws InstanceNotFoundException {
 		LOGGER.info("User Srevice impl token :"+token);
 		LOGGER.debug("User Srevice impl password :"+password);
 		
