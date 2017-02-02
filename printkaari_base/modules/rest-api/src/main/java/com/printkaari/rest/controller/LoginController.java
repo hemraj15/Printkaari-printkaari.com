@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.printkaari.rest.constant.ErrorCodes;
+import com.printkaari.rest.exception.PasswordException;
+import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.LoginForm;
 import com.printkaari.rest.model.ErrorResponse;
 import com.printkaari.rest.service.UserService;
@@ -62,7 +65,26 @@ public class LoginController {
 			
 			data = userService.loginUser(PasswordUtils.encode(loginForm.getUsername()),loginForm.getPassword());
 			LOGGER.info("login data response :"+data);
-		} catch (Exception e) {
+		} 
+		
+		catch(PasswordException p){
+			LOGGER.error(p.getMessage(), p);
+			data = new ErrorResponse();
+			((ErrorResponse) data).setErrorCode(ErrorCodes.PASSWORD_INVALID);
+			((ErrorResponse) data).setMessage(p.getMessage());
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		}
+			
+			catch (UserNotFoundException  u) {
+				
+				LOGGER.error(u.getMessage(), u);
+				data = new ErrorResponse();
+				((ErrorResponse) data).setErrorCode(ErrorCodes.USER_NOT_FOUND_ERROR);
+				((ErrorResponse) data).setMessage(u.getMessage());
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			
+		}
+		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			data = new ErrorResponse();
 			((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);

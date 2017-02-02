@@ -116,7 +116,7 @@ public class SignUpController {
 				System.out.println("msdhv,sjdh");
 				LOGGER.info("temp pasword "+tempPassword);
 				LOGGER.info("email token"+signUpStep2Form.getEmailToken());
-				data = userService.loginUser(signUpStep2Form.getEmailToken(), tempPassword);
+				data = userService.autoLoginUser(signUpStep2Form.getEmailToken(), tempPassword);
 				response.setStatus(HttpServletResponse.SC_CREATED);
 			} catch (SignUpException e) {
 				data = new ErrorResponse();
