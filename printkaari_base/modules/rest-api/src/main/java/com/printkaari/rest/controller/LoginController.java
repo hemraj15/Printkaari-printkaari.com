@@ -87,8 +87,8 @@ public class LoginController {
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			data = new ErrorResponse();
-			((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
-			((ErrorResponse) data).setMessage(e.getMessage());
+			((ErrorResponse) data).setErrorCode(ErrorCodes.PASSWORD_INVALID);
+			((ErrorResponse) data).setMessage(e.getMessage()+" - "+"Invalid Password");
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		return data;
