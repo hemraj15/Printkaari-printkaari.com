@@ -90,6 +90,7 @@ public class UserServiceImpl implements UserService {
 			user.setLastName(signUpStep1Form.getLastName());
 			user.setEmailId(signUpStep1Form.getEmail());
 			user.setTempPassword(signUpStep1Form.getPassword());
+			user.setUserType(signUpStep1Form.getUserType());
 			String salt = BCrypt.gensalt(12);
 			user.setPassword(BCrypt.hashpw(signUpStep1Form.getPassword(), salt));
 			user.setStatus(UserStatus.SIGNUP_INITIATED.toString());
