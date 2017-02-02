@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.PasswordException;
+import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.ResetPasswordForm;
 import com.printkaari.rest.model.ErrorResponse;
 import com.printkaari.rest.service.UserService;
@@ -35,7 +36,7 @@ public class PasswordController {
 	private UserService	userService;
 
 	@ResponseBody
-	@RequestMapping(value = "/forgot", method = RequestMethod.POST,consumes="application/json")
+	@RequestMapping(value = "/forgot", method = RequestMethod.GET)
 	public Object forgotPassword(@RequestParam String emailId, HttpServletRequest request,
 	        HttpServletResponse response) {
 		Object data = null;
@@ -46,11 +47,21 @@ public class PasswordController {
 			dataMap.put("message", "forgot email sent successfully to user!");
 			data = dataMap;
 
-		} catch (PasswordException e) {
+		} 
+		
+		catch(UserNotFoundException e){
+			LOGGER.error(e.getMessage(), e);
+			data = new ErrorResponse();
+			((ErrorResponse) data).setErrorCode(ErrorCodes.USER_NOT_FOUND_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			
+		}
+		catch (PasswordException e) {
 			data = new ErrorResponse();
 			((ErrorResponse) data).setErrorCode(e.getErrorCode());
 			((ErrorResponse) data).setMessage(e.getMessage());
-
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			data = new ErrorResponse();

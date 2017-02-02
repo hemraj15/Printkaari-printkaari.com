@@ -34,6 +34,7 @@ import com.printkaari.rest.constant.UserTypes;
 import com.printkaari.rest.exception.EmptyListException;
 import com.printkaari.rest.exception.PasswordException;
 import com.printkaari.rest.exception.SignUpException;
+import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.ResetPasswordForm;
 import com.printkaari.rest.form.SignUpStep1Form;
@@ -233,9 +234,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public void sendForgotPasswordLink(String emailId)
-	        throws MailNotSentException, PasswordException {
+	        throws MailNotSentException, PasswordException, UserNotFoundException {
 		if (!ValidationUtils.validateEmail(emailId)) {
-			throw new PasswordException("Please provide valid Email.", ErrorCodes.VALIDATION_ERROR);
+			throw new UserNotFoundException("Please provide valid Email.", ErrorCodes.VALIDATION_ERROR);
 		}
 
 		User user = validateForgetPasswordRequest(emailId);
@@ -251,23 +252,23 @@ public class UserServiceImpl implements UserService {
 		userDao.update(user);
 	}
 
-	private User validateForgetPasswordRequest(String emailId) throws PasswordException {
+	private User validateForgetPasswordRequest(String emailId) throws PasswordException, UserNotFoundException {
 		User user = null;
 		try {
 			user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(emailId.trim()));
 			if (user == null) {
-				throw new PasswordException("No user found with this email id",
+				throw new UserNotFoundException("No user found with this email id",
 				        ErrorCodes.USER_NOT_FOUND_ERROR);
 			}
 
 			UserStatus status = UserStatus.valueOf(user.getStatus());
 			switch (status) {
 			case SIGNUP_INITIATED:
-				throw new PasswordException(
+				throw new UserNotFoundException(
 				        "You have already initiated the signup, please complete it first!",
 				        ErrorCodes.FORGOT_REQUEST_SIGNUP_INITIATED);
 			case ARCHIVED:
-				throw new PasswordException(
+				throw new UserNotFoundException(
 				        "Your account is deactivated, Please contact your administrator!",
 				        ErrorCodes.SIGNUP_ACCOUNT_DEACTIVATED);
 			default:
@@ -275,7 +276,7 @@ public class UserServiceImpl implements UserService {
 			}
 		} catch (InstanceNotFoundException e) {
 			LOGGER.error(e.getMessage(), e);
-			throw new PasswordException("No user found with this Email",
+			throw new UserNotFoundException("No user found with this Email",
 			        ErrorCodes.USER_NOT_FOUND_ERROR);
 		}
 		return user;
@@ -283,7 +284,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public void resetPassword(ResetPasswordForm resetPasswordForm) throws PasswordException {
+	public void resetPassword(ResetPasswordForm resetPasswordForm) throws PasswordException, UserNotFoundException {
 		String token = resetPasswordForm.getEmailToken();
 		String newPassword = resetPasswordForm.getNewPassword();
 		LOGGER.debug("Resetting password");
@@ -296,7 +297,7 @@ public class UserServiceImpl implements UserService {
 		try {
 			user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(email));
 			if (user == null) {
-				throw new PasswordException("No user found with this Email",
+				throw new UserNotFoundException("No user found with this Email",
 				        ErrorCodes.USER_NOT_FOUND_ERROR);
 			}
 
@@ -306,6 +307,7 @@ public class UserServiceImpl implements UserService {
 				String salt = BCrypt.gensalt(12);
 
 				user.setPassword(BCrypt.hashpw(newPassword, salt));
+				
 				user.setStatus(UserStatus.ACTIVE.toString());
 				userDao.update(user);
 				break;
@@ -330,7 +332,7 @@ public class UserServiceImpl implements UserService {
 
 		} catch (InstanceNotFoundException e) {
 			LOGGER.error(e.getMessage(), e);
-			throw new PasswordException("No user found with this Email",
+			throw new UserNotFoundException("No user found with this Email",
 			        ErrorCodes.USER_NOT_FOUND_ERROR);
 		}
 
@@ -358,31 +360,7 @@ public class UserServiceImpl implements UserService {
 		LOGGER.info("HTML Email Sent");
 	}
 
-	@Override
-	@Transactional
-	public List<UserDto> recruiterDTOList() throws EmptyListException {
-		List<UserDto> userDtos = new ArrayList<>();
-		try {
-			User user = AuthorizationUtil.getLoggedInUser();
-			//Long companyId = user.getCompany().getId();
-			
-			Long companyId=null;
-
-			/*userDtos = userDao.getRecruiterDTOList(CommonStatus.ACTIVE.toString(), companyId,
-			        SystemRoles.ROLE_COMPANY_RECRUITER);*/
-			if (userDtos.isEmpty() || userDtos == null) {
-				throw new EmptyListException("Recruiter Lsit is empty",
-				        ErrorCodes.RECRUIERS_LIST_EMPTY);
-			}
-
-		} catch (Exception e) {
-			throw new EmptyListException(
-			        "Error occured while getting recruiters list through database",
-			        ErrorCodes.DATABASE_ERROR);
-		}
-
-		return userDtos;
-	}
+	
 	@Override
 	@Transactional
 	public String loginUser(String token, String password) throws UsernameNotFoundException, PasswordException, Exception {
@@ -408,11 +386,42 @@ public class UserServiceImpl implements UserService {
 				throw new UserNotFoundException("No user found with this Email",
 				        ErrorCodes.USER_NOT_FOUND_ERROR);
 			}
-			else if(!(user.getPassword().equals(PasswordUtils.encode(password)))){
+        /*  else if (!(user.getStatus().equals(UserStatus.ACTIVE.toString()))){
 				
+				
+			}*/
+			UserStatus status = UserStatus.valueOf(user.getStatus());
+			
+			switch (status) {
+			case FORGET_PASSWORD_INITIATED:
+				throw new PasswordException("Forogto Password Already Initiated , Change the Password ",ErrorCodes.FORGET_PASSWORD_INITIATED);
+				
+
+			case SIGNUP_INITIATED:
+				throw new StatusException(
+				        "You have initiated the signup, please complete it first!",
+				        ErrorCodes.SIGNUP_INITIATED);
+
+			case ARCHIVED:
+				throw new StatusException(
+				        "Your account is deactivated, Please contact your administrator!",
+				        ErrorCodes.SIGNUP_ACCOUNT_DEACTIVATED);
+
+			default:
+				break;
+			}
+			
+			       String salt = BCrypt.gensalt(12);
+
+			      String enPassword=BCrypt.hashpw(password, salt);
+			/* if(!(user.getPassword().equals(enPassword))){
+				
+				       
+				 System.out.println("DB Password is "+user.getPassword()+" Provided Pawword is"+enPassword);
 				throw new PasswordException("Invalid Password ",
 				        ErrorCodes.PASSWORD_INVALID);
-			}
+			}*/
+			
 		} catch (InstanceNotFoundException e) {
 			LOGGER.debug("validate user error : User not found "+e.getMessage());
 			throw new UserNotFoundException("No user found with this Email",
@@ -438,6 +447,32 @@ public class UserServiceImpl implements UserService {
 		user.setTempPassword("");
 		userDao.update(user);
 		return authTokenResponse;
+	}
+	
+	@Override
+	@Transactional
+	public List<UserDto> recruiterDTOList() throws EmptyListException {
+		List<UserDto> userDtos = new ArrayList<>();
+		try {
+			User user = AuthorizationUtil.getLoggedInUser();
+			//Long companyId = user.getCompany().getId();
+			
+			Long companyId=null;
+
+			/*userDtos = userDao.getRecruiterDTOList(CommonStatus.ACTIVE.toString(), companyId,
+			        SystemRoles.ROLE_COMPANY_RECRUITER);*/
+			if (userDtos.isEmpty() || userDtos == null) {
+				throw new EmptyListException("Recruiter Lsit is empty",
+				        ErrorCodes.RECRUIERS_LIST_EMPTY);
+			}
+
+		} catch (Exception e) {
+			throw new EmptyListException(
+			        "Error occured while getting recruiters list through database",
+			        ErrorCodes.DATABASE_ERROR);
+		}
+
+		return userDtos;
 	}
 
 }

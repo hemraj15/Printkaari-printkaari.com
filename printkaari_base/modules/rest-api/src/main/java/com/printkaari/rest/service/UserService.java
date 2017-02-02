@@ -10,6 +10,7 @@ import com.printkaari.message.exception.MailNotSentException;
 import com.printkaari.rest.exception.EmptyListException;
 import com.printkaari.rest.exception.PasswordException;
 import com.printkaari.rest.exception.SignUpException;
+import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.ResetPasswordForm;
 import com.printkaari.rest.form.SignUpStep1Form;
 
@@ -20,9 +21,9 @@ public interface UserService {
 
 	void resendEmail(String email) throws SignUpException;
 
-	void sendForgotPasswordLink(String emailId) throws PasswordException, MailNotSentException;
+	void sendForgotPasswordLink(String emailId) throws PasswordException, MailNotSentException, UserNotFoundException;
 
-	void resetPassword(ResetPasswordForm resetPasswordForm) throws PasswordException;
+	void resetPassword(ResetPasswordForm resetPasswordForm) throws PasswordException, UserNotFoundException;
 
 	List<UserDto> recruiterDTOList() throws EmptyListException;
 
