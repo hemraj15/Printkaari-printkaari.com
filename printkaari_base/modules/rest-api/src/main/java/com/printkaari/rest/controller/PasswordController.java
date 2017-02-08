@@ -25,6 +25,7 @@ import com.printkaari.rest.form.ResetPasswordForm;
 import com.printkaari.rest.model.ErrorResponse;
 import com.printkaari.rest.service.UserService;
 import com.printkaari.rest.utils.ErrorUtils;
+import com.printkaari.rest.utils.PasswordUtils;
 
 @RestController
 @RequestMapping("/password")
@@ -45,6 +46,7 @@ public class PasswordController {
 			userService.sendForgotPasswordLink(emailId);
 			Map<String, Object> dataMap = new HashMap<>();
 			dataMap.put("message", "forgot email sent successfully to user!");
+			dataMap.put("emailToken", PasswordUtils.encode(emailId));
 			data = dataMap;
 
 		} 
@@ -89,8 +91,9 @@ public class PasswordController {
 			Map<String, Object> dataMap = new HashMap<>();
 			dataMap.put("message", "Password reset successfully");
 			data = dataMap;
-
+			LOGGER.error("Password reset Success Fully");
 		} catch (PasswordException e) {
+			LOGGER.error(e.getMessage(), e);
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			data = new ErrorResponse();
 			((ErrorResponse) data).setErrorCode(e.getErrorCode());
