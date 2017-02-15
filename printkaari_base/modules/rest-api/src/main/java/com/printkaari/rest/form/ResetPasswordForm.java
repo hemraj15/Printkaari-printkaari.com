@@ -16,12 +16,12 @@ public class ResetPasswordForm {
 
 	@NotNull(message = ErrorCodes.RESET_PASSWORD_NULL)
 	@NotEmpty(message = ErrorCodes.RESET_PASSWORD_EMPTY)
-	@Length(max = 25, min = 8, message = ErrorCodes.RESET_PASSWORD_INVALID)
+	@Length(max = 25, min = 5, message = ErrorCodes.RESET_PASSWORD_INVALID)
 	String	newPassword;
 	
 	@NotNull(message = ErrorCodes.RESET_PASSWORD_NULL)
 	@NotEmpty(message = ErrorCodes.RESET_PASSWORD_EMPTY)
-	@Length(max = 25, min = 8, message = ErrorCodes.RESET_PASSWORD_INVALID)
+	@Length(max = 25, min = 5, message = ErrorCodes.RESET_PASSWORD_INVALID)
 	String confirmPassword;
 
 	public String getEmailToken() {
