@@ -43,6 +43,7 @@ import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.constant.UserStatus;
 import com.printkaari.rest.constant.UserTypes;
 import com.printkaari.rest.exception.CompanyFileUploadException;
+import com.printkaari.rest.exception.InvalidFieldLengthException;
 import com.printkaari.rest.exception.SignUpException;
 import com.printkaari.rest.form.CompanyUrlForm;
 import com.printkaari.rest.form.SignUpStep2Form;
@@ -96,7 +97,7 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 	@Override
 	@Transactional
-	public String completeSignup(SignUpStep2Form signUpStep2Form) throws SignUpException {
+	public String completeSignup(SignUpStep2Form signUpStep2Form) throws SignUpException, InvalidFieldLengthException {
 		// Validating Complete Sign Up Request
 		User user = validateCompleteSignUpRequest(signUpStep2Form);
 		String tempPassword = user.getTempPassword();
@@ -368,17 +369,29 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 		return cust;
 		
 		
-	}
-	
-	
+	}	
 
 	private User validateCompleteSignUpRequest(SignUpStep2Form signUpStep2Form)
-	        throws SignUpException {
+	        throws SignUpException, InvalidFieldLengthException {
 		User user = null;
+		Long contNum=signUpStep2Form.getContactNo();
+		Integer zipcode=signUpStep2Form.getZipCode();
 		String email = PasswordUtils.decode(signUpStep2Form.getEmailToken());
 		if (!ValidationUtils.validateEmail(email)) {
 			throw new SignUpException("Please provide valid Email.", ErrorCodes.VALIDATION_ERROR);
 		}
+       if(contNum!=null && String.valueOf(contNum).length() !=10 ){
+			
+    	   throw new InvalidFieldLengthException("Contact Number Should Be 10 digits ",ErrorCodes.CONTACT_NUMBER_LENGTH_INVALI);
+					
+		}
+       
+       if(zipcode !=null && String.valueOf(zipcode).length() != 6 ){
+			
+    	   throw new InvalidFieldLengthException("Zipcode should be 6 digits ",ErrorCodes.ZIPCODE_LENGTH_INVALID);
+			
+		}
+		
 		try {
 			user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(email));
 			if (user == null) {
