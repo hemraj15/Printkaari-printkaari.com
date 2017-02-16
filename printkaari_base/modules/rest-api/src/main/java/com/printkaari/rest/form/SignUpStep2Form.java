@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.printkaari.rest.constant.ErrorCodes;
+import com.printkaari.rest.exception.InvalidFieldLengthException;
 
 /**
  * @author Hemraj
@@ -22,7 +23,7 @@ public class SignUpStep2Form {
 	
 
 	@NotNull(message = ErrorCodes.SIGNUP_COMPANY_CONTACTNO_NULL)
-	@Length(max=10,min=10 , message=ErrorCodes.CONTACT_NUMBER_LENGTH_INVALI)
+   // @Length(max=10,min=10 , message=ErrorCodes.CONTACT_NUMBER_LENGTH_INVALI)
 	private Long	contactNo;
 
 	@NotNull(message = ErrorCodes.SIGNUP_COMPANY_COUNTRY_NULL)
@@ -39,7 +40,7 @@ public class SignUpStep2Form {
 
 	@NotNull(message = ErrorCodes.SIGNUP_COMPANY_ZIPCODE_NULL)
 	
-	@Length(max = 6, min = 6, message = ErrorCodes.ZIPCODE_LENGTH_INVALID)
+	//@Length(max = 6, min = 6, message = ErrorCodes.ZIPCODE_LENGTH_INVALID)
 	private Integer	zipCode;
 	
 	@NotNull(message = ErrorCodes.USER_TYPE_EMPTY)
@@ -64,8 +65,10 @@ public class SignUpStep2Form {
 	public Long getContactNo() {
 		return contactNo;
 	}
-	public void setContactNo(Long contactNo) {
-		this.contactNo = contactNo;
+	public void setContactNo(Long contactNo) throws InvalidFieldLengthException {
+		this.contactNo=contactNo;
+		
+		
 	}
 	public Long getCountryId() {
 		return countryId;
@@ -88,8 +91,11 @@ public class SignUpStep2Form {
 	public Integer getZipCode() {
 		return zipCode;
 	}
-	public void setZipCode(Integer zipCode) {
-		this.zipCode = zipCode;
+	public void setZipCode(Integer zipCode) throws InvalidFieldLengthException {
+		
+		
+		this.zipCode=zipCode;
+       
 	}
 	public String getUserType() {
 		return userType;
