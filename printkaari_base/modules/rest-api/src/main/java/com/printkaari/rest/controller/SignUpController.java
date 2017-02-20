@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.CompanyFileUploadException;
+import com.printkaari.rest.exception.InvalidFieldLengthException;
 import com.printkaari.rest.exception.SignUpException;
 import com.printkaari.rest.form.SignUpStep1Form;
 import com.printkaari.rest.form.SignUpStep2Form;
@@ -133,7 +134,14 @@ public class SignUpController {
 					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					break;
 				}
-			} catch (Exception e) {
+			}			
+			catch (InvalidFieldLengthException e) {
+				LOGGER.error(e.getMessage(), e);
+				data = new ErrorResponse();
+				((ErrorResponse) data).setErrorCode(ErrorCodes.VALIDATION_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			}catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 				data = new ErrorResponse();
 				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);

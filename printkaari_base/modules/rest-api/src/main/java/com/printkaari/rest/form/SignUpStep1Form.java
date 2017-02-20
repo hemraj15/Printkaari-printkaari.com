@@ -27,7 +27,7 @@ public class SignUpStep1Form {
 
 	@NotNull(message = ErrorCodes.SIGNUP_PASSWORD_NULL)
 	@NotEmpty(message = ErrorCodes.SIGNUP_PASSWORD_EMPTY)
-	@Length(max = 25, min = 8, message = ErrorCodes.SIGNUP_PASSWORD_INVALID)
+	@Length(max = 25, min = 5, message = ErrorCodes.SIGNUP_PASSWORD_LENGTH_INVALID)
 	private String	password;
 	
 	@NotNull(message = ErrorCodes.USER_TYPE_NULL)

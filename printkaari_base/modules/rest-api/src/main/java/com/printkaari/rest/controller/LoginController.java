@@ -69,6 +69,15 @@ public class LoginController {
 			LOGGER.info("login data response :" + data);
 		}
 
+		
+		catch(UserNotFoundException e){
+			LOGGER.error(e.getMessage(), e);
+			data = new ErrorResponse();
+			((ErrorResponse) data).setErrorCode(ErrorCodes.USER_NOT_FOUND_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			
+		}
 		catch (PasswordException p) {
 			LOGGER.error(p.getMessage(), p);
 			data = new ErrorResponse();
@@ -81,14 +90,6 @@ public class LoginController {
 			((ErrorResponse) data).setErrorCode(ErrorCodes.SIGNUP_INITIATED);
 			((ErrorResponse) data).setMessage(e.getMessage());
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		} catch (UserNotFoundException u) {
-
-			LOGGER.error(u.getMessage(), u);
-			data = new ErrorResponse();
-			((ErrorResponse) data).setErrorCode(ErrorCodes.USER_NOT_FOUND_ERROR);
-			((ErrorResponse) data).setMessage(u.getMessage());
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			data = new ErrorResponse();

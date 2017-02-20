@@ -196,6 +196,23 @@ public class ErrorCodes {
 	public static final String	LOGIN_USER_PASSWORD_EMPTY				= "login_user_password_empty";
 
 	public static final String	PASSWORD_INVALID						= "password_invalid";
-	public static String		SIGNUP_INITIATED						= "signup_initiated_status";
+
+	public static final String	LOGIN_EMAIL_INVALID						= "login_email_invalid";
+
+	public static final String	ZIPCODE_LENGTH_INVALID					= "zipcode_length_invalid";
+
+	public static final String	SIGNUP_PASSWORD_LENGTH_INVALID			= "signup_password_length_invalid";
+
+	public static final String	CONTACT_NUMBER_LENGTH_INVALI			= "contact_number_maxlength_exeeded";
+
+	public static final String	HOUSE_NUMBER_LENGTH_INVALID				= "house_number_maxlength_exeeded";
+
+	public static final String	STREET_NUMBER_LENGTH_INVALID			= "street_number_maxlength_exeeded";
+
+	public static final String	LANDMARK_LENGTH_INVALID					= "landmark_maxlength_exceeded";
+
+	public static final String	AREA_LENGTH_INVALID						= "area_maxlength_invalid";
+
+	public static final String	SIGNUP_INITIATED						= "signup_initiated_status";
 
 }

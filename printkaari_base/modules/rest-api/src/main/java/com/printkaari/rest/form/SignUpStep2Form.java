@@ -5,9 +5,11 @@ package com.printkaari.rest.form;
 
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.printkaari.rest.constant.ErrorCodes;
+import com.printkaari.rest.exception.InvalidFieldLengthException;
 
 /**
  * @author Hemraj
@@ -21,34 +23,39 @@ public class SignUpStep2Form {
 	
 
 	@NotNull(message = ErrorCodes.SIGNUP_COMPANY_CONTACTNO_NULL)
-	//@NotBlank(message = ErrorCodes.SIGNUP_COMPANY_CONTACTNO_EMPTY)
+   // @Length(max=10,min=10 , message=ErrorCodes.CONTACT_NUMBER_LENGTH_INVALI)
 	private Long	contactNo;
 
 	@NotNull(message = ErrorCodes.SIGNUP_COMPANY_COUNTRY_NULL)
-	//@NotBlank(message = ErrorCodes.SIGNUP_COMPANY_COUNTRY_EMPTY)
+	
 	private Long	countryId;
 
 	@NotNull(message = ErrorCodes.SIGNUP_COMPANY_STATE_NULL)
-	//@NotBlank(message = ErrorCodes.SIGNUP_COMPANY_STATE_EMPTY)
+	
 	private Long	stateId;
 
 	@NotNull(message = ErrorCodes.SIGNUP_COMPANY_CITY_NULL)
-	//@NotBlank(message = ErrorCodes.SIGNUP_COMPANY_CITY_EMPTY)
+	
 	private Long	cityId;
 
 	@NotNull(message = ErrorCodes.SIGNUP_COMPANY_ZIPCODE_NULL)
-	//@NotBlank(message = ErrorCodes.SIGNUP_ZIPCODE_EMPTY)
+	
+	//@Length(max = 6, min = 6, message = ErrorCodes.ZIPCODE_LENGTH_INVALID)
 	private Integer	zipCode;
 	
 	@NotNull(message = ErrorCodes.USER_TYPE_EMPTY)
 	@NotBlank(message = ErrorCodes.USER_TYPE_NULL)
 	private String userType;
 
-	
+	@Length(max = 6, message = ErrorCodes.HOUSE_NUMBER_LENGTH_INVALID)
 	private String	houseNo;
+	@Length(max = 4, message = ErrorCodes.STREET_NUMBER_LENGTH_INVALID)
 	private String	StreetNo;
+	@Length(max = 100, message = ErrorCodes.LANDMARK_LENGTH_INVALID)
 	private String	landMark;
+	@Length(max = 100, message = ErrorCodes.AREA_LENGTH_INVALID)
 	private String	area;
+	
 	public String getEmailToken() {
 		return emailToken;
 	}
@@ -58,8 +65,10 @@ public class SignUpStep2Form {
 	public Long getContactNo() {
 		return contactNo;
 	}
-	public void setContactNo(Long contactNo) {
-		this.contactNo = contactNo;
+	public void setContactNo(Long contactNo) throws InvalidFieldLengthException {
+		this.contactNo=contactNo;
+		
+		
 	}
 	public Long getCountryId() {
 		return countryId;
@@ -82,8 +91,11 @@ public class SignUpStep2Form {
 	public Integer getZipCode() {
 		return zipCode;
 	}
-	public void setZipCode(Integer zipCode) {
-		this.zipCode = zipCode;
+	public void setZipCode(Integer zipCode) throws InvalidFieldLengthException {
+		
+		
+		this.zipCode=zipCode;
+       
 	}
 	public String getUserType() {
 		return userType;
