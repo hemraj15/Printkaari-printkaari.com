@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.prinktaakri.auth.util.AuthorizationUtil;
 import com.printkaari.data.dao.CustomerDao;
 import com.printkaari.data.dao.OrderDao;
 import com.printkaari.data.dao.entity.Customer;
@@ -76,6 +77,14 @@ public class CustomerServiceImpl implements CustomerService {
 
 
 		return null;
+	}
+
+	@Override
+  public Object fetchLoggedinCustomer() throws DatabaseException {
+    
+              
+		
+		return AuthorizationUtil.getLoggedInUser();  
 	}
 
 }

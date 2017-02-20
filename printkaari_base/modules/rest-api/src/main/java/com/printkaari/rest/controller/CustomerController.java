@@ -83,6 +83,35 @@ public class CustomerController {
 		}
 		return data;
 	}
+	
+	//@Secured(value = { SystemRoles.ADMIN,SystemRoles.CUSTOMER})
+		@RequestMapping(value = "/profile", method = RequestMethod.GET)
+		public Object fetchLoggedinUser( HttpServletResponse response) {
+			LOGGER.info(">> fetchLoggedinUser");
+			
+			LOGGER.info(">> fetchLoggedinUser for customerId ");
+			Object data = null;
+			try {
+				LOGGER.info("fetchOrders <<");
+				//data = customerService.fetchAllOrdersByCustomerId();
+				data=customerService.fetchLoggedinCustomer();
+			}
+			catch (DatabaseException e) {
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+			
+			catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+			return data;
+		}
+
 
 	
 }

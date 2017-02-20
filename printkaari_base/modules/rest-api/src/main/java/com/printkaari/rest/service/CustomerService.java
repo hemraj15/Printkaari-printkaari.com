@@ -13,4 +13,6 @@ public interface CustomerService {
 
 	Object fetchAllCustomerByModifyDate(Integer records)throws DatabaseException;
 
+	Object fetchLoggedinCustomer() throws DatabaseException;
+
 }
