@@ -22,12 +22,16 @@ public final class AuthorizationUtil {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null) {
+			
+		logger.debug("logged in iuser null block");
 			return null;
 		}
 
 		Object principal = authentication.getPrincipal();
 
 		if (principal instanceof UserDetailsImpl) {
+			
+			logger.debug("Logged in user found ");
 			return ((UserDetailsImpl) principal).getUser();
 		}
 		return null;

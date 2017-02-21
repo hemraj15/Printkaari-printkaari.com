@@ -9,14 +9,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.prinktaakri.auth.util.AuthorizationUtil;
+import com.printkaari.auth.service.SystemRoles;
 import com.printkaari.data.dao.CustomerDao;
 import com.printkaari.data.dao.OrderDao;
+import com.printkaari.data.dao.UserDao;
 import com.printkaari.data.dao.entity.Customer;
+import com.printkaari.data.dao.entity.User;
 import com.printkaari.data.dto.CustomerDto;
 import com.printkaari.data.dto.OrderDto;
+import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.SignUpException;
+import com.printkaari.rest.exception.UserNotFoundException;
 
 
 @Service
@@ -26,6 +32,10 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	private CustomerDao	customerDao;
+	
+	@Autowired
+	private UserDao		userDao;
+	
 	
 	@Autowired
 	private OrderDao orderDao;
@@ -85,6 +95,31 @@ public class CustomerServiceImpl implements CustomerService {
               
 		
 		return AuthorizationUtil.getLoggedInUser();  
+	}
+
+	@Override
+	@Transactional
+	public Object fetchCustomerByEmail(String email) throws DatabaseException, UserNotFoundException, InstanceNotFoundException {
+		Customer cust=null;
+		User user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(email));
+		if (user == null) {
+			throw new UserNotFoundException("No user found with this Email",
+			        ErrorCodes.USER_NOT_FOUND_ERROR);
+		}else{
+			
+			System.out.println("user found "+user.getUserType());
+			
+			if(user.getUserType()==SystemRoles.CUSTOMER && user.getStatus()==CommonStatus.ACTIVE.toString()){
+				
+				 cust=(Customer)customerDao.getByCriteria(customerDao.getFindByEmailCriteria(email));
+				 
+				 System.out.println("Customer found +"+cust.getFirstName());
+				
+			}
+			
+		}
+		
+		return cust;
 	}
 
 }

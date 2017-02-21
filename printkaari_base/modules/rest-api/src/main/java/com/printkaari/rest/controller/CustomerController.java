@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.printkaari.auth.service.SystemRoles;
+import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.model.ErrorResponse;
 import com.printkaari.rest.service.CustomerService;
 
@@ -69,6 +71,7 @@ public class CustomerController {
 			data = customerService.fetchAllOrdersByCustomerId(customerId);
 		}
 		catch (DatabaseException e) {
+			data = new ErrorResponse();
 			LOGGER.error(e.getMessage(), e);
 			((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
 			((ErrorResponse) data).setMessage(e.getMessage());
@@ -76,6 +79,7 @@ public class CustomerController {
 		}
 		
 		catch (Exception e) {
+			data = new ErrorResponse();
 			LOGGER.error(e.getMessage(), e);
 			((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
 			((ErrorResponse) data).setMessage(e.getMessage());
@@ -84,9 +88,9 @@ public class CustomerController {
 		return data;
 	}
 	
-	//@Secured(value = { SystemRoles.ADMIN,SystemRoles.CUSTOMER})
+	    //@Secured(value = { SystemRoles.ADMIN,SystemRoles.CUSTOMER})
 		@RequestMapping(value = "/profile", method = RequestMethod.GET)
-		public Object fetchLoggedinUser( HttpServletResponse response) {
+		public Object fetchLoggedinUser(@RequestParam String emailId, HttpServletResponse response) {
 			LOGGER.info(">> fetchLoggedinUser");
 			
 			LOGGER.info(">> fetchLoggedinUser for customerId ");
@@ -94,16 +98,38 @@ public class CustomerController {
 			try {
 				LOGGER.info("fetchOrders <<");
 				//data = customerService.fetchAllOrdersByCustomerId();
-				data=customerService.fetchLoggedinCustomer();
+				//data=customerService.fetchLoggedinCustomer();
+				data=customerService.fetchCustomerByEmail(emailId);
+				
+				
 			}
 			catch (DatabaseException e) {
+				data = new ErrorResponse();
 				LOGGER.error(e.getMessage(), e);
 				((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
 				((ErrorResponse) data).setMessage(e.getMessage());
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
+			catch (InstanceNotFoundException e) {
+				data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.USER_NOT_FOUND_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				
+			}
+			
+			catch (UserNotFoundException e) {
+				data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.USER_NOT_FOUND_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				
+			}
 			
 			catch (Exception e) {
+				data = new ErrorResponse();
 				LOGGER.error(e.getMessage(), e);
 				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
 				((ErrorResponse) data).setMessage(e.getMessage());
