@@ -38,18 +38,18 @@ import com.printkaari.rest.utils.PasswordUtils;
 @RequestMapping("/signup")
 public class SignUpController {
 
-	private Logger			LOGGER	= LoggerFactory.getLogger(SignUpController.class);
+	private Logger				LOGGER	= LoggerFactory.getLogger(SignUpController.class);
 
 	@Autowired
-	private UserService		userService;
+	private UserService			userService;
 
 	@Autowired
 	private PrintStoreService	printStoreService;
 
 	@ResponseBody
-	//@Consumes("application/json")
-	@RequestMapping(value = "/initiate", method = RequestMethod.POST ,consumes="application/json")
-	
+	// @Consumes("application/json")
+	@RequestMapping(value = "/initiate", method = RequestMethod.POST, consumes = "application/json")
+
 	public Object initiate(@RequestBody @Valid SignUpStep1Form signUpstep1Form,
 	        BindingResult result, HttpServletResponse response) {
 		Object data = null;
@@ -98,10 +98,9 @@ public class SignUpController {
 		return data;
 
 	}
-	
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/complete", method = RequestMethod.POST,consumes="application/json")
+	@RequestMapping(value = "/complete", method = RequestMethod.POST, consumes = "application/json")
 	public Object complete(@RequestBody @Valid SignUpStep2Form signUpStep2Form,
 	        BindingResult result, HttpServletRequest request, HttpServletResponse response) {
 		Object data = null;
@@ -114,9 +113,9 @@ public class SignUpController {
 		} else {
 			try {
 				String tempPassword = printStoreService.completeSignup(signUpStep2Form);
-				System.out.println("msdhv,sjdh");
-				LOGGER.info("temp pasword "+tempPassword);
-				LOGGER.info("email token"+signUpStep2Form.getEmailToken());
+				
+				LOGGER.info("temp pasword " + tempPassword);
+				LOGGER.info("email token" + signUpStep2Form.getEmailToken());
 				data = userService.autoLoginUser(signUpStep2Form.getEmailToken(), tempPassword);
 				response.setStatus(HttpServletResponse.SC_CREATED);
 			} catch (SignUpException e) {
@@ -134,14 +133,13 @@ public class SignUpController {
 					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					break;
 				}
-			}			
-			catch (InvalidFieldLengthException e) {
+			} catch (InvalidFieldLengthException e) {
 				LOGGER.error(e.getMessage(), e);
 				data = new ErrorResponse();
 				((ErrorResponse) data).setErrorCode(ErrorCodes.VALIDATION_ERROR);
 				((ErrorResponse) data).setMessage(e.getMessage());
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			}catch (Exception e) {
+			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 				data = new ErrorResponse();
 				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
@@ -151,7 +149,6 @@ public class SignUpController {
 		}
 		return data;
 	}
-	
 
 	@ResponseBody
 	@RequestMapping(value = "/resend-email/{token}", method = RequestMethod.GET)
@@ -185,8 +182,6 @@ public class SignUpController {
 		return data;
 
 	}
-
-	
 
 	@ResponseBody
 	@RequestMapping(value = "/upload-company-files", method = RequestMethod.POST, consumes = "multipart/form-data")
@@ -227,4 +222,3 @@ public class SignUpController {
 	}
 
 }
-

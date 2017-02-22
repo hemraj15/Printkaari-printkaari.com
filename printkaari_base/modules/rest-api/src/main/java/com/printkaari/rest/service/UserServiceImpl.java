@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.prinktaakri.auth.util.AuthorizationUtil;
-import com.printkaari.auth.service.SystemRoles;
 import com.printkaari.data.dao.CustomerDao;
 import com.printkaari.data.dao.EmployeeDao;
 import com.printkaari.data.dao.UserDao;
@@ -27,7 +26,6 @@ import com.printkaari.message.exception.MailNotSentException;
 import com.printkaari.message.model.MailMessage;
 import com.printkaari.message.service.MailService;
 import com.printkaari.message.utils.ReadConfigurationFile;
-import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.constant.UserStatus;
 import com.printkaari.rest.constant.UserTypes;
@@ -48,12 +46,12 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserDao		userDao;
-	
+
 	@Autowired
-	private CustomerDao custDao;
-	
+	private CustomerDao	custDao;
+
 	@Autowired
-	private EmployeeDao empDao;
+	private EmployeeDao	empDao;
 
 	@Autowired
 	private MailService	mailService;
@@ -97,22 +95,17 @@ public class UserServiceImpl implements UserService {
 			String salt = BCrypt.gensalt(12);
 			user.setPassword(BCrypt.hashpw(signUpStep1Form.getPassword(), salt));
 			user.setStatus(UserStatus.SIGNUP_INITIATED.toString());
-		
-			
-			
+
 			LOGGER.debug("Savig User");
 			userDao.save(user);
 			LOGGER.debug("User saved");
-			
-			if(signUpStep1Form.getUserType().equalsIgnoreCase(UserTypes.CUSTOMER.toString())){
+
+			if (signUpStep1Form.getUserType().equalsIgnoreCase(UserTypes.CUSTOMER.toString())) {
 				saveCustomer(signUpStep1Form);
-			}
-			if(signUpStep1Form.getUserType().equalsIgnoreCase(UserTypes.EMPLOYEE.toString())){
+			} else {
 				saveEmployee(signUpStep1Form);
 			}
-			
-			
-			
+
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			throw new SignUpException("Error occurred while creating new User in database!",
@@ -121,22 +114,22 @@ public class UserServiceImpl implements UserService {
 	}
 
 	private void saveEmployee(SignUpStep1Form signUpStep1Form) {
-	
-		Employee emp=new Employee();
+
+		Employee emp = new Employee();
 		emp.setFirstName(signUpStep1Form.getFirstName());
 		emp.setLastName(signUpStep1Form.getLastName());
 		emp.setStatus(UserStatus.SIGNUP_INITIATED.toString());
 		emp.setEmail(signUpStep1Form.getEmail());
 		LOGGER.debug("Savig Employee");
 		empDao.save(emp);
-		LOGGER.debug("Employee saved with status :"+UserStatus.SIGNUP_INITIATED.toString());
-		
+		LOGGER.debug("Employee saved with status :" + UserStatus.SIGNUP_INITIATED.toString());
+
 	}
 
 	private void saveCustomer(SignUpStep1Form signUpStep1Form) {
 
-        Customer cust=new Customer();
-		
+		Customer cust = new Customer();
+
 		cust.setFirstName(signUpStep1Form.getFirstName());
 		cust.setLastName(signUpStep1Form.getLastName());
 		cust.setStatus(UserStatus.SIGNUP_INITIATED.toString());
@@ -144,8 +137,8 @@ public class UserServiceImpl implements UserService {
 
 		LOGGER.debug("Savig Customer");
 		custDao.save(cust);
-		LOGGER.debug("Customer saved :"+UserStatus.SIGNUP_INITIATED.toString());
-		
+		LOGGER.debug("Customer saved :" + UserStatus.SIGNUP_INITIATED.toString());
+
 	}
 
 	private void sendSignUpEmail(String email, String firstName, String lastName)
@@ -236,7 +229,8 @@ public class UserServiceImpl implements UserService {
 	public void sendForgotPasswordLink(String emailId)
 	        throws MailNotSentException, PasswordException, UserNotFoundException {
 		if (!ValidationUtils.validateEmail(emailId)) {
-			throw new UserNotFoundException("Please provide valid Email.", ErrorCodes.VALIDATION_ERROR);
+			throw new UserNotFoundException("Please provide valid Email.",
+			        ErrorCodes.VALIDATION_ERROR);
 		}
 
 		User user = validateForgetPasswordRequest(emailId);
@@ -252,7 +246,8 @@ public class UserServiceImpl implements UserService {
 		userDao.update(user);
 	}
 
-	private User validateForgetPasswordRequest(String emailId) throws PasswordException, UserNotFoundException {
+	private User validateForgetPasswordRequest(String emailId)
+	        throws PasswordException, UserNotFoundException {
 		User user = null;
 		try {
 			user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(emailId.trim()));
@@ -284,7 +279,8 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public void resetPassword(ResetPasswordForm resetPasswordForm) throws PasswordException, UserNotFoundException {
+	public void resetPassword(ResetPasswordForm resetPasswordForm)
+	        throws PasswordException, UserNotFoundException {
 		String token = resetPasswordForm.getEmailToken();
 		String newPassword = resetPasswordForm.getNewPassword();
 		LOGGER.debug("Resetting password");
@@ -307,7 +303,7 @@ public class UserServiceImpl implements UserService {
 				String salt = BCrypt.gensalt(12);
 
 				user.setPassword(BCrypt.hashpw(newPassword, salt));
-				
+
 				user.setStatus(UserStatus.ACTIVE.toString());
 				userDao.update(user);
 				break;
@@ -360,42 +356,47 @@ public class UserServiceImpl implements UserService {
 		LOGGER.info("HTML Email Sent");
 	}
 
-	
 	@Override
 	@Transactional
-	public String loginUser(String token, String password) throws UsernameNotFoundException, PasswordException, Exception {
-		LOGGER.info("User Srevice impl token :"+token);
-		LOGGER.debug("User Srevice impl password :"+password);
-		
-		validateLoginRequest( token,password);
+	public String loginUser(String token, String password)
+	        throws UsernameNotFoundException, PasswordException, Exception {
+		LOGGER.info("User Srevice impl token :" + token);
+		LOGGER.debug("User Srevice impl password :" + password);
+
+		validateLoginRequest(token, password);
 		Properties props = ReadConfigurationFile.getProperties("auth_server.properties");
-		String authTokenResponse = RestClientUtils.autoLogin(PasswordUtils.decode(token),
-				password, props.getProperty("aGrantType"), props.getProperty("aClientId"),
+		String authTokenResponse = RestClientUtils.autoLogin(PasswordUtils.decode(token), password,
+		        props.getProperty("aGrantType"), props.getProperty("aClientId"),
 		        props.getProperty("aClientSecret"), props.getProperty("aScope"),
 		        props.getProperty("aHost"), props.getProperty("aPort"));
 		LOGGER.debug("Auth token response " + authTokenResponse);
-		
-		
+
 		return authTokenResponse;
 	}
-	private void validateLoginRequest(String token, String password) throws Exception ,PasswordException {
+
+	private void validateLoginRequest(String token, String password)
+	        throws Exception, PasswordException {
 		try {
-			User user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(PasswordUtils.decode(token)));
-			if (user==null) {
-				
+			User user = (User) userDao
+			        .getByCriteria(userDao.getFindByEmailCriteria(PasswordUtils.decode(token)));
+			if (user == null) {
+
 				throw new UserNotFoundException("No user found with this Email",
 				        ErrorCodes.USER_NOT_FOUND_ERROR);
 			}
-        /*  else if (!(user.getStatus().equals(UserStatus.ACTIVE.toString()))){
-				
-				
-			}*/
+			/*
+			 * else if (!(user.getStatus().equals(UserStatus.ACTIVE.toString()))){
+			 * 
+			 * 
+			 * }
+			 */
 			UserStatus status = UserStatus.valueOf(user.getStatus());
-			
+
 			switch (status) {
 			case FORGET_PASSWORD_INITIATED:
-				throw new PasswordException("Forogto Password Already Initiated , Change the Password ",ErrorCodes.FORGET_PASSWORD_INITIATED);
-				
+				throw new PasswordException(
+				        "Forogto Password Already Initiated , Change the Password ",
+				        ErrorCodes.FORGET_PASSWORD_INITIATED);
 
 			case SIGNUP_INITIATED:
 				throw new StatusException(
@@ -410,35 +411,36 @@ public class UserServiceImpl implements UserService {
 			default:
 				break;
 			}
-			
-			       String salt = BCrypt.gensalt(12);
 
-			      String enPassword=BCrypt.hashpw(password, salt);
-			/* if(!(user.getPassword().equals(enPassword))){
-				
-				       
-				 System.out.println("DB Password is "+user.getPassword()+" Provided Pawword is"+enPassword);
-				throw new PasswordException("Invalid Password ",
-				        ErrorCodes.PASSWORD_INVALID);
-			}*/
-			
+			String salt = BCrypt.gensalt(12);
+
+			String enPassword = BCrypt.hashpw(password, salt);
+			/*
+			 * if(!(user.getPassword().equals(enPassword))){
+			 * 
+			 * 
+			 * System.out.println("DB Password is "+user.getPassword()+" Provided Pawword is"
+			 * +enPassword); throw new PasswordException("Invalid Password ",
+			 * ErrorCodes.PASSWORD_INVALID); }
+			 */
+
 		} catch (InstanceNotFoundException e) {
-			LOGGER.debug("validate user error : User not found "+e.getMessage());
+			LOGGER.debug("validate user error : User not found " + e.getMessage());
 			throw new UserNotFoundException("No user found with this Email",
 			        ErrorCodes.USER_NOT_FOUND_ERROR);
 		}
-		
+
 	}
 
 	@Override
 	@Transactional
 	public String autoLoginUser(String token, String password) throws InstanceNotFoundException {
-		LOGGER.info("User Srevice impl token :"+token);
-		LOGGER.debug("User Srevice impl password :"+password);
-		
+		LOGGER.info("User Srevice impl token :" + token);
+		LOGGER.debug("User Srevice impl password :" + password);
+
 		Properties props = ReadConfigurationFile.getProperties("auth_server.properties");
-		String authTokenResponse = RestClientUtils.autoLogin(PasswordUtils.decode(token),
-				password, props.getProperty("aGrantType"), props.getProperty("aClientId"),
+		String authTokenResponse = RestClientUtils.autoLogin(PasswordUtils.decode(token), password,
+		        props.getProperty("aGrantType"), props.getProperty("aClientId"),
 		        props.getProperty("aClientSecret"), props.getProperty("aScope"),
 		        props.getProperty("aHost"), props.getProperty("aPort"));
 		LOGGER.debug("Auth token response " + authTokenResponse);
@@ -448,19 +450,21 @@ public class UserServiceImpl implements UserService {
 		userDao.update(user);
 		return authTokenResponse;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<UserDto> recruiterDTOList() throws EmptyListException {
 		List<UserDto> userDtos = new ArrayList<>();
 		try {
 			User user = AuthorizationUtil.getLoggedInUser();
-			//Long companyId = user.getCompany().getId();
-			
-			Long companyId=null;
+			// Long companyId = user.getCompany().getId();
 
-			/*userDtos = userDao.getRecruiterDTOList(CommonStatus.ACTIVE.toString(), companyId,
-			        SystemRoles.ROLE_COMPANY_RECRUITER);*/
+			Long companyId = null;
+
+			/*
+			 * userDtos = userDao.getRecruiterDTOList(CommonStatus.ACTIVE.toString(), companyId,
+			 * SystemRoles.ROLE_COMPANY_RECRUITER);
+			 */
 			if (userDtos.isEmpty() || userDtos == null) {
 				throw new EmptyListException("Recruiter Lsit is empty",
 				        ErrorCodes.RECRUIERS_LIST_EMPTY);

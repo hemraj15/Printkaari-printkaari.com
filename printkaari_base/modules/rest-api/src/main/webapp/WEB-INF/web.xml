@@ -24,8 +24,8 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-            /WEB-INF/printkaari-api-servlet.xml,
-            classpath:printkaari-api-auth.xml
+            /WEB-INF/printkaari-api-servlet.xml
+           
         </param-value>
 	</context-param>
 

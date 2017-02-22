@@ -21,13 +21,16 @@ public interface UserService {
 
 	void resendEmail(String email) throws SignUpException;
 
-	void sendForgotPasswordLink(String emailId) throws PasswordException, MailNotSentException, UserNotFoundException;
+	void sendForgotPasswordLink(String emailId)
+	        throws PasswordException, MailNotSentException, UserNotFoundException;
 
-	void resetPassword(ResetPasswordForm resetPasswordForm) throws PasswordException, UserNotFoundException;
+	void resetPassword(ResetPasswordForm resetPasswordForm)
+	        throws PasswordException, UserNotFoundException;
 
 	List<UserDto> recruiterDTOList() throws EmptyListException;
 
-	String loginUser(String token, String email) throws InstanceNotFoundException, UsernameNotFoundException, PasswordException, Exception;
+	String loginUser(String token, String email) throws InstanceNotFoundException,
+	        UsernameNotFoundException, PasswordException, Exception;
 
 	String autoLoginUser(String token, String password) throws InstanceNotFoundException;
 }
