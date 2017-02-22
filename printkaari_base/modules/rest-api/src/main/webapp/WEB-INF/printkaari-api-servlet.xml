@@ -47,5 +47,8 @@
 	<beans:import resource="classpath:printkaari-api-mail.xml" />
 	<beans:import resource="classpath:printkaari-api-db.xml" />
 	<beans:import resource="classpath:printkaari-api-batch.xml" />
+	<beans:import resource="classpath:printkaari-api-auth.xml" />
+	
+	
 
 </beans>        

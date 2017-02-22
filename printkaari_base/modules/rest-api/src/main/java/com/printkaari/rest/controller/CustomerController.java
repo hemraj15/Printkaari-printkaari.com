@@ -11,15 +11,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.prinktaakri.auth.util.AuthorizationUtil;
 import com.printkaari.auth.service.SystemRoles;
+import com.printkaari.data.dao.entity.User;
 import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.model.ErrorResponse;
+import com.printkaari.rest.security.AuthenticateUtil;
 import com.printkaari.rest.service.CustomerService;
 
 @RestController
@@ -146,6 +150,31 @@ public class CustomerController {
 			return data;
 		}
 
-
+		@ResponseBody
+		@Secured(value = {SystemRoles.CUSTOMER})
+		@RequestMapping(value = "/email", method = RequestMethod.GET)
+		public Object getLoggedinUser( HttpServletResponse response) {
+			LOGGER.info(">> getLoggedinUser");
+			
+			
+			Object data = null;
+			try {
+				LOGGER.info("fetchOrders <<");
+			   //data = customerService.fetchAllOrdersByCustomerId(customerId);
+				
+				//data=(User) AuthorizationUtil.getLoggedInUser();
+				data=customerService.getLoggedinUser();
+			}
+			
+			
+			catch (Exception e) {
+				data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+			return data;
+		}
 	
 }

@@ -131,4 +131,10 @@ public class CustomerServiceImpl implements CustomerService {
 		return cust;
 	}
 
+	@Override
+	@Transactional
+	public Object getLoggedinUser() {
+		return (User)AuthorizationUtil.getLoggedInUser();
+	}
+
 }

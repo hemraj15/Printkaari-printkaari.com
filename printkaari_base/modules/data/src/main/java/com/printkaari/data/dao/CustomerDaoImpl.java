@@ -21,8 +21,12 @@ public class CustomerDaoImpl extends GenericDaoImpl<Customer, Long> implements C
 	private OrderDao orderDao;
 	
 	
+	
+	
 	@Override
 	public Criteria getFindByEmailCriteria(String email) {
+		
+		System.out.println("CustomerDaoImpl getFindByEmailCriteria");
 		return getCriteria().add(Restrictions.eq("email", email));
 	}
 	

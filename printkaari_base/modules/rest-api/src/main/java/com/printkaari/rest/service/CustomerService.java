@@ -20,4 +20,6 @@ public interface CustomerService {
 
 	Object fetchCustomerByEmail(String email)throws DatabaseException, UserNotFoundException, InstanceNotFoundException, StatusException;
 
+	Object getLoggedinUser();
+
 }
