@@ -5,6 +5,7 @@ import java.util.List;
 import com.printkaari.data.dto.CustomerDto;
 import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 
 public interface CustomerService {
@@ -17,6 +18,6 @@ public interface CustomerService {
 
 	Object fetchLoggedinCustomer() throws DatabaseException;
 
-	Object fetchCustomerByEmail(String email)throws DatabaseException, UserNotFoundException, InstanceNotFoundException;
+	Object fetchCustomerByEmail(String email)throws DatabaseException, UserNotFoundException, InstanceNotFoundException, StatusException;
 
 }

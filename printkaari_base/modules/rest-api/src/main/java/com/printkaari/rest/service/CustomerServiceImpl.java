@@ -22,6 +22,7 @@ import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.SignUpException;
+import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 
 
@@ -99,22 +100,30 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	@Transactional
-	public Object fetchCustomerByEmail(String email) throws DatabaseException, UserNotFoundException, InstanceNotFoundException {
+	public Object fetchCustomerByEmail(String email) throws DatabaseException, UserNotFoundException, InstanceNotFoundException, StatusException {
 		Customer cust=null;
 		User user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(email));
 		if (user == null) {
+			
+			System.out.println("user is null");
 			throw new UserNotFoundException("No user found with this Email",
 			        ErrorCodes.USER_NOT_FOUND_ERROR);
 		}else{
 			
 			System.out.println("user found "+user.getUserType());
+			System.out.println("user status :"+user.getStatus());
 			
-			if(user.getUserType()==SystemRoles.CUSTOMER && user.getStatus()==CommonStatus.ACTIVE.toString()){
+			if(user.getUserType().equals(SystemRoles.CUSTOMER) && user.getStatus().equals(CommonStatus.ACTIVE.toString())){
 				
 				 cust=(Customer)customerDao.getByCriteria(customerDao.getFindByEmailCriteria(email));
 				 
 				 System.out.println("Customer found +"+cust.getFirstName());
 				
+			}else {
+				
+				System.out.println("customer status"+cust.getStatus());
+				System.out.println("customer status"+cust.getEmail());
+				throw new StatusException("User is not a customer or Inactive Customer");
 			}
 			
 		}

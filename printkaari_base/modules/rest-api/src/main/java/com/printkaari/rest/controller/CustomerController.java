@@ -17,6 +17,7 @@ import com.printkaari.auth.service.SystemRoles;
 import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.model.ErrorResponse;
 import com.printkaari.rest.service.CustomerService;
@@ -117,6 +118,13 @@ public class CustomerController {
 				((ErrorResponse) data).setMessage(e.getMessage());
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				
+			}
+			catch (StatusException  e) {
+				data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.VALIDATION_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			}
 			
 			catch (UserNotFoundException e) {
