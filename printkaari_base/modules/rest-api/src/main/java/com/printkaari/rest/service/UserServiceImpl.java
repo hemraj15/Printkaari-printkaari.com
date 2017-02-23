@@ -479,4 +479,11 @@ public class UserServiceImpl implements UserService {
 		return userDtos;
 	}
 
+	@Override
+	@Transactional
+	public String getEmail() {
+		User user = AuthorizationUtil.getLoggedInUser();
+		return user.getEmailId();
+	}
+
 }

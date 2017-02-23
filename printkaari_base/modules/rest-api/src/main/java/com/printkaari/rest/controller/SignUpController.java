@@ -11,6 +11,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.printkaari.auth.service.SystemRoles;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.CompanyFileUploadException;
 import com.printkaari.rest.exception.InvalidFieldLengthException;
@@ -221,4 +223,27 @@ public class SignUpController {
 		return data;
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/email", method = RequestMethod.GET)
+//	@Secured({SystemRoles.ROLE_CUSTOMER})
+	@Secured({SystemRoles.CUSTOMER})
+	public Object getEmailUser()
+	
+	{
+		Object data = null;
+		data = userService.getEmail();
+		return data;
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/emailWoAuth", method = RequestMethod.GET)
+//	@Secured({SystemRoles.ROLE_CUSTOMER})
+	public Object getEmailUserWOAuth()
+	
+	{
+		Object data = null;
+		data = userService.getEmail();
+		return data;
+	}
 }

@@ -27,7 +27,7 @@ public class RecruiterController {
 
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET)
-	@Secured(value = { SystemRoles.ADMIN })
+	//@Secured(value = { SystemRoles.ROLE_ADMIN })
 	public Object getRecruiters(HttpServletResponse response) {
 		Object data = null;
 		try {

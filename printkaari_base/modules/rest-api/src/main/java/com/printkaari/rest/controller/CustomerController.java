@@ -151,6 +151,7 @@ public class CustomerController {
 		}
 
 		@ResponseBody
+		//@Secured(value = {SystemRoles.ROLE_CUSTOMER})
 		@Secured(value = {SystemRoles.CUSTOMER})
 		@RequestMapping(value = "/email", method = RequestMethod.GET)
 		public Object getLoggedinUser( HttpServletResponse response) {

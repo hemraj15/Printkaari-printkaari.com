@@ -5,12 +5,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.printkaari.auth.service.SystemRoles;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.model.ErrorResponse;
@@ -27,6 +29,8 @@ public class LocationController {
 
 	@ResponseBody
 	@RequestMapping(value = "/countries",method = RequestMethod.GET)
+	//@Secured({SystemRoles.ROLE_CUSTOMER})
+	@Secured({SystemRoles.CUSTOMER})
 	public Object fetchAllCountries(HttpServletResponse response) {
 		Object data = null;
 		try {

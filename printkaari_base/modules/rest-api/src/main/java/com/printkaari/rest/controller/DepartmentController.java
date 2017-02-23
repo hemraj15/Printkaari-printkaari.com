@@ -34,6 +34,7 @@ public class DepartmentController {
 	@Autowired
 	private DepartmentService deptService;
 	
+	//@Secured(value = { SystemRoles.ROLE_ADMIN})
 	@Secured(value = { SystemRoles.ADMIN})
 	@RequestMapping(value="/companies/{companyId}/departments", method = RequestMethod.GET)
 	public Object fetchDepartmentListByCompanyId( @PathVariable  Long companyId,

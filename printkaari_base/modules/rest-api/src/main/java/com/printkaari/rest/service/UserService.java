@@ -33,4 +33,6 @@ public interface UserService {
 	        UsernameNotFoundException, PasswordException, Exception;
 
 	String autoLoginUser(String token, String password) throws InstanceNotFoundException;
+	
+	String getEmail();
 }
