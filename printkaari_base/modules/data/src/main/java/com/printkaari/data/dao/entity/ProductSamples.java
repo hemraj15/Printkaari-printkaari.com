@@ -7,8 +7,8 @@ import java.io.Serializable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -25,9 +25,10 @@ public class ProductSamples extends PrintkaariBaseEntity implements Serializable
 	private static final long serialVersionUID = -6030975521334358688L;
 	
 	private Product product;
+	private String name ;
+	private SampleFileRecord sampleFileId;
 
-	@ManyToOne(cascade=CascadeType.ALL,targetEntity=Product.class)
-	@JoinColumn(name="product_id")
+	@OneToOne(cascade=CascadeType.ALL,targetEntity=Product.class)
 	public Product getProduct() {
 		return product;
 	}
@@ -35,5 +36,24 @@ public class ProductSamples extends PrintkaariBaseEntity implements Serializable
 	public void setProduct(Product product) {
 		this.product = product;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	public SampleFileRecord getSampleFileId() {
+		return sampleFileId;
+	}
+
+	public void setSampleFileId(SampleFileRecord sampleFileId) {
+		this.sampleFileId = sampleFileId;
+	}
+
 
 }

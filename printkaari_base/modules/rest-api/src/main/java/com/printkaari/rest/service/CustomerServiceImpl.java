@@ -14,6 +14,7 @@ import com.printkaari.data.dao.CustomerDao;
 import com.printkaari.data.dao.OrderDao;
 import com.printkaari.data.dao.UserDao;
 import com.printkaari.data.dao.entity.Customer;
+import com.printkaari.data.dao.entity.Order;
 import com.printkaari.data.dao.entity.User;
 import com.printkaari.data.dto.CustomerDto;
 import com.printkaari.data.dto.OrderDto;
@@ -69,10 +70,13 @@ public class CustomerServiceImpl implements CustomerService {
 		
 		List<OrderDto> orderDtos=null;
 		
+		List<Order> orders=null;
+		Customer customer=null;
+		
 		try {
 			
-			orderDtos=orderDao.fetchAllOrdersByCustomerId(customerId);
-			//customer=customerDao.find(customerId);
+			//orders=orderDao.fetchAllOrdersByCustomerId(customerId);
+			customer=customerDao.find(customerId);
 		} catch (Exception e) {
 			   LOGGER.error("Error occured while getting candidate list through database", e);
 			   e.printStackTrace();
@@ -80,7 +84,7 @@ public class CustomerServiceImpl implements CustomerService {
 			           ErrorCodes.DATABASE_ERROR);
 			  }
 		
-		return orderDtos;
+		return customer;
 	}
 
 	@Override

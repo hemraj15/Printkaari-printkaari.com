@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -78,7 +79,7 @@ public class Address extends PrintkaariBaseEntity implements Serializable {
 		this.pinCode = pinCode;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name = "cityId")
 	public City getCity() {
 		return city;
@@ -88,7 +89,7 @@ public class Address extends PrintkaariBaseEntity implements Serializable {
 		this.city = city;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name = "stateId")
 	public State getState() {
 		return state;
@@ -98,7 +99,7 @@ public class Address extends PrintkaariBaseEntity implements Serializable {
 		this.state = state;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name = "countryId")
 	public Country getCountry() {
 		return country;

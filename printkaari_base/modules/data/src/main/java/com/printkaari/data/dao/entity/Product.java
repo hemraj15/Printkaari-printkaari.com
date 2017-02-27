@@ -7,8 +7,10 @@ import java.io.Serializable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 /**
@@ -28,6 +30,8 @@ public class Product extends PrintkaariBaseEntity implements Serializable {
 	private ProductCatagory catagory;
 	private String name;
 	private boolean isFavourite;
+	
+	private ProductSamples sample;
 
 	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="product_catagory")
@@ -54,5 +58,15 @@ public class Product extends PrintkaariBaseEntity implements Serializable {
 	public void setFavourite(boolean isFavourite) {
 		this.isFavourite = isFavourite;
 	}
+	@OneToOne(fetch = FetchType.EAGER, mappedBy = "product", cascade = CascadeType.ALL)
+	@JoinColumn(name="sample")
+	public ProductSamples getSample() {
+		return sample;
+	}
 
+	public void setSample(ProductSamples sample) {
+		this.sample = sample;
+	}
+
+	
 }

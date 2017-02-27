@@ -36,7 +36,8 @@ public class Order extends PrintkaariBaseEntity implements Serializable {
 	
 	private Double orderPrice;
 	private Set<Product> products=new HashSet<>();
-	private Customer customer;
+	//private Customer customer;
+	private Set<CustomerFiles> fileId;
 
 //@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER,targetEntity=Product.class)
 	
@@ -64,13 +65,25 @@ public class Order extends PrintkaariBaseEntity implements Serializable {
 		this.orderPrice = orderPrice;
 	}
 	
-	@ManyToOne(cascade=CascadeType.ALL)
+/*	@ManyToOne(cascade=CascadeType.ALL)
 	public Customer getCustomer() {
 		return customer;
 	}
 
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}*/
+
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "Orde_Documents", joinColumns = {
+	        @JoinColumn(name = "ord_id", nullable = false, updatable = false) }, inverseJoinColumns = {
+	                @JoinColumn(name = "file_id", nullable = false, updatable = false) })
+	public Set<CustomerFiles> getFileId() {
+		return fileId;
+	}
+
+	public void setFileId(Set<CustomerFiles> fileId) {
+		this.fileId = fileId;
 	}
 
 }

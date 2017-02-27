@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -47,7 +48,7 @@ public class Country implements Serializable {
 		this.name = name;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "country")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "country" ,fetch=FetchType.EAGER)
 	public Set<State> getStates() {
 		return states;
 	}

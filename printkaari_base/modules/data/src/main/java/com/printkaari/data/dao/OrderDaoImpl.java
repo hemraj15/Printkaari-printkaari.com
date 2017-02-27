@@ -23,9 +23,10 @@ public class OrderDaoImpl extends GenericDaoImpl<Order, Long> implements OrderDa
 
 	
 	@Override
-	public List<OrderDto> fetchAllOrdersByCustomerId(Long customerId) {
+	public List<Order> fetchAllOrdersByCustomerId(Long customerId) {
 	
 		List<OrderDto> dtos=null;
+		List<Order> orders=null;
 		
 	/*	String orderQuerry="SELECT ord.id AS orderId,ord.status AS orderStatus,ord.price AS orderValue,ord.customer_id AS customerId ,"
 		+"prd.id AS productId,prd.name AS productName "+
@@ -50,21 +51,21 @@ public class OrderDaoImpl extends GenericDaoImpl<Order, Long> implements OrderDa
 	     .setResultTransformer(Transformers.aliasToBean(OrderDto.class));// here is the priblem
 		 */
 		
-		Criteria crit=getCriteria().add(Restrictions.eq("customer.id", customerId))
-				      .setProjection(Projections.projectionList()
+		Criteria crit=getCriteria().add(Restrictions.eq("customer.id", customerId));
+				     /* .setProjection(Projections.projectionList().setResultTransformer(Transformers.aliasToBean(OrderDto.class));
 				      .add(Projections.property("id"),"id")
 				      .add(Projections.property("orderPrice"),"orderPrice")
 				      .add(Projections.property("dateCreated"),"dateCreated")
 				      .add(Projections.property("dateUpdated"),"dateUpdated")
 				      .add(Projections.property("status"),"status"))
-				      .setResultTransformer(Transformers.aliasToBean(OrderDto.class));
+				      .setResultTransformer(Transformers.aliasToBean(OrderDto.class));*/
 		         
 		 
 		// System.out.println("order dto list for customer ----- > "+dtos.size());
-		 dtos=crit.list();
+		orders=crit.list();
 		
 		System.out.println("order dto list for customer "+customerId);
-		return dtos;
+		return orders;
 	}
 
 }

@@ -39,7 +39,7 @@ public class Customer extends PrintkaariBaseEntity implements Serializable {
 	private Long				contactNumber;
 	private Long				altContactNumber;
 	private Address				address;
-	//private Set<Order> custOrders=new HashSet<>();
+	private Set<Order> custOrders=new HashSet<>();
 
 	@Column(name = "firstName")
 	public String getFirstName() {
@@ -97,7 +97,7 @@ public class Customer extends PrintkaariBaseEntity implements Serializable {
 	}
 
 
-	/*@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "customer_orders", joinColumns = {
 	        @JoinColumn(name = "cust_id", nullable = false, updatable = false) }, inverseJoinColumns = {
 	                @JoinColumn(name = "ord_id", nullable = false, updatable = false) })
@@ -108,7 +108,7 @@ public class Customer extends PrintkaariBaseEntity implements Serializable {
 	public void setCustOrders(Set<Order> custOrders) {
 		this.custOrders = custOrders;
 	}
-	*/
+	
 	
 
 }

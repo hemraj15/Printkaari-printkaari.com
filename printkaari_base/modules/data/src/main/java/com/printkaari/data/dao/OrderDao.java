@@ -14,6 +14,6 @@ import com.printkaari.data.dto.OrderDto;
  */
 public interface OrderDao extends GenericDao<Order, Long> {
 
-	List<OrderDto> fetchAllOrdersByCustomerId(Long customerId);
+	List<Order> fetchAllOrdersByCustomerId(Long customerId);
 
 }
