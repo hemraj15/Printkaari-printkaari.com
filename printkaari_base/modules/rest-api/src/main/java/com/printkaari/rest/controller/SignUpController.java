@@ -185,43 +185,7 @@ public class SignUpController {
 
 	}
 
-	@ResponseBody
-	@RequestMapping(value = "/upload-company-files", method = RequestMethod.POST, consumes = "multipart/form-data")
-	public Object uploadCompanyFiles(@RequestParam Long companyId, @RequestParam String fileType,
-	        @RequestParam MultipartFile file, HttpServletRequest request,
-	        HttpServletResponse response) {
-		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
-		Object data = null;
-		if (!isMultipart || fileType == null) {
-			data = new ErrorResponse();
-			((ErrorResponse) data).setErrorCode(ErrorCodes.SIGNUP_REQUEST_NOT_MULTIPART);
-			((ErrorResponse) data).setMessage("Form validation failed!");
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-		} else {
-			try {
-				printStoreService.uploadFile(companyId, fileType, file);
-			} catch (CompanyFileUploadException e) {
-				data = new ErrorResponse();
-				((ErrorResponse) data).setErrorCode(e.getErrorCode());
-				((ErrorResponse) data).setMessage(e.getMessage());
-				switch (e.getErrorCode()) {
-				case ErrorCodes.SIGNUP_COMPANY_NOT_FOUND:
-					response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-					break;
-				default:
-					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-					break;
-				}
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage(), e);
-				data = new ErrorResponse();
-				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
-				((ErrorResponse) data).setMessage(e.getMessage());
-				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			}
-		}
-		return data;
-	}
+	
 
 	@ResponseBody
 	@RequestMapping(value = "/email", method = RequestMethod.GET)

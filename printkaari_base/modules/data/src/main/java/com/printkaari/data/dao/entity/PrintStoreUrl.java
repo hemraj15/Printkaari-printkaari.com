@@ -1,5 +1,7 @@
 package com.printkaari.data.dao.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,7 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity(name = "printstore_url")
-public class PrintStoreUrl extends PrintkaariBaseEntity {
+public class PrintStoreUrl extends PrintkaariBaseEntity implements Serializable {
 
 	/**
 	 * @author Hemraj

@@ -24,4 +24,6 @@ public interface CustomerService {
 
 	Object fetchAllActiveOrdersByCustomerId(Long customerId, String string)throws DatabaseException;
 
+	Long placeOrder()throws DatabaseException;;
+
 }

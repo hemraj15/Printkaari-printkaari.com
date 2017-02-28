@@ -24,7 +24,6 @@ import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
-import com.printkaari.rest.exception.SignUpException;
 import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 
@@ -167,6 +166,21 @@ public class CustomerServiceImpl implements CustomerService {
 			  }
 		
 		return orders;
+	}
+
+	@Override
+	public Long placeOrder() throws DatabaseException {
+		Long orderId=null;
+		
+		try {
+			
+		} catch (Exception e) {
+			   LOGGER.error("Error occured while getting candidate list through database", e);
+			   e.printStackTrace();
+			   throw new DatabaseException("Error occured while getting all orders for a customer through database",
+			           ErrorCodes.DATABASE_ERROR);
+			  }
+		return orderId;
 	}
 
 }

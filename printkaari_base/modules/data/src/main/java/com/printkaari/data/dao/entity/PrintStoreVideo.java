@@ -1,5 +1,7 @@
 package com.printkaari.data.dao.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +16,7 @@ import javax.persistence.Table;
  * */
 @Entity
 @Table(name = "printstore_video")
-public class PrintStoreVideo extends PrintkaariBaseEntity {
+public class PrintStoreVideo extends PrintkaariBaseEntity implements Serializable{
 	/**
 	 * @author Hemraj
 	 */

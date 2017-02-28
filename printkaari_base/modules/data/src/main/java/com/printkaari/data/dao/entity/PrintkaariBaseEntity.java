@@ -29,6 +29,7 @@ public class PrintkaariBaseEntity implements Serializable {
 	private String				createdBy;
 	private String				lastModifiedBy;
 	private String				status;
+	private String              description;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -91,6 +92,14 @@ public class PrintkaariBaseEntity implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	@Column(name = "description", length = 200)
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

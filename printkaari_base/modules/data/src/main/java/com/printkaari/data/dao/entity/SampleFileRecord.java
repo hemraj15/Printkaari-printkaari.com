@@ -3,6 +3,8 @@
  */
 package com.printkaari.data.dao.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -12,7 +14,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="product_sample_file")
-public class SampleFileRecord extends PrintkaariBaseEntity {
+public class SampleFileRecord extends PrintkaariBaseEntity implements Serializable {
 
 	/**
 	 * 

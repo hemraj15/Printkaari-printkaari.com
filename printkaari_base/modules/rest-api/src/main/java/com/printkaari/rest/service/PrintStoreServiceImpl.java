@@ -15,9 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.prinktaakri.auth.util.AuthorizationUtil;
+import com.printkaari.auth.service.SystemRoles;
 import com.printkaari.data.dao.CityDao;
 import com.printkaari.data.dao.CountryDao;
 import com.printkaari.data.dao.CustomerDao;
+import com.printkaari.data.dao.CustomerFileDao;
 import com.printkaari.data.dao.EmployeeDao;
 import com.printkaari.data.dao.PrintStoreDao;
 import com.printkaari.data.dao.RoleDao;
@@ -28,6 +31,7 @@ import com.printkaari.data.dao.entity.Address;
 import com.printkaari.data.dao.entity.City;
 import com.printkaari.data.dao.entity.Country;
 import com.printkaari.data.dao.entity.Customer;
+import com.printkaari.data.dao.entity.CustomerFiles;
 import com.printkaari.data.dao.entity.Employee;
 import com.printkaari.data.dao.entity.PrintStore;
 import com.printkaari.data.dao.entity.Role;
@@ -42,6 +46,7 @@ import com.printkaari.rest.constant.UserTypes;
 import com.printkaari.rest.exception.CompanyFileUploadException;
 import com.printkaari.rest.exception.InvalidFieldLengthException;
 import com.printkaari.rest.exception.SignUpException;
+import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.SignUpStep2Form;
 import com.printkaari.rest.utils.FileUtils;
 import com.printkaari.rest.utils.PasswordUtils;
@@ -86,6 +91,11 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 	@Autowired
 	private CustomerDao		custDao;
+	@Autowired
+	private CustomerService customerService;
+	
+	@Autowired
+	private CustomerFileDao custFileDao;
 
 	static {
 		Properties props = ReadConfigurationFile.getProperties("file-upload.properties");
@@ -386,13 +396,53 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 	@Override
 	@Transactional
-	public void uploadFile(Long companyId, String fileType, MultipartFile file)
-	        throws CompanyFileUploadException {
+	public Long uploadFile( String fileType, MultipartFile file)
+	        throws CompanyFileUploadException, UserNotFoundException {
 		// Validating Request
 		validateUploadFileInput(fileType);
+		Long fileId=null;
 
 		try {
-			PrintStore printStore = printStoreDao.find(companyId);
+			
+			User user=null;
+			Customer cust=null;
+			
+			user=(User)customerService.getLoggedinUser();
+			
+			if(user !=null && user.getUserType().equals(SystemRoles.CUSTOMER)){
+				
+				cust=(Customer)custDao.getByCriteria(custDao.getFindByEmailCriteria(user.getEmailId()));
+				
+				if(cust !=null){
+					String custFileName=file.getOriginalFilename();
+					String custFormatterName=cust.getFirstName().trim();
+					String custFileRelativePath="printkaari_files"+File.separator+"customer_data"+File.separator+"customer_"+cust.getId();
+				    String outPutFileName=custFormatterName +"_"+fileType.trim().toUpperCase()+custFileName.substring(custFileName.lastIndexOf("."));
+				
+				    LOGGER.debug("companyRelativePath : " + custFileRelativePath);
+					LOGGER.debug("logoOutputFileName : " + outPutFileName);
+					
+					FileUtils.uploadFile(BASE_UPLOAD_PATH + File.separator + custFileRelativePath +File.separator,
+							outPutFileName, file);
+					String filePath=custFileRelativePath + File.separator+ outPutFileName;
+					CustomerFiles custFile=new CustomerFiles();
+					custFile.setFilaPath(filePath);
+					custFile.setName(outPutFileName);
+					custFile.setStatus(CommonStatus.ACTIVE.toString());
+					
+					fileId=custFileDao.save(custFile);
+				}
+				else {
+					
+					throw new UserNotFoundException("No Customer found with this ID!",
+					        ErrorCodes.CUSTOMER_NOT_FOUND_ERROR);
+				}
+				
+				
+			    
+			}
+			
+			/*PrintStore printStore = printStoreDao.find(companyId);
 			if (printStore.getStatus().equalsIgnoreCase(CommonStatus.ARCHIVED.toString())
 			        || printStore.getStatus().equalsIgnoreCase(CommonStatus.INACTIVE.toString())) {
 				throw new CompanyFileUploadException("No active company found with this ID!",
@@ -417,27 +467,27 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 				throw new CompanyFileUploadException("Invalid File Path!",
 				        ErrorCodes.COMPANY_FILE_UPLOAD_FILE_TYPE_INVALID);
 			}
-			FileUtils.uploadFile(BASE_UPLOAD_PATH + File.separator + companyRelativePath,
-			        outputFileName, file);
-			printStoreDao.update(printStore);
+			
+			printStoreDao.update(printStore);*/
 		} catch (InstanceNotFoundException e) {
 			LOGGER.error(e.getMessage(), e);
-			throw new CompanyFileUploadException("No PrintStore found with this ID!",
-			        ErrorCodes.SIGNUP_COMPANY_NOT_FOUND);
+			throw new UserNotFoundException("No PrintStore found with this ID!",
+			        ErrorCodes.USER_NOT_FOUND_ERROR);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			throw new CompanyFileUploadException("Some error occurred while uploading file!",
-			        ErrorCodes.SIGNUP_COMPANY_FILE_UPLOAD_FAIL);
+			        ErrorCodes.CUSTOMER_FILE_UPLOAD_ERRO);
 		}
+		return fileId;
 	}
 
 	private void validateUploadFileInput(String fileType) throws CompanyFileUploadException {
 		if (fileType == null || fileType.trim().length() <= 0) {
 			throw new CompanyFileUploadException("File type is required!",
-			        ErrorCodes.COMPANY_FILE_UPLOAD_FILE_TYPE_EMPTY);
-		} else if (!fileType.equalsIgnoreCase("logo") && !fileType.equals("video")) {
+			        ErrorCodes.CUSTOMER_FILE_UPLOAD_FILE_TYPE_EMPTY);
+		} else if (!fileType.equalsIgnoreCase("pdf") && !fileType.equals("doc")) {
 			throw new CompanyFileUploadException("Invalid File Path!",
-			        ErrorCodes.COMPANY_FILE_UPLOAD_FILE_TYPE_INVALID);
+			        ErrorCodes.CUSTOMER_FILE_UPLOAD_FILE_TYPE_INVALID);
 		}
 	}
 }
