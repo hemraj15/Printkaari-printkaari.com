@@ -32,8 +32,9 @@ public class Product extends PrintkaariBaseEntity implements Serializable {
 	private ProductCatagory catagory;
 	private String name;
 	private boolean isFavourite;
+	private SampleFileRecord sampleFileId;
 	
-	private ProductSamples sample;
+	//private ProductSamples sample;
 
 	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="product_catagory")
@@ -60,7 +61,7 @@ public class Product extends PrintkaariBaseEntity implements Serializable {
 	public void setFavourite(boolean isFavourite) {
 		this.isFavourite = isFavourite;
 	}
-	@OneToOne( cascade = CascadeType.ALL)
+	/*@OneToOne( cascade = CascadeType.ALL)
 	@JoinColumn(name="sample")
 	public ProductSamples getSample() {
 		return sample;
@@ -69,6 +70,16 @@ public class Product extends PrintkaariBaseEntity implements Serializable {
 	public void setSample(ProductSamples sample) {
 		this.sample = sample;
 	}
+*/	
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	public SampleFileRecord getSampleFileId() {
+		return sampleFileId;
+	}
+
+	public void setSampleFileId(SampleFileRecord sampleFileId) {
+		this.sampleFileId = sampleFileId;
+	}
+
 
 	
 }
