@@ -125,10 +125,13 @@ public class CustomerServiceImpl implements CustomerService {
 				 
 				 System.out.println("Customer found +"+cust.getFirstName());
 				
-			}else {
+			}if(cust!=null){
 				
 				System.out.println("customer status"+cust.getStatus());
 				System.out.println("customer status"+cust.getEmail());
+			}else {
+				
+				
 				throw new StatusException("User is not a customer or Inactive Customer");
 			}
 			
