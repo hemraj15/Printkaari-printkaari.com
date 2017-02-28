@@ -1,6 +1,8 @@
 package com.printkaari.rest.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,7 @@ import com.printkaari.data.dao.CustomerDao;
 import com.printkaari.data.dao.OrderDao;
 import com.printkaari.data.dao.UserDao;
 import com.printkaari.data.dao.entity.Customer;
+import com.printkaari.data.dao.entity.Order;
 import com.printkaari.data.dao.entity.User;
 import com.printkaari.data.dto.CustomerDto;
 import com.printkaari.data.dto.OrderDto;
@@ -21,7 +24,6 @@ import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
-import com.printkaari.rest.exception.SignUpException;
 import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 
@@ -69,9 +71,12 @@ public class CustomerServiceImpl implements CustomerService {
 		
 		List<OrderDto> orderDtos=null;
 		
+		List<Order> orders=null;
+		Customer customer=null;
+		
 		try {
 			
-			orderDtos=orderDao.fetchAllOrdersByCustomerId(customerId);
+			orders=orderDao.fetchAllOrdersByCustomerId(customerId);
 			//customer=customerDao.find(customerId);
 		} catch (Exception e) {
 			   LOGGER.error("Error occured while getting candidate list through database", e);
@@ -80,7 +85,7 @@ public class CustomerServiceImpl implements CustomerService {
 			           ErrorCodes.DATABASE_ERROR);
 			  }
 		
-		return orderDtos;
+		return orders;
 	}
 
 	@Override
@@ -119,10 +124,13 @@ public class CustomerServiceImpl implements CustomerService {
 				 
 				 System.out.println("Customer found +"+cust.getFirstName());
 				
-			}else {
+			}if(cust!=null){
 				
 				System.out.println("customer status"+cust.getStatus());
 				System.out.println("customer status"+cust.getEmail());
+			}else {
+				
+				
 				throw new StatusException("User is not a customer or Inactive Customer");
 			}
 			
@@ -135,6 +143,44 @@ public class CustomerServiceImpl implements CustomerService {
 	@Transactional
 	public Object getLoggedinUser() {
 		return (User)AuthorizationUtil.getLoggedInUser();
+	}
+
+	@Override
+	@Transactional
+	public Object fetchAllActiveOrdersByCustomerId(Long customerId,String status) throws DatabaseException {
+		List<Order> orders=null;
+		Customer customer=null;
+		
+		Map<String ,Object> data =new HashMap<>();
+		
+		try {
+			
+			orders=orderDao.fetchAllActiveOrdersByCustomerId(customerId,status);
+			
+			//customer=customerDao.find(customerId);
+		} catch (Exception e) {
+			   LOGGER.error("Error occured while getting candidate list through database", e);
+			   e.printStackTrace();
+			   throw new DatabaseException("Error occured while getting all orders for a customer through database",
+			           ErrorCodes.DATABASE_ERROR);
+			  }
+		
+		return orders;
+	}
+
+	@Override
+	public Long placeOrder() throws DatabaseException {
+		Long orderId=null;
+		
+		try {
+			
+		} catch (Exception e) {
+			   LOGGER.error("Error occured while getting candidate list through database", e);
+			   e.printStackTrace();
+			   throw new DatabaseException("Error occured while getting all orders for a customer through database",
+			           ErrorCodes.DATABASE_ERROR);
+			  }
+		return orderId;
 	}
 
 }

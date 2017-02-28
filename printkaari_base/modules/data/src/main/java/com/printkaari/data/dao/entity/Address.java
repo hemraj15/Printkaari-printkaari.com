@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -29,9 +30,9 @@ public class Address extends PrintkaariBaseEntity implements Serializable {
 	private String				landMark;
 	private String				area;
 	private Integer				pinCode;
-	private City				city;
-	private State				state;
-	private Country country;
+	private Long				cityId;
+	private Long				stateId;
+	private Long          countryId;
 
 	@Column(name = "houseNo")
 	public String getHouseNo() {
@@ -77,8 +78,8 @@ public class Address extends PrintkaariBaseEntity implements Serializable {
 	public void setPinCode(Integer pinCode) {
 		this.pinCode = pinCode;
 	}
-
-	@OneToOne(cascade = CascadeType.ALL)
+/*
+	@OneToOne(cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name = "cityId")
 	public City getCity() {
 		return city;
@@ -88,7 +89,8 @@ public class Address extends PrintkaariBaseEntity implements Serializable {
 		this.city = city;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL)
+
+	@OneToOne(cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name = "stateId")
 	public State getState() {
 		return state;
@@ -98,7 +100,7 @@ public class Address extends PrintkaariBaseEntity implements Serializable {
 		this.state = state;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name = "countryId")
 	public Country getCountry() {
 		return country;
@@ -108,5 +110,30 @@ public class Address extends PrintkaariBaseEntity implements Serializable {
 		this.country = country;
 	}
 
+*/
+
+	public Long getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Long cityId) {
+		this.cityId = cityId;
+	}
+
+	public Long getStateId() {
+		return stateId;
+	}
+
+	public void setStateId(Long stateId) {
+		this.stateId = stateId;
+	}
+
+	public Long getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(Long countryId) {
+		this.countryId = countryId;
+	}	
 	
 }

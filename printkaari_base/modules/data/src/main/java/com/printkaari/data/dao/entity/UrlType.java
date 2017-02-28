@@ -3,6 +3,8 @@
  */
 package com.printkaari.data.dao.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -12,7 +14,7 @@ import javax.persistence.Entity;
  */
 
 @Entity(name = "url_type")
-public class UrlType extends PrintkaariBaseEntity {
+public class UrlType extends PrintkaariBaseEntity implements Serializable {
 
 	/**
 	 * 
@@ -20,7 +22,6 @@ public class UrlType extends PrintkaariBaseEntity {
 	private static final long	serialVersionUID	= -4001090034029840972L;
 
 	private String				urlTypeName;
-	private String				description;
 
 	@Column(name = "url_type_name", length = 25)
 	public String getUrlTypeName() {
@@ -31,13 +32,5 @@ public class UrlType extends PrintkaariBaseEntity {
 		this.urlTypeName = urlTypeName;
 	}
 
-	@Column(name = "description", length = 500)
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
+	
 }

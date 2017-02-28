@@ -1,5 +1,6 @@
 package com.printkaari.data.dao.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -16,7 +17,7 @@ import javax.persistence.TemporalType;
  * */
 @Entity
 @Table(name = "user_calendar_event")
-public class UserCalendarEvent extends PrintkaariBaseEntity {
+public class UserCalendarEvent extends PrintkaariBaseEntity implements Serializable{
 
 	/**
 	 * 

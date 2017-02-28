@@ -1,5 +1,6 @@
 package com.printkaari.data.dao.entity;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "printstore")
-public class PrintStore extends PrintkaariBaseEntity {
+public class PrintStore extends PrintkaariBaseEntity implements Serializable {
 
 	/**
 	 * 

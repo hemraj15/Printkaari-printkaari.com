@@ -1,5 +1,6 @@
 package com.printkaari.data.dao.entity;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,14 +17,13 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "role")
-public class Role extends PrintkaariBaseEntity {
+public class Role extends PrintkaariBaseEntity implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long	serialVersionUID	= 1L;
 
 	private String				name;
-	private String				description;
 	private Set<User>			users				= new HashSet<>(0);
 
 	@Column(name = "name", length = 100)
@@ -35,14 +35,6 @@ public class Role extends PrintkaariBaseEntity {
 		this.name = name;
 	}
 
-	@Column(name = "description", length = 200)
-	public String getDescription() {
-		return this.description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
 
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
 	public Set<User> getUsers() {

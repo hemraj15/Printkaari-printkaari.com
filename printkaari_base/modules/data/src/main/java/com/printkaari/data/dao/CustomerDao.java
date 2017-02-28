@@ -12,7 +12,7 @@ public interface CustomerDao extends GenericDao<Customer, Long> {
 	List<CustomerDto> fetchAllCandidatesByModifiedDate(Integer fromIndex, Integer toIndex,
 	        String status);
 
-	Criteria getFindByEmailCriteria(String emailToken);
+	Criteria getFindByEmailCriteria(String email);
 
 	CustomerDto fetchAllOrdersByCustomerId(Long customerId);
 

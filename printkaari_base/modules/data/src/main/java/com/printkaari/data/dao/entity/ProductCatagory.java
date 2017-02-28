@@ -9,8 +9,11 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Hemraj
@@ -38,6 +41,7 @@ public class ProductCatagory extends PrintkaariBaseEntity implements  Serializab
 	}
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "catagory")
+	@JsonIgnore
 	public Set<Product> getProducts() {
 		return products;
 	}

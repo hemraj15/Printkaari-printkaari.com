@@ -29,6 +29,7 @@ public class PrintkaariBaseEntity implements Serializable {
 	private String				createdBy;
 	private String				lastModifiedBy;
 	private String				status;
+	private String              description;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +44,7 @@ public class PrintkaariBaseEntity implements Serializable {
 
 	// TODO need to implement using @createdDate annotation using spring
 	@Column(name = "date_created")
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	@PrePersist
 	public Date getDateCreated() {
 		return dateCreated == null ? new Date() : dateCreated;
@@ -55,11 +56,11 @@ public class PrintkaariBaseEntity implements Serializable {
 
 	// TODO need to implement using @updatedDate annotation using spring
 	@Column(name = "date_updated")
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	@PrePersist
 	@PostUpdate
 	public Date getDateUpdated() {
-		return new Date();
+		return dateUpdated ==null ? new Date():dateUpdated;
 	}
 
 	public void setDateUpdated(Date dateUpdated) {
@@ -91,6 +92,14 @@ public class PrintkaariBaseEntity implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	@Column(name = "description", length = 200)
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

@@ -215,4 +215,10 @@ public class ErrorCodes {
 
 	public static final String	SIGNUP_INITIATED						= "signup_initiated_status";
 
+	public static final String	CUSTOMER_FILE_UPLOAD_FILE_TYPE_EMPTY	= "customer_file_upload_file_type_empty";
+
+	public static final String	CUSTOMER_FILE_UPLOAD_FILE_TYPE_INVALID	= "customer_file_upload_file_type_invalid";
+
+	public static final String	CUSTOMER_FILE_UPLOAD_ERRO				= "customer_file_upload_error";
+
 }
