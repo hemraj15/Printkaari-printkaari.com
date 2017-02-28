@@ -1,6 +1,8 @@
 package com.printkaari.rest.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,8 +77,8 @@ public class CustomerServiceImpl implements CustomerService {
 		
 		try {
 			
-			//orders=orderDao.fetchAllOrdersByCustomerId(customerId);
-			customer=customerDao.find(customerId);
+			orders=orderDao.fetchAllOrdersByCustomerId(customerId);
+			//customer=customerDao.find(customerId);
 		} catch (Exception e) {
 			   LOGGER.error("Error occured while getting candidate list through database", e);
 			   e.printStackTrace();
@@ -84,7 +86,7 @@ public class CustomerServiceImpl implements CustomerService {
 			           ErrorCodes.DATABASE_ERROR);
 			  }
 		
-		return customer;
+		return orders;
 	}
 
 	@Override
@@ -139,6 +141,29 @@ public class CustomerServiceImpl implements CustomerService {
 	@Transactional
 	public Object getLoggedinUser() {
 		return (User)AuthorizationUtil.getLoggedInUser();
+	}
+
+	@Override
+	@Transactional
+	public Object fetchAllActiveOrdersByCustomerId(Long customerId,String status) throws DatabaseException {
+		List<Order> orders=null;
+		Customer customer=null;
+		
+		Map<String ,Object> data =new HashMap<>();
+		
+		try {
+			
+			orders=orderDao.fetchAllActiveOrdersByCustomerId(customerId,status);
+			
+			//customer=customerDao.find(customerId);
+		} catch (Exception e) {
+			   LOGGER.error("Error occured while getting candidate list through database", e);
+			   e.printStackTrace();
+			   throw new DatabaseException("Error occured while getting all orders for a customer through database",
+			           ErrorCodes.DATABASE_ERROR);
+			  }
+		
+		return orders;
 	}
 
 }

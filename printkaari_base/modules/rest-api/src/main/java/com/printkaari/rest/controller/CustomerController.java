@@ -18,6 +18,7 @@ import com.prinktaakri.auth.util.AuthorizationUtil;
 import com.printkaari.auth.service.SystemRoles;
 import com.printkaari.data.dao.entity.User;
 import com.printkaari.data.exception.InstanceNotFoundException;
+import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.StatusException;
@@ -74,6 +75,36 @@ public class CustomerController {
 		try {
 			LOGGER.info("fetchOrders <<");
 			data = customerService.fetchAllOrdersByCustomerId(customerId);
+		}
+		catch (DatabaseException e) {
+			data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		
+		catch (Exception e) {
+			data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		return data;
+	}
+	
+	//@Secured(value = { SystemRoles.ADMIN,SystemRoles.CUSTOMER})
+	@RequestMapping(value = "/{customerId}/my-active-orders", method = RequestMethod.GET)
+	public Object fetchAllActiveOrdersByCustomerId(@PathVariable Long customerId
+	        , HttpServletResponse response) {
+		LOGGER.info(">> fetchAllOrdersByCustomerId");
+		
+		LOGGER.info(">> fetchAllOrdersByCustomerId for customerId "+customerId);
+		Object data = null;
+		try {
+			LOGGER.info("fetchOrders <<");
+			data = customerService.fetchAllActiveOrdersByCustomerId(customerId ,CommonStatus.ACTIVE.toString());
 		}
 		catch (DatabaseException e) {
 			data = new ErrorResponse();

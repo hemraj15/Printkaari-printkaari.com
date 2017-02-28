@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @author Hemraj
  *
@@ -58,7 +60,7 @@ public class Product extends PrintkaariBaseEntity implements Serializable {
 	public void setFavourite(boolean isFavourite) {
 		this.isFavourite = isFavourite;
 	}
-	@OneToOne(fetch = FetchType.EAGER, mappedBy = "product", cascade = CascadeType.ALL)
+	@OneToOne( cascade = CascadeType.ALL)
 	@JoinColumn(name="sample")
 	public ProductSamples getSample() {
 		return sample;

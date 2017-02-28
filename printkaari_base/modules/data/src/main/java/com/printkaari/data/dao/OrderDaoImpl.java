@@ -68,4 +68,16 @@ public class OrderDaoImpl extends GenericDaoImpl<Order, Long> implements OrderDa
 		return orders;
 	}
 
+	@Override
+	public List<Order> fetchAllActiveOrdersByCustomerId(Long customerId,String status) {
+		
+		List<Order> orders=null;
+		Criteria crit=getCriteria().add(Restrictions.eq("customer.id", customerId)).add(Restrictions.eq("status", status));
+		
+           orders=crit.list();
+		
+		System.out.println("order dto list for customer "+customerId);
+		return orders;
+	}
+
 }

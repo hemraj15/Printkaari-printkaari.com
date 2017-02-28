@@ -43,7 +43,7 @@ public class PrintkaariBaseEntity implements Serializable {
 
 	// TODO need to implement using @createdDate annotation using spring
 	@Column(name = "date_created")
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	@PrePersist
 	public Date getDateCreated() {
 		return dateCreated == null ? new Date() : dateCreated;
@@ -55,11 +55,11 @@ public class PrintkaariBaseEntity implements Serializable {
 
 	// TODO need to implement using @updatedDate annotation using spring
 	@Column(name = "date_updated")
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	@PrePersist
 	@PostUpdate
 	public Date getDateUpdated() {
-		return new Date();
+		return dateUpdated ==null ? new Date():dateUpdated;
 	}
 
 	public void setDateUpdated(Date dateUpdated) {

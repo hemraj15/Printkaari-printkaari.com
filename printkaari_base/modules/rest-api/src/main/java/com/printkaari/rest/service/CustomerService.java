@@ -22,4 +22,6 @@ public interface CustomerService {
 
 	Object getLoggedinUser();
 
+	Object fetchAllActiveOrdersByCustomerId(Long customerId, String string)throws DatabaseException;
+
 }

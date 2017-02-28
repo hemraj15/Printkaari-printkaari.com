@@ -16,4 +16,6 @@ public interface OrderDao extends GenericDao<Order, Long> {
 
 	List<Order> fetchAllOrdersByCustomerId(Long customerId);
 
+	List<Order> fetchAllActiveOrdersByCustomerId(Long customerId , String status);
+
 }

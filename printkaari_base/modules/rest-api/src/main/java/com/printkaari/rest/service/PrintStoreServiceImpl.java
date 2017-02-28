@@ -137,14 +137,14 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 			contry = countryDao.find(signUpStep2Form.getCountryId());
 
-			address.setCity(city);
-			address.setState(state);
-			address.setCity(city);
+			address.setCityId(city.getId());
+			address.setStateId(state.getId());
+			//address.setCity(city);
 			address.setArea(signUpStep2Form.getArea());
 			address.setHouseNo(signUpStep2Form.getHouseNo());
 			address.setLandMark(signUpStep2Form.getLandMark());
 			address.setPinCode(signUpStep2Form.getZipCode());
-			address.setCountry(contry);
+			address.setCountryId(contry.getId());
 
 			emp.setAddress(address);
 			emp.setContactNo(signUpStep2Form.getContactNo());
@@ -199,14 +199,13 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 			contry = countryDao.find(signUpStep2Form.getCountryId());
 
-			address.setCity(city);
-			address.setState(state);
-			address.setCity(city);
+			address.setCityId(city.getId());
+			address.setStateId(state.getId());
 			address.setArea(signUpStep2Form.getArea());
 			address.setHouseNo(signUpStep2Form.getHouseNo());
 			address.setLandMark(signUpStep2Form.getLandMark());
 			address.setPinCode(signUpStep2Form.getZipCode());
-			address.setCountry(contry);
+			address.setCountryId(contry.getId());
 
 			cust.setAddress(address);
 			cust.setContactNumber(signUpStep2Form.getContactNo());

@@ -11,6 +11,8 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @author Hemraj
  *
@@ -28,7 +30,7 @@ public class ProductSamples extends PrintkaariBaseEntity implements Serializable
 	private String name ;
 	private SampleFileRecord sampleFileId;
 
-	@OneToOne(cascade=CascadeType.ALL,targetEntity=Product.class)
+	@OneToOne(cascade=CascadeType.ALL)
 	public Product getProduct() {
 		return product;
 	}
@@ -47,6 +49,7 @@ public class ProductSamples extends PrintkaariBaseEntity implements Serializable
 	
 	
 	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JsonIgnore
 	public SampleFileRecord getSampleFileId() {
 		return sampleFileId;
 	}
