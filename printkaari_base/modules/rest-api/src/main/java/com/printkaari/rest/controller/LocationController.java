@@ -30,7 +30,7 @@ public class LocationController {
 	@ResponseBody
 	@RequestMapping(value = "/countries",method = RequestMethod.GET)
 	//@Secured({SystemRoles.ROLE_CUSTOMER})
-	@Secured({SystemRoles.CUSTOMER})
+	//@Secured({SystemRoles.CUSTOMER})
 	public Object fetchAllCountries(HttpServletResponse response) {
 		Object data = null;
 		try {
