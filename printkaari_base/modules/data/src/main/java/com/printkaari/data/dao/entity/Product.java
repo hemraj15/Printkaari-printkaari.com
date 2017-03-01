@@ -33,6 +33,7 @@ public class Product extends PrintkaariBaseEntity implements Serializable {
 	private String name;
 	private boolean isFavourite;
 	private SampleFileRecord sampleFileId;
+	private String productCode;
 	
 	//private ProductSamples sample;
 
@@ -78,6 +79,14 @@ public class Product extends PrintkaariBaseEntity implements Serializable {
 
 	public void setSampleFileId(SampleFileRecord sampleFileId) {
 		this.sampleFileId = sampleFileId;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
 
 

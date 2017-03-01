@@ -57,5 +57,12 @@ public class ProductDaoImpl extends GenericDaoImpl<Product, Long> implements Pro
 		LOGGER.info("ProductDaoImpl prodDtos size : "+prodDtos.size());
 		return prodDtos;
 	}
+	@Override
+	public Criteria getByProductCode(String productCode) {
+		LOGGER.info("ProductDaoImpl : product code ::"+productCode);
+		
+		Criteria crit=getCriteria().add(Restrictions.eq("productCode", productCode));
+		return crit;
+	}
 
 }

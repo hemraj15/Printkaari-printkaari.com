@@ -1,8 +1,10 @@
 package com.printkaari.rest.service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,17 +15,24 @@ import org.springframework.transaction.annotation.Transactional;
 import com.prinktaakri.auth.util.AuthorizationUtil;
 import com.printkaari.auth.service.SystemRoles;
 import com.printkaari.data.dao.CustomerDao;
+import com.printkaari.data.dao.CustomerFileDao;
 import com.printkaari.data.dao.OrderDao;
+import com.printkaari.data.dao.ProductDao;
 import com.printkaari.data.dao.UserDao;
 import com.printkaari.data.dao.entity.Customer;
+import com.printkaari.data.dao.entity.CustomerFiles;
 import com.printkaari.data.dao.entity.Order;
+import com.printkaari.data.dao.entity.Product;
 import com.printkaari.data.dao.entity.User;
 import com.printkaari.data.dto.CustomerDto;
 import com.printkaari.data.dto.OrderDto;
 import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.CommonStatus;
+import com.printkaari.rest.constant.CostConstant;
 import com.printkaari.rest.constant.ErrorCodes;
+import com.printkaari.rest.constant.ProductCodes;
 import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.InvalidProductException;
 import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 
@@ -41,7 +50,19 @@ public class CustomerServiceImpl implements CustomerService {
 	
 	
 	@Autowired
-	private OrderDao orderDao;
+	private ProductDao prodDao;
+	
+	@Autowired
+	private OrderDao ordDao;
+	
+	@Autowired
+	private CustomerFileDao custFileDao;
+	
+	@Autowired
+	private CustomerDao		custDao;
+	
+	@Autowired
+	private CustomerService customerService;
 
 	@Override
 	@Transactional
@@ -76,7 +97,7 @@ public class CustomerServiceImpl implements CustomerService {
 		
 		try {
 			
-			orders=orderDao.fetchAllOrdersByCustomerId(customerId);
+			orders=ordDao.fetchAllOrdersByCustomerId(customerId);
 			//customer=customerDao.find(customerId);
 		} catch (Exception e) {
 			   LOGGER.error("Error occured while getting candidate list through database", e);
@@ -155,7 +176,7 @@ public class CustomerServiceImpl implements CustomerService {
 		
 		try {
 			
-			orders=orderDao.fetchAllActiveOrdersByCustomerId(customerId,status);
+			orders=ordDao.fetchAllActiveOrdersByCustomerId(customerId,status);
 			
 			//customer=customerDao.find(customerId);
 		} catch (Exception e) {
@@ -169,10 +190,69 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public Long placeOrder() throws DatabaseException {
+	@Transactional
+	public Long placeOrder(Integer glossyColorPages,Integer nonGlossyColorPages, String anyOtherRequest, Integer totalPages,String bindingType,Long fileId) throws DatabaseException,InvalidProductException {
 		Long orderId=null;
+		String productCode=null;
 		
-		try {
+		Order order=new Order();
+		Product product=null;
+		User user=null;
+		Customer cust=null;
+		Double basePrice=0.0;
+		Integer blackPage=totalPages-(glossyColorPages+nonGlossyColorPages);
+		try {			
+			
+			
+			if(bindingType.equals("hard")){
+				productCode=ProductCodes.hard_binding.toString();
+				basePrice=CostConstant.hard_binnding_base_tate;
+			}
+			else if (bindingType.equals("spiral")){
+				productCode=ProductCodes.spiral_binding.toString();
+				basePrice=CostConstant.spiral_binding_base_rate;
+			}
+			else{
+				
+				throw new InvalidProductException("Invalid Product !",
+				        ErrorCodes.INVALID_PRODUCT_ERROR);
+			}
+            user=(User)customerService.getLoggedinUser();
+			
+			
+			if(user !=null && user.getUserType().equals(SystemRoles.CUSTOMER)){
+				
+				cust=(Customer)custDao.getByCriteria(custDao.getFindByEmailCriteria(user.getEmailId()));
+				
+				if(cust !=null){	
+					
+			
+			Double totalPrice=basePrice+(glossyColorPages*CostConstant.color_glossy_page)+(nonGlossyColorPages*CostConstant.color_non_glossy_page)+(blackPage*CostConstant.simple_black_page);
+			
+			product=(Product)prodDao.getByCriteria(prodDao.getByProductCode(productCode));
+			
+			order.setCustomer(cust);
+			order.setDescription(anyOtherRequest);
+			order.setStatus(CommonStatus.INITIATED.toString());
+			Set<Product> sets=new HashSet<>();
+			sets.add(product);
+			order.setProducts(sets);
+			order.setOrderPrice(totalPrice);			
+			
+			Set<CustomerFiles> fileSet=new HashSet<>();
+			
+			fileSet.add(custFileDao.find(fileId));
+			
+			order.setFileId(fileSet);
+			
+			order.setCreatedBy(cust.getFirstName());
+			
+			
+			orderId=ordDao.save(order);
+			
+				}
+				
+			}
 			
 		} catch (Exception e) {
 			   LOGGER.error("Error occured while getting candidate list through database", e);

@@ -221,4 +221,8 @@ public class ErrorCodes {
 
 	public static final String	CUSTOMER_FILE_UPLOAD_ERRO				= "customer_file_upload_error";
 
+	public static final String COLLEGE_SECTION_INITIATE_ORDER_NOT_MULTIPART = "college_section_initiate_order_not_multipart";
+
+	public static final String INVALID_PRODUCT_ERROR = "invalid_product_error";
+
 }

@@ -4,6 +4,7 @@
 package com.printkaari.rest.service;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.prinktaakri.auth.util.AuthorizationUtil;
 import com.printkaari.auth.service.SystemRoles;
 import com.printkaari.data.dao.CityDao;
 import com.printkaari.data.dao.CountryDao;
@@ -33,7 +33,6 @@ import com.printkaari.data.dao.entity.Country;
 import com.printkaari.data.dao.entity.Customer;
 import com.printkaari.data.dao.entity.CustomerFiles;
 import com.printkaari.data.dao.entity.Employee;
-import com.printkaari.data.dao.entity.PrintStore;
 import com.printkaari.data.dao.entity.Role;
 import com.printkaari.data.dao.entity.State;
 import com.printkaari.data.dao.entity.User;
@@ -66,9 +65,6 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 	        .getLogger(PrintStoreServiceImpl.class);
 
 	@Autowired
-	private PrintStoreDao	printStoreDao;
-
-	@Autowired
 	private UserDao			userDao;
 
 	@Autowired
@@ -91,11 +87,14 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 	@Autowired
 	private CustomerDao		custDao;
+	
 	@Autowired
 	private CustomerService customerService;
 	
 	@Autowired
 	private CustomerFileDao custFileDao;
+	
+	
 
 	static {
 		Properties props = ReadConfigurationFile.getProperties("file-upload.properties");
@@ -401,23 +400,29 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 		// Validating Request
 		validateUploadFileInput(fileType);
 		Long fileId=null;
+		
+		
 
 		try {
 			
 			User user=null;
 			Customer cust=null;
 			
+			
 			user=(User)customerService.getLoggedinUser();
+			
 			
 			if(user !=null && user.getUserType().equals(SystemRoles.CUSTOMER)){
 				
 				cust=(Customer)custDao.getByCriteria(custDao.getFindByEmailCriteria(user.getEmailId()));
 				
-				if(cust !=null){
+				if(cust !=null){	
+					
+					
 					String custFileName=file.getOriginalFilename();
 					String custFormatterName=cust.getFirstName().trim();
 					String custFileRelativePath="printkaari_files"+File.separator+"customer_data"+File.separator+"customer_"+cust.getId();
-				    String outPutFileName=custFormatterName +"_"+fileType.trim().toUpperCase()+custFileName.substring(custFileName.lastIndexOf("."));
+				    String outPutFileName=custFileName.substring(custFileName.lastIndexOf("."))+""+new Date().getTime();
 				
 				    LOGGER.debug("companyRelativePath : " + custFileRelativePath);
 					LOGGER.debug("logoOutputFileName : " + outPutFileName);
@@ -431,6 +436,9 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 					custFile.setStatus(CommonStatus.ACTIVE.toString());
 					
 					fileId=custFileDao.save(custFile);
+					
+					
+					
 				}
 				else {
 					
@@ -490,4 +498,12 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 			        ErrorCodes.CUSTOMER_FILE_UPLOAD_FILE_TYPE_INVALID);
 		}
 	}
+
+	/*@Override
+	public Long uploadFile(String fileType, MultipartFile file, Integer glossyColorPages,
+	        Integer nonGlossyColorPages, String anyOtherRequest, Integer totalPages)
+	        throws CompanyFileUploadException, UserNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
+	}*/
 }
