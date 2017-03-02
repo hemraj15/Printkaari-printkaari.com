@@ -15,4 +15,6 @@ public interface UserDao extends GenericDao<User, Long> {
 
 	List<UserDto> getRecruiterDTOList(String status, Long companyId, String roleType);
 
+	Criteria getFingByeUserRole(String admin);
+
 }

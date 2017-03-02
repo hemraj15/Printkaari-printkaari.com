@@ -20,6 +20,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxyHelper;
+
 /**
  * @author Hemraj
  */
@@ -96,7 +99,7 @@ public class User extends PrintkaariBaseEntity implements Serializable{
 		this.printStore = printStore;
 	}*/
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany( cascade = CascadeType.ALL)
 	@JoinTable(name = "user_role", joinColumns = {
 	        @JoinColumn(name = "user_id", nullable = false, updatable = false) }, inverseJoinColumns = {
 	                @JoinColumn(name = "role_id", nullable = false, updatable = false) })

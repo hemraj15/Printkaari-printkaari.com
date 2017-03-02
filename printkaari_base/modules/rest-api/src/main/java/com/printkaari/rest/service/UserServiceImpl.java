@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
 		        .getProperty("signup.url");
 
 		MailMessage mailHtmlMessage = new MailMessage();
-		mailHtmlMessage.setSubject("Welcome to Prinkaari !!");
+		mailHtmlMessage.setSubject("Welcome to Prinkaari !! ");
 		mailHtmlMessage.setContent("<h2>Hello " + firstName + " " + lastName
 		        + "!</h2><h3>Please click on below link to activate your account</h3>" + " <a href="
 		        + MessageFormat.format(url, PasswordUtils.encode(email)) + ">"

@@ -9,6 +9,6 @@ package com.printkaari.rest.constant;
  */
 public enum UserTypes {
 	
-	EMPLOYEE,CUSTOMER
+	EMPLOYEE,CUSTOMER,ADMIN,HR
 
 }
