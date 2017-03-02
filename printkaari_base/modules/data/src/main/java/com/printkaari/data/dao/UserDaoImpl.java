@@ -48,4 +48,13 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 		LOGGER.info("getRecruiterDTOList <<");
 		return userDtos;
 	}
+
+	@Override
+	public Criteria getFingByeUserRole(String admin) {
+		
+		LOGGER.info("getFingByeUserRole for "+admin);
+		Criteria crit=getCriteria().createAlias("roles", "role")
+				.add(Restrictions.eq("role.name", admin));
+		return crit;
+	}
 }

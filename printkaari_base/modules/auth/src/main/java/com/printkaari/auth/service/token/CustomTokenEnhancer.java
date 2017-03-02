@@ -23,7 +23,7 @@ public class CustomTokenEnhancer implements TokenEnhancer {
 		final Map<String, Object> additionalInfo = new HashMap<>();
 
 		additionalInfo.put("full_name", user.getFirstName() + " " + user.getLastName());
-		//additionalInfo.put("company_id", user.getCompany().getId());
+		additionalInfo.put("user_id", user.getId());
 		additionalInfo.put("username", user.getEmailId());
 		additionalInfo.put("userType", user.getUserType());
 		List<String> roles = new ArrayList<>();

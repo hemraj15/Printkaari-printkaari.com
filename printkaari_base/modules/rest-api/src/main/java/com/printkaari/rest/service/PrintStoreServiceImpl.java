@@ -44,6 +44,7 @@ import com.printkaari.rest.constant.UserStatus;
 import com.printkaari.rest.constant.UserTypes;
 import com.printkaari.rest.exception.CompanyFileUploadException;
 import com.printkaari.rest.exception.InvalidFieldLengthException;
+import com.printkaari.rest.exception.InvalidUserTypeException;
 import com.printkaari.rest.exception.SignUpException;
 import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.SignUpStep2Form;
@@ -87,14 +88,12 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 	@Autowired
 	private CustomerDao		custDao;
-	
+
 	@Autowired
-	private CustomerService customerService;
-	
+	private CustomerService	customerService;
+
 	@Autowired
-	private CustomerFileDao custFileDao;
-	
-	
+	private CustomerFileDao	custFileDao;
 
 	static {
 		Properties props = ReadConfigurationFile.getProperties("file-upload.properties");
@@ -148,7 +147,7 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 			address.setCityId(city.getId());
 			address.setStateId(state.getId());
-			//address.setCity(city);
+			// address.setCity(city);
 			address.setArea(signUpStep2Form.getArea());
 			address.setHouseNo(signUpStep2Form.getHouseNo());
 			address.setLandMark(signUpStep2Form.getLandMark());
@@ -164,9 +163,26 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 			// Updating User
 			Set<Role> roles = new HashSet<>();
-			roles.add((Role) roleDao
-			        .getByCriteria(roleDao.getFindByNameCriteria(user.getUserType())));
+			
+			if(user.getUserType().equals(UserTypes.ADMIN.toString())){
+				roles.add((Role) roleDao
+				        .getByCriteria(roleDao.getFindByNameCriteria(SystemRoles.ADMIN)));
 
+			}
+			else if (user.getUserType().equals(UserTypes.EMPLOYEE.toString())) {
+				roles.add((Role) roleDao
+				        .getByCriteria(roleDao.getFindByNameCriteria(SystemRoles.EMPLOYEE)));
+			}
+			else if(user.getUserType().equals(UserTypes.HR.toString())){
+				
+				roles.add((Role) roleDao
+				        .getByCriteria(roleDao.getFindByNameCriteria(SystemRoles.HR)));
+			}
+			else{
+				
+				throw new InvalidUserTypeException("Invalid User Type in the request ",ErrorCodes.INVALI_USER_TYPE_ERROR);
+			}
+			
 			/*
 			 * roles.add((Role) roleDao
 			 * .getByCriteria(roleDao.getFindByNameCriteria(SystemRoles.ADMIN)));
@@ -225,7 +241,8 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 			// Updating User
 			Set<Role> roles = new HashSet<>();
-			roles.add((Role) roleDao.getByCriteria(roleDao.getFindByNameCriteria("CUSTOMER")));
+			roles.add((Role) roleDao
+			        .getByCriteria(roleDao.getFindByNameCriteria(SystemRoles.CUSTOMER)));
 
 			user.setRoles(roles);
 			user.setStatus(UserStatus.ACTIVE.toString());
@@ -395,88 +412,75 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 	@Override
 	@Transactional
-	public Long uploadFile( String fileType, MultipartFile file)
+	public Long uploadFile(String fileType, MultipartFile file)
 	        throws CompanyFileUploadException, UserNotFoundException {
 		// Validating Request
 		validateUploadFileInput(fileType);
-		Long fileId=null;
-		
-		
+		Long fileId = null;
 
 		try {
-			
-			User user=null;
-			Customer cust=null;
-			
-			
-			user=(User)customerService.getLoggedinUser();
-			
-			
-			if(user !=null && user.getUserType().equals(SystemRoles.CUSTOMER)){
+
+			User user = null;
+			Customer cust = null;
+
+			user = (User) customerService.getLoggedinUser();
+
+			if (user != null && user.getUserType().equals(UserTypes.CUSTOMER.toString())) {
+                 LOGGER.info("user found which is customer");
 				
-				cust=(Customer)custDao.getByCriteria(custDao.getFindByEmailCriteria(user.getEmailId()));
-				
-				if(cust !=null){	
-					
-					
-					String custFileName=file.getOriginalFilename();
-					String custFormatterName=cust.getFirstName().trim();
-					String custFileRelativePath="printkaari_files"+File.separator+"customer_data"+File.separator+"customer_"+cust.getId();
-				    String outPutFileName=custFileName.substring(custFileName.lastIndexOf("."))+""+new Date().getTime();
-				
-				    LOGGER.debug("companyRelativePath : " + custFileRelativePath);
+				cust = (Customer) custDao
+				        .getByCriteria(custDao.getFindByEmailCriteria(user.getEmailId()));
+
+				if (cust != null) {
+					LOGGER.info("Logged in user is a customer");
+					String custFileName = file.getOriginalFilename();
+					String custFormatterName = cust.getFirstName().trim();
+					String custFileRelativePath = "printkaari_files" + File.separator
+					        + "customer_data" + File.separator + "customer_" + cust.getId();
+					String outPutFileName = custFileName.substring(0, custFileName.lastIndexOf("."))+"_"+new Date().getTime()+custFileName.substring(custFileName.lastIndexOf("."));
+
+					LOGGER.debug("companyRelativePath : " + custFileRelativePath);
 					LOGGER.debug("logoOutputFileName : " + outPutFileName);
-					
-					FileUtils.uploadFile(BASE_UPLOAD_PATH + File.separator + custFileRelativePath +File.separator,
-							outPutFileName, file);
-					String filePath=custFileRelativePath + File.separator+ outPutFileName;
-					CustomerFiles custFile=new CustomerFiles();
+
+					FileUtils.uploadFile(BASE_UPLOAD_PATH + File.separator + custFileRelativePath
+					        + File.separator, outPutFileName, file);
+					String filePath = custFileRelativePath + File.separator + outPutFileName;
+					CustomerFiles custFile = new CustomerFiles();
 					custFile.setFilaPath(filePath);
 					custFile.setName(outPutFileName);
 					custFile.setStatus(CommonStatus.ACTIVE.toString());
-					
-					fileId=custFileDao.save(custFile);
-					
-					
-					
-				}
-				else {
-					
+
+					fileId = custFileDao.save(custFile);
+
+				} else {
+					LOGGER.info("Logged in user is not a customer");
 					throw new UserNotFoundException("No Customer found with this ID!",
 					        ErrorCodes.CUSTOMER_NOT_FOUND_ERROR);
 				}
-				
-				
-			    
+
 			}
-			
-			/*PrintStore printStore = printStoreDao.find(companyId);
-			if (printStore.getStatus().equalsIgnoreCase(CommonStatus.ARCHIVED.toString())
-			        || printStore.getStatus().equalsIgnoreCase(CommonStatus.INACTIVE.toString())) {
-				throw new CompanyFileUploadException("No active company found with this ID!",
-				        ErrorCodes.SIGNUP_COMPANY_NOT_ACTIVE);
-			}
-			String companyFileName = file.getOriginalFilename();
-			String companyFormattedName = printStore.getStoreName().trim().replaceAll(" +", "_");
-			String companyRelativePath = "assessment_files" + File.separator + "company"
-			// + File.separator + companyFormattedName + "_" + printStore.getId()
-			        + File.separator;
-			String outputFileName = companyFormattedName + "_" + fileType.trim().toUpperCase()
-			        + companyFileName.substring(companyFileName.lastIndexOf("."));
-			LOGGER.debug("companyRelativePath : " + companyRelativePath);
-			LOGGER.debug("logoOutputFileName : " + outputFileName);
-			switch (fileType.toUpperCase()) {
-			case "LOGO":
-				// printStore.setCompanylogoPath(companyRelativePath + outputFileName);
-				break;
-			case "VIDEO":
-				// printStore.setCompanyVideoPath(companyRelativePath + outputFileName);
-			default:
-				throw new CompanyFileUploadException("Invalid File Path!",
-				        ErrorCodes.COMPANY_FILE_UPLOAD_FILE_TYPE_INVALID);
-			}
-			
-			printStoreDao.update(printStore);*/
+
+			/*
+			 * PrintStore printStore = printStoreDao.find(companyId); if
+			 * (printStore.getStatus().equalsIgnoreCase(CommonStatus.ARCHIVED.toString()) ||
+			 * printStore.getStatus().equalsIgnoreCase(CommonStatus.INACTIVE.toString())) { throw
+			 * new CompanyFileUploadException("No active company found with this ID!",
+			 * ErrorCodes.SIGNUP_COMPANY_NOT_ACTIVE); } String companyFileName =
+			 * file.getOriginalFilename(); String companyFormattedName =
+			 * printStore.getStoreName().trim().replaceAll(" +", "_"); String companyRelativePath =
+			 * "assessment_files" + File.separator + "company" // + File.separator +
+			 * companyFormattedName + "_" + printStore.getId() + File.separator; String
+			 * outputFileName = companyFormattedName + "_" + fileType.trim().toUpperCase() +
+			 * companyFileName.substring(companyFileName.lastIndexOf(".")); LOGGER.debug(
+			 * "companyRelativePath : " + companyRelativePath); LOGGER.debug("logoOutputFileName : "
+			 * + outputFileName); switch (fileType.toUpperCase()) { case "LOGO": //
+			 * printStore.setCompanylogoPath(companyRelativePath + outputFileName); break; case
+			 * "VIDEO": // printStore.setCompanyVideoPath(companyRelativePath + outputFileName);
+			 * default: throw new CompanyFileUploadException("Invalid File Path!",
+			 * ErrorCodes.COMPANY_FILE_UPLOAD_FILE_TYPE_INVALID); }
+			 * 
+			 * printStoreDao.update(printStore);
+			 */
 		} catch (InstanceNotFoundException e) {
 			LOGGER.error(e.getMessage(), e);
 			throw new UserNotFoundException("No PrintStore found with this ID!",
@@ -499,11 +503,10 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 		}
 	}
 
-	/*@Override
-	public Long uploadFile(String fileType, MultipartFile file, Integer glossyColorPages,
-	        Integer nonGlossyColorPages, String anyOtherRequest, Integer totalPages)
-	        throws CompanyFileUploadException, UserNotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}*/
+	/*
+	 * @Override public Long uploadFile(String fileType, MultipartFile file, Integer
+	 * glossyColorPages, Integer nonGlossyColorPages, String anyOtherRequest, Integer totalPages)
+	 * throws CompanyFileUploadException, UserNotFoundException { // TODO Auto-generated method stub
+	 * return null; }
+	 */
 }
