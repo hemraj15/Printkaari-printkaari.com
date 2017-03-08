@@ -229,4 +229,8 @@ public class ErrorCodes {
 
 	public static final String	MAIL_NOT_SENT_ERROR								= "mail_not_send_error";
 
+	public static final String	ORDER_NOT_FOUND_ERROR							= "order_not_found_error";
+
+	public static final String	INVALID_ORDER_STATUS							= "invalid_order_status";
+
 }
