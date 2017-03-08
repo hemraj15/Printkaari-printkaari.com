@@ -24,6 +24,7 @@ import com.printkaari.rest.constant.PaymentConstants;
 import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.OrderStatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
+import com.printkaari.rest.form.TransactionResponseForm;
 
 /**
  * @author Hemraj
@@ -134,17 +135,30 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
-	public Map<String, Object> transactionComplete(Long trxId) throws DatabaseException {
+	public Map<String, Object> transactionComplete(TransactionResponseForm completTrxForm) throws DatabaseException {
 		 Map<String, Object> map=new HashMap<>();
 		 
 		 CustomerTransaction trxObj= new CustomerTransaction();
 		try {
 			
 			
-			trxObj=paymentDao.find(trxId);
+			trxObj=paymentDao.find(completTrxForm.getTransactionNo());
 			
 			if (trxObj !=null) {
 				
+				trxObj.setBankCode(completTrxForm.getBankCode());
+				trxObj.setBankRefNum(completTrxForm.getBankRefNum());
+				trxObj.setCardNumber(completTrxForm.getCardNumber());
+				trxObj.setCardType(completTrxForm.getCardType());
+				trxObj.setDiscount(completTrxForm.getDiscount());
+				trxObj.setErrorCode(completTrxForm.getErrorCode());
+				trxObj.setErrorMessage(completTrxForm.getErrorMessage());
+				trxObj.setSuccessCode(completTrxForm.getSuccessCode());
+				trxObj.setSuccessMessage(completTrxForm.getSuccessMessage());
+				trxObj.setPaymentGatewayTrxId(completTrxForm.getPaymentGatewayTrxId());
+				trxObj.setPayYouMoneyId(completTrxForm.getPayYouMoneyId());
+				trxObj.setTransactionUpdateDate(completTrxForm.getTransactionUpdateDate());
+				trxObj.setTransactonDate(completTrxForm.getTransactonDate());
 				
 			}
 			
@@ -152,7 +166,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 		} catch (Exception e) {
 			LOGGER.error("Error occured while updating transaction for transaction ::"
-			        + trxId + " in database", e);
+			        + completTrxForm.getTransactionNo() + " in database", e);
 			throw new DatabaseException("Error occured while fetching order from database",
 			        ErrorCodes.DATABASE_ERROR);
 		}

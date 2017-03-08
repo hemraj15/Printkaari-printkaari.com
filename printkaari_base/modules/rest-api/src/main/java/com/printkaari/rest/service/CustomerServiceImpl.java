@@ -341,14 +341,18 @@ public class CustomerServiceImpl implements CustomerService {
 				LOGGER.info("Order "+orderId+" found");
 				ord.setStatus(CommonStatus.ACTIVE.toString());
 				ordDao.update(ord);
-				LOGGER.info("Order "+orderId+" is consfirmed ");
+				LOGGER.info("Order "+orderId+" is confirmed ");
 				
 				//Customer cust=(Customer)custDao.getByCriteria(custDao.getFindByEmailCriteria(getLoggedinUser().getEmailId()));
 				Customer cust=ord.getCustomer();
 				if(cust !=null){
-					
+					LOGGER.error("Customer associated with Order "+orderId+" is found >> sending mails");
 					sendOrderStatusMailToCustomer(ord.getId(), CommonStatus.ACTIVE.toString(), cust);
 					sendOrderStatusMailToAdmin(ord.getId(), cust);
+					LOGGER.error("Mail sent to customer and admin ");
+				}
+				else{
+					LOGGER.error("Customer associated with Order "+orderId+" is null");
 				}
 				
 			}
