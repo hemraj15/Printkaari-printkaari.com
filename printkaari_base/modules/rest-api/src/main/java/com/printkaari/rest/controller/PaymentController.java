@@ -48,7 +48,7 @@ public class PaymentController {
 	private CustomerService custService;
 	
 	@ResponseBody
-	@RequestMapping(value="/getCreds" ,method = RequestMethod.GET)
+	@RequestMapping(value="/getCreds/{orderId}" ,method = RequestMethod.GET)
 	public Object getMerchantCreds(@PathVariable Long orderId ,  HttpServletResponse response) {
 		Object data=null;
 		try {
@@ -64,12 +64,14 @@ public class PaymentController {
 		} 
 		
 		catch (DatabaseException e) {
+			
 			LOGGER.error(e.getMessage(), e);
 			((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
 			((ErrorResponse) data).setMessage(e.getMessage());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		catch (Exception e) {
+			
 			LOGGER.error(e.getMessage(), e);
 			data = new ErrorResponse();
 			((ErrorResponse) data).setErrorCode(ErrorCodes.VALIDATION_ERROR);
