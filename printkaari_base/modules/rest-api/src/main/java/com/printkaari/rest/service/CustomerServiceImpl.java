@@ -242,15 +242,23 @@ public class CustomerServiceImpl implements CustomerService {
 			LOGGER.info("Product code for College Projects Catagory "+productCode);
 			
 			if(user !=null && user.getUserType().equals(UserTypes.CUSTOMER.toString())){
-				 LOGGER.info("Initiate order Logged in user is "+user.getFirstName()+" user id"+user.getId());
+				 LOGGER.info("Initiate order Logged in user is "+user.getFirstName()+" user id  "+user.getId());
 				cust=(Customer)custDao.getByCriteria(custDao.getFindByEmailCriteria(user.getEmailId()));
 				
 				if(cust !=null){	
 					
-					 LOGGER.info("Initiate order customer is "+cust.getFirstName()+" user id"+cust.getId());
+					 LOGGER.info("Initiate order customer is "+cust.getFirstName()+" user id  "+cust.getId());
 			Double totalPrice=basePrice+(glossyColorPages*CostConstant.color_glossy_page)+(nonGlossyColorPages*CostConstant.color_non_glossy_page)+(blackPage*CostConstant.simple_black_page);
 			
 			product=(Product)prodDao.getByCriteria(prodDao.getByProductCode(productCode));
+			
+			if(product == null){
+				
+				LOGGER.info("no product found for product code "+productCode);
+			}
+			else {
+				
+			}
 			
 			order.setCustomer(cust);
 			order.setDescription(anyOtherRequest);
@@ -341,14 +349,18 @@ public class CustomerServiceImpl implements CustomerService {
 				LOGGER.info("Order "+orderId+" found");
 				ord.setStatus(CommonStatus.ACTIVE.toString());
 				ordDao.update(ord);
-				LOGGER.info("Order "+orderId+" is consfirmed ");
+				LOGGER.info("Order "+orderId+" is confirmed ");
 				
 				//Customer cust=(Customer)custDao.getByCriteria(custDao.getFindByEmailCriteria(getLoggedinUser().getEmailId()));
 				Customer cust=ord.getCustomer();
 				if(cust !=null){
-					
+					LOGGER.error("Customer associated with Order "+orderId+" is found >> sending mails");
 					sendOrderStatusMailToCustomer(ord.getId(), CommonStatus.ACTIVE.toString(), cust);
 					sendOrderStatusMailToAdmin(ord.getId(), cust);
+					LOGGER.error("Mail sent to customer and admin ");
+				}
+				else{
+					LOGGER.error("Customer associated with Order "+orderId+" is null");
 				}
 				
 			}
