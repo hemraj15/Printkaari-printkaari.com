@@ -118,7 +118,7 @@
 		class="org.springframework.security.oauth2.provider.token.DefaultTokenServices"
 		p:tokenStore-ref="tokenStore" p:clientDetailsService-ref="clientDetails"
 		p:supportRefreshToken="true" p:tokenEnhancer-ref="tokenEnhancer"
-		p:accessTokenValiditySeconds="1800" />
+		p:accessTokenValiditySeconds="86400" />
 
 	<bean id="userApprovalHandler"
 		class="org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler">

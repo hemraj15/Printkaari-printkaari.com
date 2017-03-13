@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.printkaari.auth.service.SystemRoles;
+import com.printkaari.data.dao.entity.Customer;
 import com.printkaari.data.dao.entity.User;
 import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.CommonStatus;
@@ -74,7 +75,7 @@ public class CustomerController {
 	}
 
 
-	//@Secured(value = { SystemRoles.ADMIN,SystemRoles.CUSTOMER})
+	@Secured(value = { SystemRoles.ADMIN,SystemRoles.CUSTOMER})
 	@RequestMapping(value = "/my-orders", method = RequestMethod.GET)
 	public Object fetchAllOrdersByCustomerId( HttpServletResponse response) {
 		LOGGER.info(">> fetchAllOrdersByCustomerId");		
@@ -84,7 +85,7 @@ public class CustomerController {
 		try {
 			user=customerService.getLoggedinUser();
 			LOGGER.info(">> fetchAllOrdersByCustomerId for customerId "+user.getId());
-			data = customerService.fetchAllOrdersByCustomerId(user.getId());
+			data = customerService.fetchAllOrdersByCustomerId(user.getEmailId().trim());
 		}
 		catch (DatabaseException e) {
 			data = new ErrorResponse();
@@ -113,8 +114,10 @@ public class CustomerController {
 		User user=null;
 		try {
 			user=customerService.getLoggedinUser();
+			
+			
 			LOGGER.info(">> fetchAllOrdersByCustomerId for customerId "+user.getId());
-			data = customerService.fetchAllActiveOrdersByCustomerId(user.getId() ,CommonStatus.ACTIVE.toString());
+			data = customerService.fetchAllActiveOrdersByCustomerId(user.getEmailId() ,CommonStatus.ACTIVE.toString());
 		}
 		catch (DatabaseException e) {
 			data = new ErrorResponse();
@@ -148,7 +151,7 @@ public class CustomerController {
 				LOGGER.info(">> fetchLoggedinUser for my profile ");
 				//data = customerService.fetchAllOrdersByCustomerId();
 				String custEmail=customerService.fetchLoggedinCustomer();
-				data=customerService.fetchCustomerByEmail(custEmail);
+				data=customerService.fetchCustomerByEmail(custEmail.trim());
 				
 				
 			}

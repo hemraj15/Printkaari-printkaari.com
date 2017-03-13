@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
 	private void validateInitiateSignUpRequest(String email) throws SignUpException {
 		try {
-			User user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(email));
+			User user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(email.trim()));
 			if (user != null) {
 				UserStatus status = UserStatus.valueOf(user.getStatus());
 				switch (status) {
@@ -187,12 +187,12 @@ public class UserServiceImpl implements UserService {
 		try {
 			LOGGER.debug("Resend Email");
 			String email = PasswordUtils.decode(token);
-			if (!ValidationUtils.validateEmail(email)) {
+			if (!ValidationUtils.validateEmail(email.trim())) {
 				throw new SignUpException("Please provide valid Email.",
 				        ErrorCodes.VALIDATION_ERROR);
 			}
 
-			User user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(email));
+			User user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(email.trim()));
 			if (user == null) {
 				throw new SignUpException("No user found with this Email",
 				        ErrorCodes.USER_NOT_FOUND_ERROR);
@@ -228,12 +228,12 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public void sendForgotPasswordLink(String emailId)
 	        throws MailNotSentException, PasswordException, UserNotFoundException {
-		if (!ValidationUtils.validateEmail(emailId)) {
+		if (!ValidationUtils.validateEmail(emailId.trim())) {
 			throw new UserNotFoundException("Please provide valid Email.",
 			        ErrorCodes.VALIDATION_ERROR);
 		}
 
-		User user = validateForgetPasswordRequest(emailId);
+		User user = validateForgetPasswordRequest(emailId.trim());
 
 		updateUser(user);
 	}
@@ -285,13 +285,13 @@ public class UserServiceImpl implements UserService {
 		String newPassword = resetPasswordForm.getNewPassword();
 		LOGGER.debug("Resetting password");
 		String email = PasswordUtils.decode(token);
-		if (!ValidationUtils.validateEmail(email)) {
+		if (!ValidationUtils.validateEmail(email.trim())) {
 			throw new PasswordException("Please provide valid token.", ErrorCodes.VALIDATION_ERROR);
 		}
 
 		User user;
 		try {
-			user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(email));
+			user = (User) userDao.getByCriteria(userDao.getFindByEmailCriteria(email.trim()));
 			if (user == null) {
 				throw new UserNotFoundException("No user found with this Email",
 				        ErrorCodes.USER_NOT_FOUND_ERROR);
@@ -461,18 +461,14 @@ public class UserServiceImpl implements UserService {
 
 			Long companyId = null;
 
-			/*
-			 * userDtos = userDao.getRecruiterDTOList(CommonStatus.ACTIVE.toString(), companyId,
-			 * SystemRoles.ROLE_COMPANY_RECRUITER);
-			 */
 			if (userDtos.isEmpty() || userDtos == null) {
-				throw new EmptyListException("Recruiter Lsit is empty",
+				throw new EmptyListException("User Lsit is empty",
 				        ErrorCodes.RECRUIERS_LIST_EMPTY);
 			}
 
 		} catch (Exception e) {
 			throw new EmptyListException(
-			        "Error occured while getting recruiters list through database",
+			        "Error occured while getting user list through database",
 			        ErrorCodes.DATABASE_ERROR);
 		}
 
