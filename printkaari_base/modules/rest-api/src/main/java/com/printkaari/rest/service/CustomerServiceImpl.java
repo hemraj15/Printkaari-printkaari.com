@@ -37,6 +37,7 @@ import com.printkaari.rest.constant.UserTypes;
 import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.InvalidProductException;
 import com.printkaari.rest.exception.MailNotSendException;
+import com.printkaari.rest.exception.ProductNotFoundException;
 import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 
@@ -262,7 +263,7 @@ public class CustomerServiceImpl implements CustomerService {
 			if (user != null && user.getUserType().equals(UserTypes.CUSTOMER.toString())) {
 				LOGGER.info("Initiate order Logged in user is " + user.getFirstName() + " user id  "
 				        + user.getId());
-				cust = getCustomerByEmailId(user.getEmailId());
+				cust = getCustomerByEmailId(user.getEmailId().trim());
 				if (cust != null) {
 
 					LOGGER.info("Initiate order customer is " + cust.getFirstName() + " user id  "
@@ -272,43 +273,46 @@ public class CustomerServiceImpl implements CustomerService {
 					        + (nonGlossyColorPages * CostConstant.color_non_glossy_page)
 					        + (blackPage * CostConstant.simple_black_page);
 
-					product = (Product) prodDao
-					        .getByCriteria(prodDao.getByProductCode(productCode));
+					product = fetchProductCodeFromDB(productCode);
 
 					if (product == null) {
 
 						LOGGER.info("no product found for product code " + productCode);
+						 throw new ProductNotFoundException("Product not found in the data base while placing order ",ErrorCodes.PRODUCT_NOT_FOUND_IN_DATABASE);
+						
 					} else {
+
+						order.setCustomer(cust);
+						order.setDescription(anyOtherRequest);
+						order.setStatus(CommonStatus.INITIATED.toString());
+						Set<Product> sets = new HashSet<>();
+						sets.add(product);
+						order.setProducts(sets);
+						order.setOrderPrice(totalPrice);
+
+						Set<CustomerFiles> fileSet = new HashSet<>();
+
+						fileSet.add(custFileDao.find(fileId));
+
+						order.setFileId(fileSet);
+
+						order.setCreatedBy(cust.getFirstName());
+
+						orderId = ordDao.save(order);
+						map.put("order_id", orderId);
+						map.put("total_price", order.getOrderPrice());
+
+						LOGGER.info("OrderDao Save Order --> initiated with Order Id " + orderId);
+
+						sendOrderStatusMailToCustomer(orderId, order.getStatus(), cust);
+						sendOrderStatusMailToAdmin(orderId, cust);
 
 					}
 
-					order.setCustomer(cust);
-					order.setDescription(anyOtherRequest);
-					order.setStatus(CommonStatus.INITIATED.toString());
-					Set<Product> sets = new HashSet<>();
-					sets.add(product);
-					order.setProducts(sets);
-					order.setOrderPrice(totalPrice);
-
-					Set<CustomerFiles> fileSet = new HashSet<>();
-
-					fileSet.add(custFileDao.find(fileId));
-
-					order.setFileId(fileSet);
-
-					order.setCreatedBy(cust.getFirstName());
-
-					orderId = ordDao.save(order);
-					map.put("order_id", orderId);
-					map.put("total_price", order.getOrderPrice());
-
-					LOGGER.info("OrderDao Save Order --> initiated with Order Id " + orderId);
-
-					sendOrderStatusMailToCustomer(orderId, order.getStatus(), cust);
-					sendOrderStatusMailToAdmin(orderId, cust);
-
+					
 				}
 
+				LOGGER.info("Customer object  is null or is not a customer  while placing order ");
 			}
 
 			LOGGER.info("User is null or is not a customer  while placing order ");
@@ -320,6 +324,18 @@ public class CustomerServiceImpl implements CustomerService {
 			        ErrorCodes.DATABASE_ERROR);
 		}
 		return map;
+	}
+
+	/**
+	 * @param productCode
+	 * @return
+	 * @throws InstanceNotFoundException
+	 */
+	private Product fetchProductCodeFromDB(String productCode) throws InstanceNotFoundException {
+		Product product;
+		product = (Product) prodDao
+		        .getByCriteria(prodDao.getByProductCode(productCode));
+		return product;
 	}
 
 	private void sendOrderStatusMailToCustomer(Long orderId, String ordStatus, Customer cust)

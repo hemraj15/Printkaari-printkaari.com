@@ -233,4 +233,6 @@ public class ErrorCodes {
 
 	public static final String	INVALID_ORDER_STATUS							= "invalid_order_status";
 
+	public static final String	PRODUCT_NOT_FOUND_IN_DATABASE					= "product_not_found_in_database";
+
 }
