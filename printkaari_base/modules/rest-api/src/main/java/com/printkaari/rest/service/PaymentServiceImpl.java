@@ -60,14 +60,15 @@ public class PaymentServiceImpl implements PaymentService {
 
 				if (cust != null) {
 
-					map.put("merchantKey", PaymentConstants.merchantKey);
-					map.put("merchantId", PaymentConstants.merchantId);
-					map.put("authHeader", PaymentConstants.authHeader);
-					map.put("merchantSalt", PaymentConstants.merchantSalt);
+					//map.put("merchantKey", PaymentConstants.merchantKey);
+					//map.put("merchantId", PaymentConstants.merchantId);
+					//map.put("authHeader", PaymentConstants.authHeader);
+					//map.put("merchantSalt", PaymentConstants.merchantSalt);
 					map.put("customerEmail", cust.getEmail());
 					map.put("customerId", cust.getId());
 					map.put("customerFirstName", cust.getFirstName());
 					map.put("custLastName", cust.getLastName());
+					map.put("custContactNum", cust.getContactNumber());
 					map.put("orderPrice", ord.getOrderPrice());
 					map.put("orderId", ord.getId());
 

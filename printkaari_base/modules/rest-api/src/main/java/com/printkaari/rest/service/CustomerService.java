@@ -16,7 +16,7 @@ public interface CustomerService {
 
 	List<CustomerDto> fetchAllCandidatesByModifiedDate(Integer records) throws DatabaseException;
 
-	Object fetchAllOrdersByCustomerId(Long customerId)throws DatabaseException;
+	Object fetchAllOrdersByCustomerId(String mailId)throws DatabaseException;
 
 	Object fetchAllCustomerByModifyDate(Integer records)throws DatabaseException;
 
@@ -26,11 +26,11 @@ public interface CustomerService {
 
 	User getLoggedinUser();
 
-	Object fetchAllActiveOrdersByCustomerId(Long customerId, String string)throws DatabaseException;
+	Object fetchAllActiveOrdersByCustomerId(String string2, String string)throws DatabaseException;
 
 	Map<String,Object> placeOrder(Integer glossyColorPages, Integer nonGlossyColorPages, String anyOtherRequest, Integer totalPages, String bindingType,Long fileId)throws DatabaseException,InvalidProductException, MailNotSendException;
 
-	void confirmOrder(Long orderId)throws DatabaseException;
+	void confirmOrder(Long orderId, String string)throws DatabaseException;
 
 	void changeOrderStatus(String status, Long orderId) throws DatabaseException;
 
