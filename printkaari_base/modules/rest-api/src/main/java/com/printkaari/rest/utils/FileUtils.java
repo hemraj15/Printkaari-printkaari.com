@@ -33,4 +33,26 @@ public class FileUtils {
 
 		}
 	}
+	
+	public static void downloadFile(String inputDir, String inputFileName) {
+		if (!file.isEmpty()) {
+			File outDir = new File(outputDir);
+			if (!outDir.exists()) {
+				outDir.mkdirs();
+			}
+			byte[] bytes;
+			try {
+				bytes = file.getBytes();
+				BufferedOutputStream stream = new BufferedOutputStream(
+				        new FileOutputStream(new File(outputDir + outputFileName)));
+				stream.write(bytes);
+				stream.flush();
+				stream.close();
+				LOGGER.info("File Uploaded successfuly!");
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+			}
+
+		}
+	}
 }

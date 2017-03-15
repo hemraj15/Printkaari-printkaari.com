@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.printkaari.auth.service.SystemRoles;
 import com.printkaari.rest.constant.ErrorCodes;
-import com.printkaari.rest.exception.CompanyFileUploadException;
+import com.printkaari.rest.exception.FileUploadException;
 import com.printkaari.rest.exception.InvalidFieldLengthException;
 import com.printkaari.rest.exception.SignUpException;
 import com.printkaari.rest.form.SignUpStep1Form;

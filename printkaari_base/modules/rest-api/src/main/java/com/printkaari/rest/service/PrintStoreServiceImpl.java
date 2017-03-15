@@ -5,7 +5,9 @@ package com.printkaari.rest.service;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -22,6 +24,7 @@ import com.printkaari.data.dao.CountryDao;
 import com.printkaari.data.dao.CustomerDao;
 import com.printkaari.data.dao.CustomerFileDao;
 import com.printkaari.data.dao.EmployeeDao;
+import com.printkaari.data.dao.OrderDao;
 import com.printkaari.data.dao.PrintStoreDao;
 import com.printkaari.data.dao.RoleDao;
 import com.printkaari.data.dao.StateDao;
@@ -33,6 +36,7 @@ import com.printkaari.data.dao.entity.Country;
 import com.printkaari.data.dao.entity.Customer;
 import com.printkaari.data.dao.entity.CustomerFiles;
 import com.printkaari.data.dao.entity.Employee;
+import com.printkaari.data.dao.entity.Order;
 import com.printkaari.data.dao.entity.Role;
 import com.printkaari.data.dao.entity.State;
 import com.printkaari.data.dao.entity.User;
@@ -42,7 +46,9 @@ import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.constant.UserStatus;
 import com.printkaari.rest.constant.UserTypes;
-import com.printkaari.rest.exception.CompanyFileUploadException;
+import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.FileDownloadException;
+import com.printkaari.rest.exception.FileUploadException;
 import com.printkaari.rest.exception.InvalidFieldLengthException;
 import com.printkaari.rest.exception.InvalidUserTypeException;
 import com.printkaari.rest.exception.SignUpException;
@@ -94,6 +100,9 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 	@Autowired
 	private CustomerFileDao	custFileDao;
+	
+	@Autowired
+	private OrderDao ordDao;
 
 	static {
 		Properties props = ReadConfigurationFile.getProperties("file-upload.properties");
@@ -180,7 +189,7 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 			}
 			else{
 				
-				throw new InvalidUserTypeException("Invalid User Type in the request ",ErrorCodes.INVALI_USER_TYPE_ERROR);
+				throw new InvalidUserTypeException("Invalid User Type in the request ",ErrorCodes.INVALID_USER_TYPE_ERROR);
 			}
 			
 			/*
@@ -413,7 +422,7 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 	@Override
 	@Transactional
 	public Long uploadFile(String fileType, MultipartFile file)
-	        throws CompanyFileUploadException, UserNotFoundException {
+	        throws FileUploadException, UserNotFoundException {
 		// Validating Request
 		validateUploadFileInput(fileType);
 		Long fileId = null;
@@ -464,7 +473,7 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 			 * PrintStore printStore = printStoreDao.find(companyId); if
 			 * (printStore.getStatus().equalsIgnoreCase(CommonStatus.ARCHIVED.toString()) ||
 			 * printStore.getStatus().equalsIgnoreCase(CommonStatus.INACTIVE.toString())) { throw
-			 * new CompanyFileUploadException("No active company found with this ID!",
+			 * new FileUploadException("No active company found with this ID!",
 			 * ErrorCodes.SIGNUP_COMPANY_NOT_ACTIVE); } String companyFileName =
 			 * file.getOriginalFilename(); String companyFormattedName =
 			 * printStore.getStoreName().trim().replaceAll(" +", "_"); String companyRelativePath =
@@ -476,7 +485,7 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 			 * + outputFileName); switch (fileType.toUpperCase()) { case "LOGO": //
 			 * printStore.setCompanylogoPath(companyRelativePath + outputFileName); break; case
 			 * "VIDEO": // printStore.setCompanyVideoPath(companyRelativePath + outputFileName);
-			 * default: throw new CompanyFileUploadException("Invalid File Path!",
+			 * default: throw new FileUploadException("Invalid File Path!",
 			 * ErrorCodes.COMPANY_FILE_UPLOAD_FILE_TYPE_INVALID); }
 			 * 
 			 * printStoreDao.update(printStore);
@@ -487,26 +496,55 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 			        ErrorCodes.USER_NOT_FOUND_ERROR);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			throw new CompanyFileUploadException("Some error occurred while uploading file!",
-			        ErrorCodes.CUSTOMER_FILE_UPLOAD_ERRO);
+			throw new FileUploadException("Some error occurred while uploading file!",
+			        ErrorCodes.CUSTOMER_FILE_UPLOAD_ERROR);
 		}
 		return fileId;
 	}
 
-	private void validateUploadFileInput(String fileType) throws CompanyFileUploadException {
+	private void validateUploadFileInput(String fileType) throws FileUploadException {
 		if (fileType == null || fileType.trim().length() <= 0) {
-			throw new CompanyFileUploadException("File type is required!",
+			throw new FileUploadException("File type is required!",
 			        ErrorCodes.CUSTOMER_FILE_UPLOAD_FILE_TYPE_EMPTY);
 		} else if (!fileType.equalsIgnoreCase("pdf") && !fileType.equals("doc")) {
-			throw new CompanyFileUploadException("Invalid File Path!",
+			throw new FileUploadException("Invalid File Path !",
 			        ErrorCodes.CUSTOMER_FILE_UPLOAD_FILE_TYPE_INVALID);
 		}
 	}
 
-	/*
-	 * @Override public Long uploadFile(String fileType, MultipartFile file, Integer
-	 * glossyColorPages, Integer nonGlossyColorPages, String anyOtherRequest, Integer totalPages)
-	 * throws CompanyFileUploadException, UserNotFoundException { // TODO Auto-generated method stub
-	 * return null; }
-	 */
+	@Override
+	public Map<String, Object> downloadCollegeProjectFiles(Long order_id)
+	        throws DatabaseException, FileDownloadException {
+		
+		Order ord=null;
+		Map<String, Object> map=new HashMap<>();
+		Set<CustomerFiles> custFiles=new HashSet<>();
+		String fileLocation=null;
+		
+		try {
+			
+			ord=ordDao.find(order_id);
+			
+			custFiles=ord.getFileId();
+			
+			
+			
+			for (CustomerFiles custFile :custFiles) {
+				
+				
+			}
+			
+			
+			
+			
+			
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new FileDownloadException("Some error occurred while downloading file !",
+			        ErrorCodes.CUSTOMER_FILE_UPLOAD_ERROR);
+		}
+		return null;
+	}
+
+	
 }

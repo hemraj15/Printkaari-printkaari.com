@@ -219,13 +219,13 @@ public class ErrorCodes {
 
 	public static final String	CUSTOMER_FILE_UPLOAD_FILE_TYPE_INVALID			= "customer_file_upload_file_type_invalid";
 
-	public static final String	CUSTOMER_FILE_UPLOAD_ERRO						= "customer_file_upload_error";
+	public static final String	CUSTOMER_FILE_UPLOAD_ERROR						= "customer_file_upload_error";
 
 	public static final String	COLLEGE_SECTION_INITIATE_ORDER_NOT_MULTIPART	= "college_section_initiate_order_not_multipart";
 
 	public static final String	INVALID_PRODUCT_ERROR							= "invalid_product_error";
 
-	public static final String	INVALI_USER_TYPE_ERROR							= "invalid_user_type_error";
+	public static final String	INVALID_USER_TYPE_ERROR							= "invalid_user_type_error";
 
 	public static final String	MAIL_NOT_SENT_ERROR								= "mail_not_send_error";
 
@@ -234,5 +234,7 @@ public class ErrorCodes {
 	public static final String	INVALID_ORDER_STATUS							= "invalid_order_status";
 
 	public static final String	PRODUCT_NOT_FOUND_IN_DATABASE					= "product_not_found_in_database";
+
+	public static final String	CUSTOMER_FILE_DOWNLOAD_ERROR					= "customer_file_download_error";
 
 }
