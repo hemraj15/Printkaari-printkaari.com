@@ -48,7 +48,7 @@ public class PaymentController {
 	private CustomerService custService;
 	
 	@ResponseBody
-	@RequestMapping(value="/getCreds/{orderId}" ,method = RequestMethod.GET)
+	@RequestMapping(value="/trxInititated/{orderId}" ,method = RequestMethod.GET)
 	public Object getMerchantCreds(@PathVariable Long orderId ,  HttpServletResponse response) {
 		Object data=null;
 		try {
