@@ -30,7 +30,7 @@ public interface CustomerService {
 
 	Map<String,Object> placeOrder(Integer glossyColorPages, Integer nonGlossyColorPages, String anyOtherRequest, Integer totalPages, String bindingType,Long fileId)throws DatabaseException,InvalidProductException, MailNotSendException;
 
-	void confirmOrder(Long orderId)throws DatabaseException;
+	void confirmOrder(Long orderId, String string)throws DatabaseException;
 
 	void changeOrderStatus(String status, Long orderId) throws DatabaseException;
 

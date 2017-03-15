@@ -300,7 +300,7 @@ public class CustomerController {
 		}
 		
 		@ResponseBody
-		@RequestMapping(value = "/confirm-college-order/{orderId}", method = RequestMethod.GET)
+		@RequestMapping(value = "/confirm-order/{orderId}", method = RequestMethod.GET)
 		public Object confirmOrder( @PathVariable Long  orderId, HttpServletRequest request,
 		        HttpServletResponse response) {
 			
@@ -311,7 +311,7 @@ public class CustomerController {
 				try {					
 					LOGGER.info("order id to comfirm ::"+orderId);
 					LOGGER.info("Placing order >>");
-					 customerService.confirmOrder(orderId);
+					// customerService.confirmOrder(orderId);
 					
 					map.put("orderId", orderId);
 					map.put("message", "order has been confirmed succssfully !!");

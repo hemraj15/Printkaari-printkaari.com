@@ -393,11 +393,12 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	@Transactional
-	public void confirmOrder(Long orderId) throws DatabaseException {
+	public void confirmOrder(Long orderId , String successCode) throws DatabaseException {
 		try {
 			LOGGER.info("Order about to confirm :" + orderId);
+			LOGGER.info("Success Code to confirm order :" + successCode);
 			Order ord = getOrderByOrderId(orderId);
-			if (ord != null) {
+			if (ord != null && successCode !=null) {
 				LOGGER.info("Order " + orderId + " found");
 				ord.setStatus(CommonStatus.ACTIVE.toString());
 				ordDao.update(ord);
@@ -415,6 +416,10 @@ public class CustomerServiceImpl implements CustomerService {
 				}
 
 			}
+			else{
+				LOGGER.error(" Success Code is null !!");
+			}
+			
 		} catch (Exception e) {
 			LOGGER.error("Error occured while updating order in database", e);
 			e.printStackTrace();

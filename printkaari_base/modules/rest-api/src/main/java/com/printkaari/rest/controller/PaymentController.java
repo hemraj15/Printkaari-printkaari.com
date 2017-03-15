@@ -48,7 +48,7 @@ public class PaymentController {
 	private CustomerService custService;
 	
 	@ResponseBody
-	@RequestMapping(value="/trxInititated/{orderId}" ,method = RequestMethod.GET)
+	@RequestMapping(value="/trxInitiate/{orderId}" ,method = RequestMethod.GET)
 	public Object getMerchantCreds(@PathVariable Long orderId ,  HttpServletResponse response) {
 		Object data=null;
 		try {
@@ -102,13 +102,13 @@ public class PaymentController {
 			Map<String ,Object> map=new HashMap<>();
 			
 			map=paymentService.transactionComplete(completTrxForm);
-			map.put("message", "payment successfull - transaction completed");
+			map.put("message", "payment successfull - transaction completed for order id :"+completTrxForm.getOrderId());
 			
 			LOGGER.info("order id to comfirm ::"+completTrxForm.getOrderId());
 			LOGGER.info("Placing order >>");
-			//custService.confirmOrder(completTrxForm.getOrderId());
-			//map.put("orderId", completTrxForm.getOrderId());
-			//map.put("message", "order has been confirmed succssfully !!");
+		   custService.confirmOrder(completTrxForm.getOrderId(),completTrxForm.getSuccessCode());
+			map.put("orderId", completTrxForm.getOrderId());
+			map.put("message", "order has been confirmed succssfully !!");
 			data=map;
 			
 		} 
