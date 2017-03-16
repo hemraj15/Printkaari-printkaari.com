@@ -514,6 +514,7 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 	}
 
 	@Override
+	@Transactional
 	public Map<String, Object> downloadCollegeProjectFiles(Long order_id)
 	        throws DatabaseException, FileDownloadException {
 		
