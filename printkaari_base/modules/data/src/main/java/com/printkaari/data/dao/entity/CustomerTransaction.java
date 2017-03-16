@@ -48,6 +48,12 @@ public class CustomerTransaction implements Serializable {
 	private String successMessage;
 	private String successCode;
 	private Long orderId;
+	private String trxMessage;
+	private String trxStatus;
+	private String trxStatusCode;
+	private Long netAmountPaid;
+	private String paymentMode;
+	private String custTrxAction;
 	
 	public Long getOrderId() {
 		return orderId;
@@ -168,6 +174,78 @@ public class CustomerTransaction implements Serializable {
 	}
 	public void setPayYouMoneyId(Long payYouMoneyId) {
 		this.payYouMoneyId = payYouMoneyId;
+	}
+	/**
+	 * @return the trxMessage
+	 */
+	public String getTrxMessage() {
+		return trxMessage;
+	}
+	/**
+	 * @param trxMessage the trxMessage to set
+	 */
+	public void setTrxMessage(String trxMessage) {
+		this.trxMessage = trxMessage;
+	}
+	/**
+	 * @return the trxStatus
+	 */
+	public String getTrxStatus() {
+		return trxStatus;
+	}
+	/**
+	 * @param trxStatus the trxStatus to set
+	 */
+	public void setTrxStatus(String trxStatus) {
+		this.trxStatus = trxStatus;
+	}
+	/**
+	 * @return the trxStatusCode
+	 */
+	public String getTrxStatusCode() {
+		return trxStatusCode;
+	}
+	/**
+	 * @param trxStatusCode the trxStatusCode to set
+	 */
+	public void setTrxStatusCode(String trxStatusCode) {
+		this.trxStatusCode = trxStatusCode;
+	}
+	/**
+	 * @return the netAmountPaid
+	 */
+	public Long getNetAmountPaid() {
+		return netAmountPaid;
+	}
+	/**
+	 * @param netAmountPaid the netAmountPaid to set
+	 */
+	public void setNetAmountPaid(Long netAmountPaid) {
+		this.netAmountPaid = netAmountPaid;
+	}
+	/**
+	 * @return the paymentMode
+	 */
+	public String getPaymentMode() {
+		return paymentMode;
+	}
+	/**
+	 * @param paymentMode the paymentMode to set
+	 */
+	public void setPaymentMode(String paymentMode) {
+		this.paymentMode = paymentMode;
+	}
+	/**
+	 * @return the custTrxAction
+	 */
+	public String getCustTrxAction() {
+		return custTrxAction;
+	}
+	/**
+	 * @param custTrxAction the custTrxAction to set
+	 */
+	public void setCustTrxAction(String custTrxAction) {
+		this.custTrxAction = custTrxAction;
 	}
 	
 	

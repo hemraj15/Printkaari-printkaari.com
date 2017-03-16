@@ -34,7 +34,7 @@ public class FileUtils {
 		}
 	}
 	
-	public static void downloadFile(String inputDir, String inputFileName) {
+	/*public static void downloadFile(String inputDir, String inputFileName) {
 		if (!file.isEmpty()) {
 			File outDir = new File(outputDir);
 			if (!outDir.exists()) {
@@ -54,5 +54,5 @@ public class FileUtils {
 			}
 
 		}
-	}
+	}*/
 }
