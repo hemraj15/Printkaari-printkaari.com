@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -517,25 +518,29 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 	        throws DatabaseException, FileDownloadException {
 		
 		Order ord=null;
-		Map<String, Object> map=new HashMap<>();
+		Map<String, Object> map=new LinkedHashMap<>();
 		Set<CustomerFiles> custFiles=new HashSet<>();
 		String fileLocation=null;
+		
+		CustomerFiles file=null;
+		
+		String str="1";
 		
 		try {
 			
 			ord=ordDao.find(order_id);
 			
-			custFiles=ord.getFileId();
-			
-			
+			custFiles=ord.getFileId();			
 			
 			for (CustomerFiles custFile :custFiles) {
 				
+				map.put(str, custFile.getFilaPath());
 				
-			}
-			
-			
-			
+				Integer pathNo=Integer.parseInt(str);
+				pathNo=pathNo+1;
+				pathNo.toString();
+				
+			}			
 			
 			
 		} catch (Exception e) {

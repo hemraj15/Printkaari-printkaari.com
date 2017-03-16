@@ -2,6 +2,7 @@ package com.printkaari.rest.utils;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 import org.slf4j.Logger;
@@ -34,25 +35,27 @@ public class FileUtils {
 		}
 	}
 	
-	/*public static void downloadFile(String inputDir, String inputFileName) {
-		if (!file.isEmpty()) {
-			File outDir = new File(outputDir);
-			if (!outDir.exists()) {
-				outDir.mkdirs();
-			}
+	/*public static MultipartFile downloadFile(String filepath, String filename) {
+		
 			byte[] bytes;
 			try {
+				
+				MultipartFile file =null;
+				FileInputStream fileInputStream = new FileInputStream(filepath + filename);
+				
+				
+				
 				bytes = file.getBytes();
-				BufferedOutputStream stream = new BufferedOutputStream(
-				        new FileOutputStream(new File(outputDir + outputFileName)));
-				stream.write(bytes);
-				stream.flush();
-				stream.close();
+				//BufferedOutputStream stream = new BufferedOutputStream(
+				    //    new FileOutputStream(new File(outputDir + outputFileName)));
+				//stream.write(bytes);
+				//stream.flush();
+				//stream.close();
 				LOGGER.info("File Uploaded successfuly!");
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
 			}
 
-		}
-	}*/
+		}*/
+	
 }
