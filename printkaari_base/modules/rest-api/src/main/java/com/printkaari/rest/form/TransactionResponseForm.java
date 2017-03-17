@@ -14,7 +14,7 @@ public class TransactionResponseForm {
 	//private String custEmailId;
 //	private String custFirstName;
 	//private String custLastName;
-	private Date transactonDate;
+	//private String transactonDate;
 	//protected Date transactionUpdateDate;
 	private Long paymentGatewayTrxId;
 	private Double amount;
@@ -86,15 +86,15 @@ public class TransactionResponseForm {
 	*//**
 	 * @return the transactonDate
 	 */
-	public Date getTransactonDate() {
+	public String getTransactonDate() {
 		return transactonDate;
 	}
 	/**
 	 * @param transactonDate the transactonDate to set
 	 */
-	public void setTransactonDate(Date transactonDate) {
+	/*public void setTransactonDate(String transactonDate) {
 		this.transactonDate = transactonDate;
-	}
+	}*/
 	/**
 	 * @return the paymentGatewayTrxId
 	 */

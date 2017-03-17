@@ -153,7 +153,7 @@ public class PaymentServiceImpl implements PaymentService {
 				trxObj.setBankRefNum(completTrxForm.getBankRefNum());
 				trxObj.setErrorCode(completTrxForm.getErrorCode());
 				trxObj.setErrorMessage(completTrxForm.getErrorMessage());
-				trxObj.setTransactonDate(completTrxForm.getTransactonDate());
+				//trxObj.setTransactonDate(completTrxForm.getTransactonDate());
 				trxObj.setDiscount(completTrxForm.getDiscount());
 				trxObj.setCustTrxAction(completTrxForm.getCustTrxAction());
 				trxObj.setNetAmountPaid(completTrxForm.getNetAmountPaid());
