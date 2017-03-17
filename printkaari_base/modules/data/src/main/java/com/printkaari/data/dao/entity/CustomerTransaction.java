@@ -51,7 +51,7 @@ public class CustomerTransaction implements Serializable {
 	private String trxMessage;
 	private String trxStatus;
 	//private String trxStatusCode;
-	private Long netAmountPaid;
+	private Double netAmountPaid;
 	private String paymentMode;
 	private String custTrxAction;
 	
@@ -112,7 +112,7 @@ public class CustomerTransaction implements Serializable {
 	@Temporal(TemporalType.DATE)
 	@PrePersist
 	public Date getTransactonDate() {
-		return transactonDate == null ? new Date() :transactonDate ;
+		return transactonDate == null ? new Date() : transactonDate ;
 	}
 	public void setTransactonDate(Date transactonDate) {
 		this.transactonDate = transactonDate;
@@ -122,7 +122,7 @@ public class CustomerTransaction implements Serializable {
 	@PrePersist
 	@PostUpdate
 	public Date getTransactionUpdateDate() {
-		return transactionUpdateDate ==null ?new Date() : transactionUpdateDate;
+		return transactionUpdateDate == null ? new Date() : transactionUpdateDate;
 	}
 	public void setTransactionUpdateDate(Date transactionUpdateDate) {
 		this.transactionUpdateDate = transactionUpdateDate;
@@ -215,13 +215,13 @@ public class CustomerTransaction implements Serializable {
 	/**
 	 * @return the netAmountPaid
 	 */
-	public Long getNetAmountPaid() {
+	public Double getNetAmountPaid() {
 		return netAmountPaid;
 	}
 	/**
 	 * @param netAmountPaid the netAmountPaid to set
 	 */
-	public void setNetAmountPaid(Long netAmountPaid) {
+	public void setNetAmountPaid(Double netAmountPaid) {
 		this.netAmountPaid = netAmountPaid;
 	}
 	/**

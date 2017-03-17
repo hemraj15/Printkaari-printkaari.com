@@ -3,6 +3,8 @@
  */
 package com.printkaari.rest.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.OrderStatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.TransactionResponseForm;
+import com.printkaari.rest.utils.DateTimeUtils;
 
 /**
  * @author Hemraj
@@ -138,6 +141,7 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
+	@Transactional
 	public Map<String, Object> transactionComplete(TransactionResponseForm completTrxForm) throws DatabaseException {
 		 Map<String, Object> map=new HashMap<>();
 		 
@@ -153,7 +157,12 @@ public class PaymentServiceImpl implements PaymentService {
 				trxObj.setBankRefNum(completTrxForm.getBankRefNum());
 				trxObj.setErrorCode(completTrxForm.getErrorCode());
 				trxObj.setErrorMessage(completTrxForm.getErrorMessage());
-				//trxObj.setTransactonDate(completTrxForm.getTransactonDate());
+				
+				//SimpleDateFormat dateFormat=new SimpleDateFormat("YYYY-MM-DD HH:MM:SS");
+				
+				//Date trxDate=dateFormat.parse(completTrxForm.getTransactonDate());
+			//	Date trxDate=DateTimeUtils.getStringFromDate(completTrxForm.getTransactonDate(), "YYYY-MM-DD HH:MM:SS");
+				//trxObj.setTransactonDate(trxDate);
 				trxObj.setDiscount(completTrxForm.getDiscount());
 				trxObj.setCustTrxAction(completTrxForm.getCustTrxAction());
 				trxObj.setNetAmountPaid(completTrxForm.getNetAmountPaid());

@@ -3,8 +3,6 @@
  */
 package com.printkaari.rest.form;
 
-import java.util.Date;
-
 /**
  * @author Hemraj
  *
@@ -14,6 +12,7 @@ public class TransactionResponseForm {
 	//private String custEmailId;
 //	private String custFirstName;
 	//private String custLastName;
+	//@Temporal(TemporalType.DATE)
 	//private String transactonDate;
 	//protected Date transactionUpdateDate;
 	private Long paymentGatewayTrxId;
@@ -32,7 +31,7 @@ public class TransactionResponseForm {
 	private String trxMessage;
 	private String trxStatus;
 	//private String trxStatusCode;
-	private Long netAmountPaid;
+	private Double netAmountPaid;
 	private String paymentMode;
 	private String custTrxAction;
 	/**
@@ -86,13 +85,13 @@ public class TransactionResponseForm {
 	*//**
 	 * @return the transactonDate
 	 */
-	public String getTransactonDate() {
+	/*public String getTransactonDate() {
 		return transactonDate;
 	}
-	/**
+	*//**
 	 * @param transactonDate the transactonDate to set
-	 */
-	/*public void setTransactonDate(String transactonDate) {
+	 *//*
+	public void setTransactonDate(String transactonDate) {
 		this.transactonDate = transactonDate;
 	}*/
 	/**
@@ -230,13 +229,13 @@ public class TransactionResponseForm {
 	/**
 	 * @return the netAmountPaid
 	 */
-	public Long getNetAmountPaid() {
+	public Double getNetAmountPaid() {
 		return netAmountPaid;
 	}
 	/**
 	 * @param netAmountPaid the netAmountPaid to set
 	 */
-	public void setNetAmountPaid(Long netAmountPaid) {
+	public void setNetAmountPaid(Double netAmountPaid) {
 		this.netAmountPaid = netAmountPaid;
 	}
 	/**
