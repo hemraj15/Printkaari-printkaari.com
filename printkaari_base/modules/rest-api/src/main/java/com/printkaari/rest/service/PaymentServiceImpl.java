@@ -3,6 +3,8 @@
  */
 package com.printkaari.rest.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,9 +24,11 @@ import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.constant.PaymentConstants;
 import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.InvalidTransactionException;
 import com.printkaari.rest.exception.OrderStatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.TransactionResponseForm;
+import com.printkaari.rest.utils.DateTimeUtils;
 
 /**
  * @author Hemraj
@@ -43,7 +47,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public Map<String, Object> initiateTransaction(Long orderId) throws DatabaseException {
+	public Map<String, Object> initiateTransaction(Long orderId) throws DatabaseException, InstanceNotFoundException,OrderStatusException {
 
 		Map<String, Object> map = new HashMap<>();
 		Order ord = new Order();
@@ -72,10 +76,12 @@ public class PaymentServiceImpl implements PaymentService {
 					map.put("orderPrice", ord.getOrderPrice());
 					map.put("orderId", ord.getId());
 
-					trx.setAmount(ord.getOrderPrice());
+					trx.setAmountToBePaid(ord.getOrderPrice());
 					trx.setCustEmailId(cust.getEmail());
 					trx.setCustFirstName(cust.getFirstName());
+					trx.setCustLastName(cust.getLastName());
 					trx.setOrderId(ord.getId());
+					trx.setTrxStatus(CommonStatus.INITIATED.toString());
 
 					LOGGER.info("saving transaction for order id ::" + orderId);
 					trxId = paymentDao.save(trx);
@@ -93,7 +99,7 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("Error occured while initiating transaction for order" + orderId
+			LOGGER.error("Error occured while initiating transaction for order " + orderId
 			        + " in database", e);
 			throw new DatabaseException("Error occured while initiating transaction",
 			        ErrorCodes.DATABASE_ERROR);
@@ -103,7 +109,7 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	private Order getOrderByOrderId(Long orderId)
-	        throws DatabaseException, InstanceNotFoundException {
+	        throws DatabaseException, InstanceNotFoundException,OrderStatusException {
 		Order ord = null;
 		try {
 
@@ -136,7 +142,8 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
-	public Map<String, Object> transactionComplete(TransactionResponseForm completTrxForm) throws DatabaseException {
+	@Transactional
+	public Map<String, Object> transactionComplete(TransactionResponseForm completTrxForm) throws DatabaseException,InvalidTransactionException,InstanceNotFoundException {
 		 Map<String, Object> map=new HashMap<>();
 		 
 		 CustomerTransaction trxObj= new CustomerTransaction();
@@ -147,20 +154,34 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			if (trxObj !=null) {
 				
+				LOGGER.info("transaction found ::"+trxObj.getTransactionNo());
 				trxObj.setBankCode(completTrxForm.getBankCode());
 				trxObj.setBankRefNum(completTrxForm.getBankRefNum());
-				trxObj.setCardNumber(completTrxForm.getCardNumber());
-				trxObj.setCardType(completTrxForm.getCardType());
-				trxObj.setDiscount(completTrxForm.getDiscount());
 				trxObj.setErrorCode(completTrxForm.getErrorCode());
 				trxObj.setErrorMessage(completTrxForm.getErrorMessage());
-				trxObj.setSuccessCode(completTrxForm.getSuccessCode());
-				trxObj.setSuccessMessage(completTrxForm.getSuccessMessage());
-				trxObj.setPaymentGatewayTrxId(completTrxForm.getPaymentGatewayTrxId());
-				trxObj.setPayYouMoneyId(completTrxForm.getPayYouMoneyId());
-				trxObj.setTransactionUpdateDate(completTrxForm.getTransactionUpdateDate());
-				trxObj.setTransactonDate(completTrxForm.getTransactonDate());
 				
+				//SimpleDateFormat dateFormat=new SimpleDateFormat("YYYY-MM-DD HH:MM:SS");
+				
+				//Date trxDate=dateFormat.parse(completTrxForm.getTransactonDate());
+			//	Date trxDate=DateTimeUtils.getStringFromDate(completTrxForm.getTransactonDate(), "YYYY-MM-DD HH:MM:SS");
+				//trxObj.setTransactonDate(trxDate);
+				trxObj.setDiscount(completTrxForm.getDiscount());
+				trxObj.setCustTrxAction(completTrxForm.getCustTrxAction());
+				trxObj.setNetAmountPaid(completTrxForm.getNetAmountPaid());
+				trxObj.setPaymentGatewayTrxId(completTrxForm.getPaymentGatewayTrxId());
+				trxObj.setPaymentMode(completTrxForm.getPaymentMode());
+				trxObj.setTrxStatus(completTrxForm.getTrxStatus());
+				trxObj.setPayYouMoneyId(completTrxForm.getPayYouMoneyId());
+				trxObj.setTrxMessage(completTrxForm.getTrxMessage());
+				trxObj.setNetAmountPaid(completTrxForm.getNetAmountPaid());
+			
+				
+			}
+			else {
+				
+				LOGGER.info("Transaction Object is null for request trx no");
+				throw new InvalidTransactionException("Error occured while fetching transaction from database",
+				        ErrorCodes.DATABASE_ERROR);
 			}
 			
 			paymentDao.saveOrUpdate(trxObj);
@@ -168,7 +189,7 @@ public class PaymentServiceImpl implements PaymentService {
 		} catch (Exception e) {
 			LOGGER.error("Error occured while updating transaction for transaction ::"
 			        + completTrxForm.getTransactionNo() + " in database", e);
-			throw new DatabaseException("Error occured while fetching order from database",
+			throw new DatabaseException("Error occured while fetching transaction from database",
 			        ErrorCodes.DATABASE_ERROR);
 		}
 		return map;

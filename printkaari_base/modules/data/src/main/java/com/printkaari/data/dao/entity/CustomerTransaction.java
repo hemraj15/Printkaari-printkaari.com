@@ -36,18 +36,24 @@ public class CustomerTransaction implements Serializable {
 	private Date transactonDate;
 	protected Date transactionUpdateDate;
 	private Long paymentGatewayTrxId;
-	private Double amount;
-	private Long bankRefNum;
+	private Double amountToBePaid;
+	private String bankRefNum;
 	private String bankCode;
-	private String cardNumber;
-	private String cardType;
+	//private String cardNumber;
+	//private String cardType;
 	private Double discount;
 	private Long payYouMoneyId;
 	private String errorMessage;
 	private String errorCode;
-	private String successMessage;
-	private String successCode;
+	//private String successMessage;
+	//private String successCode;
 	private Long orderId;
+	private String trxMessage;
+	private String trxStatus;
+	//private String trxStatusCode;
+	private Double netAmountPaid;
+	private String paymentMode;
+	private String custTrxAction;
 	
 	public Long getOrderId() {
 		return orderId;
@@ -67,7 +73,7 @@ public class CustomerTransaction implements Serializable {
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
-	public String getSuccessMessage() {
+	/*public String getSuccessMessage() {
 		return successMessage;
 	}
 	public void setSuccessMessage(String successMessage) {
@@ -78,7 +84,7 @@ public class CustomerTransaction implements Serializable {
 	}
 	public void setSuccessCode(String successCode) {
 		this.successCode = successCode;
-	}
+	}*/
 	public Long getTransactionNo() {
 		return transactionNo;
 	}
@@ -106,7 +112,7 @@ public class CustomerTransaction implements Serializable {
 	@Temporal(TemporalType.DATE)
 	@PrePersist
 	public Date getTransactonDate() {
-		return transactonDate == null ? new Date() :transactonDate ;
+		return transactonDate == null ? new Date() : transactonDate ;
 	}
 	public void setTransactonDate(Date transactonDate) {
 		this.transactonDate = transactonDate;
@@ -116,7 +122,7 @@ public class CustomerTransaction implements Serializable {
 	@PrePersist
 	@PostUpdate
 	public Date getTransactionUpdateDate() {
-		return transactionUpdateDate ==null ?new Date() : transactionUpdateDate;
+		return transactionUpdateDate == null ? new Date() : transactionUpdateDate;
 	}
 	public void setTransactionUpdateDate(Date transactionUpdateDate) {
 		this.transactionUpdateDate = transactionUpdateDate;
@@ -127,17 +133,17 @@ public class CustomerTransaction implements Serializable {
 	public void setPaymentGatewayTrxId(Long paymentGatewayTrxId) {
 		this.paymentGatewayTrxId = paymentGatewayTrxId;
 	}
-	public Double getAmount() {
-		return amount;
+	public Double getAmountToBePaid() {
+		return amountToBePaid;
 	}
-	public void setAmount(Double amount) {
-		this.amount = amount;
+	public void setAmountToBePaid(Double amount) {
+		this.amountToBePaid = amount;
 	}
-	public Long getBankRefNum() {
+	public String getBankRefNum() {
 		return bankRefNum;
 	}
-	public void setBankRefNum(Long bankRefNum) {
-		this.bankRefNum = bankRefNum;
+	public void setBankRefNum(String string) {
+		this.bankRefNum = string;
 	}
 	public String getBankCode() {
 		return bankCode;
@@ -145,6 +151,7 @@ public class CustomerTransaction implements Serializable {
 	public void setBankCode(String bankCode) {
 		this.bankCode = bankCode;
 	}
+	/*
 	public String getCardNumber() {
 		return cardNumber;
 	}
@@ -157,7 +164,7 @@ public class CustomerTransaction implements Serializable {
 	public void setCardType(String cardType) {
 		this.cardType = cardType;
 	}
-	public Double getDiscount() {
+	*/public Double getDiscount() {
 		return discount;
 	}
 	public void setDiscount(Double discount) {
@@ -168,6 +175,78 @@ public class CustomerTransaction implements Serializable {
 	}
 	public void setPayYouMoneyId(Long payYouMoneyId) {
 		this.payYouMoneyId = payYouMoneyId;
+	}
+	/**
+	 * @return the trxMessage
+	 */
+	public String getTrxMessage() {
+		return trxMessage;
+	}
+	/**
+	 * @param trxMessage the trxMessage to set
+	 */
+	public void setTrxMessage(String trxMessage) {
+		this.trxMessage = trxMessage;
+	}
+	/**
+	 * @return the trxStatus
+	 */
+	public String getTrxStatus() {
+		return trxStatus;
+	}
+	/**
+	 * @param trxStatus the trxStatus to set
+	 */
+	public void setTrxStatus(String trxStatus) {
+		this.trxStatus = trxStatus;
+	}
+	/**
+	 * @return the trxStatusCode
+	 */
+	/*public String getTrxStatusCode() {
+		return trxStatusCode;
+	}
+	*//**
+	 * @param trxStatusCode the trxStatusCode to set
+	 *//*
+	public void setTrxStatusCode(String trxStatusCode) {
+		this.trxStatusCode = trxStatusCode;
+	}*/
+	/**
+	 * @return the netAmountPaid
+	 */
+	public Double getNetAmountPaid() {
+		return netAmountPaid;
+	}
+	/**
+	 * @param netAmountPaid the netAmountPaid to set
+	 */
+	public void setNetAmountPaid(Double netAmountPaid) {
+		this.netAmountPaid = netAmountPaid;
+	}
+	/**
+	 * @return the paymentMode
+	 */
+	public String getPaymentMode() {
+		return paymentMode;
+	}
+	/**
+	 * @param paymentMode the paymentMode to set
+	 */
+	public void setPaymentMode(String paymentMode) {
+		this.paymentMode = paymentMode;
+	}
+	/**
+	 * @return the custTrxAction
+	 */
+	public String getCustTrxAction() {
+		return custTrxAction;
+	}
+	/**
+	 * @param custTrxAction the custTrxAction to set
+	 */
+	public void setCustTrxAction(String custTrxAction) {
+		this.custTrxAction = custTrxAction;
 	}
 	
 	

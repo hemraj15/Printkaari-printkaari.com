@@ -3,9 +3,13 @@
  */
 package com.printkaari.rest.service;
 
+import java.util.Map;
+
 import org.springframework.web.multipart.MultipartFile;
 
-import com.printkaari.rest.exception.CompanyFileUploadException;
+import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.FileDownloadException;
+import com.printkaari.rest.exception.FileUploadException;
 import com.printkaari.rest.exception.InvalidFieldLengthException;
 import com.printkaari.rest.exception.SignUpException;
 import com.printkaari.rest.exception.UserNotFoundException;
@@ -20,6 +24,8 @@ public interface PrintStoreService {
 	String completeSignup(SignUpStep2Form SignUpStep2Form) throws SignUpException, InvalidFieldLengthException;
 
 	Long uploadFile(String fileType, MultipartFile file)
-	        throws CompanyFileUploadException, UserNotFoundException;
+	        throws FileUploadException, UserNotFoundException;
+
+	Map<String, Object> downloadCollegeProjectFiles(Long order_id) throws DatabaseException ,FileDownloadException;
 
 }

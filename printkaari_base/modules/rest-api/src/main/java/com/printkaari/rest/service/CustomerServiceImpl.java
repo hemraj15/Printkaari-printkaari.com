@@ -345,7 +345,7 @@ public class CustomerServiceImpl implements CustomerService {
 		mailHtmlMessage.setSubject("Your Order Status here  !! ");
 		mailHtmlMessage.setContent("<h2>Hello " + cust.getFirstName() + " " + cust.getLastName()
 		        + "!</h2><h3>Your Order Status is " + ordStatus + " you can track your order  "
-		        + "<a href=www.printkaari.com > here  </a></h3>");
+		        + "<a href=www.printkaari.com/#!/auth/login > here  </a></h3>");
 		mailHtmlMessage.setToAddresses(new String[] { email });
 		try {
 			mailService.sendHtmlMail(mailHtmlMessage);
@@ -369,7 +369,7 @@ public class CustomerServiceImpl implements CustomerService {
 			mailHtmlMessage.setContent("<h2>Hello " + user.getFirstName()
 			        + "</h2> <h3>One of customer " + cust.getFirstName() + " " + cust.getLastName()
 			        + " has updated/placed order track order  "
-			        + " <a href=www.printkaari.com >here</a> </h3>");
+			        + " <a href=www.printkaari.com/#!/auth/login >here</a> </h3>");
 			mailHtmlMessage.setToAddresses(new String[] { email });
 
 			mailService.sendHtmlMail(mailHtmlMessage);
