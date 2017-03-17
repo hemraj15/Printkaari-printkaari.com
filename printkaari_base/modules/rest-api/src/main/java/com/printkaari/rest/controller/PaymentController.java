@@ -24,6 +24,7 @@ import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.constant.PaymentConstants;
 import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.InvalidTransactionException;
 import com.printkaari.rest.exception.OrderStatusException;
 import com.printkaari.rest.form.SignUpStep1Form;
 import com.printkaari.rest.form.TransactionResponseForm;
@@ -126,7 +127,20 @@ public class PaymentController {
 			data=map;
 			
 		} 
-		
+		 catch (InstanceNotFoundException e) {
+       	  data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			((ErrorResponse) data).setErrorCode(ErrorCodes.INVALID_TRANSACTION_NUMBER_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		}		
+		 catch (InvalidTransactionException e) {
+	       	  data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.INVALID_TRANSACTION_NUMBER_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}
 		catch (DatabaseException e) {
 			data = new ErrorResponse();
 			LOGGER.error(e.getMessage(), e);

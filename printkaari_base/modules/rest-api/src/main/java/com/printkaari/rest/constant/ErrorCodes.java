@@ -241,4 +241,6 @@ public class ErrorCodes {
 	
 	public static final  String ORDER_STATUS_ERROR ="order_status_is_not_as_expected";
 
+	public static final String INVALID_TRANSACTION_NUMBER_ERROR = "invalid_transaction_number_error";
+
 }

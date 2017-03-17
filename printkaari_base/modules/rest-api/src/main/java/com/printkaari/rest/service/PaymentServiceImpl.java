@@ -24,6 +24,7 @@ import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.constant.PaymentConstants;
 import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.InvalidTransactionException;
 import com.printkaari.rest.exception.OrderStatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.TransactionResponseForm;
@@ -142,7 +143,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public Map<String, Object> transactionComplete(TransactionResponseForm completTrxForm) throws DatabaseException {
+	public Map<String, Object> transactionComplete(TransactionResponseForm completTrxForm) throws DatabaseException,InvalidTransactionException,InstanceNotFoundException {
 		 Map<String, Object> map=new HashMap<>();
 		 
 		 CustomerTransaction trxObj= new CustomerTransaction();
@@ -153,6 +154,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			if (trxObj !=null) {
 				
+				LOGGER.info("transaction found ::"+trxObj.getTransactionNo());
 				trxObj.setBankCode(completTrxForm.getBankCode());
 				trxObj.setBankRefNum(completTrxForm.getBankRefNum());
 				trxObj.setErrorCode(completTrxForm.getErrorCode());
@@ -175,13 +177,19 @@ public class PaymentServiceImpl implements PaymentService {
 			
 				
 			}
+			else {
+				
+				LOGGER.info("Transaction Object is null for request trx no");
+				throw new InvalidTransactionException("Error occured while fetching transaction from database",
+				        ErrorCodes.DATABASE_ERROR);
+			}
 			
 			paymentDao.saveOrUpdate(trxObj);
 			
 		} catch (Exception e) {
 			LOGGER.error("Error occured while updating transaction for transaction ::"
 			        + completTrxForm.getTransactionNo() + " in database", e);
-			throw new DatabaseException("Error occured while fetching order from database",
+			throw new DatabaseException("Error occured while fetching transaction from database",
 			        ErrorCodes.DATABASE_ERROR);
 		}
 		return map;
