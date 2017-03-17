@@ -37,7 +37,7 @@ public class CustomerTransaction implements Serializable {
 	protected Date transactionUpdateDate;
 	private Long paymentGatewayTrxId;
 	private Double amountToBePaid;
-	private Long bankRefNum;
+	private String bankRefNum;
 	private String bankCode;
 	//private String cardNumber;
 	//private String cardType;
@@ -139,11 +139,11 @@ public class CustomerTransaction implements Serializable {
 	public void setAmountToBePaid(Double amount) {
 		this.amountToBePaid = amount;
 	}
-	public Long getBankRefNum() {
+	public String getBankRefNum() {
 		return bankRefNum;
 	}
-	public void setBankRefNum(Long bankRefNum) {
-		this.bankRefNum = bankRefNum;
+	public void setBankRefNum(String string) {
+		this.bankRefNum = string;
 	}
 	public String getBankCode() {
 		return bankCode;

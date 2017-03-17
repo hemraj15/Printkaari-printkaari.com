@@ -18,7 +18,7 @@ public class TransactionResponseForm {
 	//protected Date transactionUpdateDate;
 	private Long paymentGatewayTrxId;
 	private Double amount;
-	private Long bankRefNum;
+	private String bankRefNum;
 	private String bankCode;
 	//private String cardNumber;
 	//private String cardType;
@@ -122,13 +122,13 @@ public class TransactionResponseForm {
 	/**
 	 * @return the bankRefNum
 	 */
-	public Long getBankRefNum() {
+	public String getBankRefNum() {
 		return bankRefNum;
 	}
 	/**
 	 * @param bankRefNum the bankRefNum to set
 	 */
-	public void setBankRefNum(Long bankRefNum) {
+	public void setBankRefNum(String bankRefNum) {
 		this.bankRefNum = bankRefNum;
 	}
 	/**
