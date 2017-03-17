@@ -46,7 +46,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public Map<String, Object> initiateTransaction(Long orderId) throws DatabaseException {
+	public Map<String, Object> initiateTransaction(Long orderId) throws DatabaseException, InstanceNotFoundException,OrderStatusException {
 
 		Map<String, Object> map = new HashMap<>();
 		Order ord = new Order();
@@ -98,7 +98,7 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("Error occured while initiating transaction for order" + orderId
+			LOGGER.error("Error occured while initiating transaction for order " + orderId
 			        + " in database", e);
 			throw new DatabaseException("Error occured while initiating transaction",
 			        ErrorCodes.DATABASE_ERROR);
@@ -108,7 +108,7 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	private Order getOrderByOrderId(Long orderId)
-	        throws DatabaseException, InstanceNotFoundException {
+	        throws DatabaseException, InstanceNotFoundException,OrderStatusException {
 		Order ord = null;
 		try {
 

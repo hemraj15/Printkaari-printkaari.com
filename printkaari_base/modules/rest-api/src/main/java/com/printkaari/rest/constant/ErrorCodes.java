@@ -2,6 +2,8 @@ package com.printkaari.rest.constant;
 
 public class ErrorCodes {
 
+	
+
 	private ErrorCodes() {
 		// To stop instantiation of this constant class
 	}
@@ -236,5 +238,7 @@ public class ErrorCodes {
 	public static final String	PRODUCT_NOT_FOUND_IN_DATABASE					= "product_not_found_in_database";
 
 	public static final String	CUSTOMER_FILE_DOWNLOAD_ERROR					= "customer_file_download_error";
+	
+	public static final  String ORDER_STATUS_ERROR ="order_status_is_not_as_expected";
 
 }

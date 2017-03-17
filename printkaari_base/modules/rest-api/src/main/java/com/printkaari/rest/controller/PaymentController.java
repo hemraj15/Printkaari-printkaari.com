@@ -20,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.constant.PaymentConstants;
 import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.OrderStatusException;
 import com.printkaari.rest.form.SignUpStep1Form;
 import com.printkaari.rest.form.TransactionResponseForm;
 import com.printkaari.rest.model.ErrorResponse;
@@ -56,22 +58,34 @@ public class PaymentController {
 			Map<String ,Object> map=new HashMap<>();
 			
 			map=paymentService.initiateTransaction(orderId);
-			//map.put("test", "test");
-			
-			
+			//map.put("test", "test");			
 			data=map;
 			
 		} 
 		
 		catch (DatabaseException e) {
-			
+			data = new ErrorResponse();
 			LOGGER.error(e.getMessage(), e);
 			((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
 			((ErrorResponse) data).setMessage(e.getMessage());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
+          catch (InstanceNotFoundException e) {
+        	  data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			((ErrorResponse) data).setErrorCode(ErrorCodes.ORDER_NOT_FOUND_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		}
+       catch (OrderStatusException e) {
+    	   data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			((ErrorResponse) data).setErrorCode(ErrorCodes.ORDER_STATUS_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_CONFLICT);
+		}
 		catch (Exception e) {
-			
+			data = new ErrorResponse();
 			LOGGER.error(e.getMessage(), e);
 			data = new ErrorResponse();
 			((ErrorResponse) data).setErrorCode(ErrorCodes.VALIDATION_ERROR);
@@ -114,12 +128,14 @@ public class PaymentController {
 		} 
 		
 		catch (DatabaseException e) {
+			data = new ErrorResponse();
 			LOGGER.error(e.getMessage(), e);
 			((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
 			((ErrorResponse) data).setMessage(e.getMessage());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		catch (Exception e) {
+			data = new ErrorResponse();
 			LOGGER.error(e.getMessage(), e);
 			data = new ErrorResponse();
 			((ErrorResponse) data).setErrorCode(ErrorCodes.VALIDATION_ERROR);
