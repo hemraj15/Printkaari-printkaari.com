@@ -36,21 +36,21 @@ public class CustomerTransaction implements Serializable {
 	private Date transactonDate;
 	protected Date transactionUpdateDate;
 	private Long paymentGatewayTrxId;
-	private Double amount;
+	private Double amountToBePaid;
 	private Long bankRefNum;
 	private String bankCode;
-	private String cardNumber;
-	private String cardType;
+	//private String cardNumber;
+	//private String cardType;
 	private Double discount;
 	private Long payYouMoneyId;
 	private String errorMessage;
 	private String errorCode;
-	private String successMessage;
-	private String successCode;
+	//private String successMessage;
+	//private String successCode;
 	private Long orderId;
 	private String trxMessage;
 	private String trxStatus;
-	private String trxStatusCode;
+	//private String trxStatusCode;
 	private Long netAmountPaid;
 	private String paymentMode;
 	private String custTrxAction;
@@ -73,7 +73,7 @@ public class CustomerTransaction implements Serializable {
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
-	public String getSuccessMessage() {
+	/*public String getSuccessMessage() {
 		return successMessage;
 	}
 	public void setSuccessMessage(String successMessage) {
@@ -84,7 +84,7 @@ public class CustomerTransaction implements Serializable {
 	}
 	public void setSuccessCode(String successCode) {
 		this.successCode = successCode;
-	}
+	}*/
 	public Long getTransactionNo() {
 		return transactionNo;
 	}
@@ -133,11 +133,11 @@ public class CustomerTransaction implements Serializable {
 	public void setPaymentGatewayTrxId(Long paymentGatewayTrxId) {
 		this.paymentGatewayTrxId = paymentGatewayTrxId;
 	}
-	public Double getAmount() {
-		return amount;
+	public Double getAmountToBePaid() {
+		return amountToBePaid;
 	}
-	public void setAmount(Double amount) {
-		this.amount = amount;
+	public void setAmountToBePaid(Double amount) {
+		this.amountToBePaid = amount;
 	}
 	public Long getBankRefNum() {
 		return bankRefNum;
@@ -151,6 +151,7 @@ public class CustomerTransaction implements Serializable {
 	public void setBankCode(String bankCode) {
 		this.bankCode = bankCode;
 	}
+	/*
 	public String getCardNumber() {
 		return cardNumber;
 	}
@@ -163,7 +164,7 @@ public class CustomerTransaction implements Serializable {
 	public void setCardType(String cardType) {
 		this.cardType = cardType;
 	}
-	public Double getDiscount() {
+	*/public Double getDiscount() {
 		return discount;
 	}
 	public void setDiscount(Double discount) {
@@ -202,15 +203,15 @@ public class CustomerTransaction implements Serializable {
 	/**
 	 * @return the trxStatusCode
 	 */
-	public String getTrxStatusCode() {
+	/*public String getTrxStatusCode() {
 		return trxStatusCode;
 	}
-	/**
+	*//**
 	 * @param trxStatusCode the trxStatusCode to set
-	 */
+	 *//*
 	public void setTrxStatusCode(String trxStatusCode) {
 		this.trxStatusCode = trxStatusCode;
-	}
+	}*/
 	/**
 	 * @return the netAmountPaid
 	 */

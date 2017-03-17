@@ -72,10 +72,12 @@ public class PaymentServiceImpl implements PaymentService {
 					map.put("orderPrice", ord.getOrderPrice());
 					map.put("orderId", ord.getId());
 
-					trx.setAmount(ord.getOrderPrice());
+					trx.setAmountToBePaid(ord.getOrderPrice());
 					trx.setCustEmailId(cust.getEmail());
 					trx.setCustFirstName(cust.getFirstName());
+					trx.setCustLastName(cust.getLastName());
 					trx.setOrderId(ord.getId());
+					trx.setTrxStatus(CommonStatus.INITIATED.toString());
 
 					LOGGER.info("saving transaction for order id ::" + orderId);
 					trxId = paymentDao.save(trx);
@@ -149,17 +151,19 @@ public class PaymentServiceImpl implements PaymentService {
 				
 				trxObj.setBankCode(completTrxForm.getBankCode());
 				trxObj.setBankRefNum(completTrxForm.getBankRefNum());
-				trxObj.setCardNumber(completTrxForm.getCardNumber());
-				trxObj.setCardType(completTrxForm.getCardType());
-				trxObj.setDiscount(completTrxForm.getDiscount());
 				trxObj.setErrorCode(completTrxForm.getErrorCode());
 				trxObj.setErrorMessage(completTrxForm.getErrorMessage());
-				trxObj.setSuccessCode(completTrxForm.getSuccessCode());
-				trxObj.setSuccessMessage(completTrxForm.getSuccessMessage());
-				trxObj.setPaymentGatewayTrxId(completTrxForm.getPaymentGatewayTrxId());
-				trxObj.setPayYouMoneyId(completTrxForm.getPayYouMoneyId());
-				trxObj.setTransactionUpdateDate(completTrxForm.getTransactionUpdateDate());
 				trxObj.setTransactonDate(completTrxForm.getTransactonDate());
+				trxObj.setDiscount(completTrxForm.getDiscount());
+				trxObj.setCustTrxAction(completTrxForm.getCustTrxAction());
+				trxObj.setNetAmountPaid(completTrxForm.getNetAmountPaid());
+				trxObj.setPaymentGatewayTrxId(completTrxForm.getPaymentGatewayTrxId());
+				trxObj.setPaymentMode(completTrxForm.getPaymentMode());
+				trxObj.setTrxStatus(completTrxForm.getTrxStatus());
+				trxObj.setPayYouMoneyId(completTrxForm.getPayYouMoneyId());
+				trxObj.setTrxMessage(completTrxForm.getTrxMessage());
+				trxObj.setNetAmountPaid(completTrxForm.getNetAmountPaid());
+			
 				
 			}
 			

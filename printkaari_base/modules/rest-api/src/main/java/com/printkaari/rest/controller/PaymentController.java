@@ -106,7 +106,7 @@ public class PaymentController {
 			
 			LOGGER.info("order id to comfirm ::"+completTrxForm.getOrderId());
 			LOGGER.info("Placing order >>");
-		   custService.confirmOrder(completTrxForm.getOrderId(),completTrxForm.getSuccessCode());
+		   custService.confirmOrder(completTrxForm.getOrderId(),completTrxForm.getTrxStatus());
 			map.put("orderId", completTrxForm.getOrderId());
 			map.put("message", "order has been confirmed succssfully !!");
 			data=map;

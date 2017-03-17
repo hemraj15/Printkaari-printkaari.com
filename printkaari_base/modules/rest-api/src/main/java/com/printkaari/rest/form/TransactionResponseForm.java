@@ -11,27 +11,27 @@ import java.util.Date;
  */
 public class TransactionResponseForm {
 	private Long transactionNo;
-	private String custEmailId;
-	private String custFirstName;
-	private String custLastName;
+	//private String custEmailId;
+//	private String custFirstName;
+	//private String custLastName;
 	private Date transactonDate;
-	protected Date transactionUpdateDate;
+	//protected Date transactionUpdateDate;
 	private Long paymentGatewayTrxId;
 	private Double amount;
 	private Long bankRefNum;
 	private String bankCode;
-	private String cardNumber;
-	private String cardType;
+	//private String cardNumber;
+	//private String cardType;
 	private Double discount;
 	private Long payYouMoneyId;
 	private String errorMessage;
 	private String errorCode;
-	private String successMessage;
-	private String successCode;
+	//private String successMessage;
+	//private String successCode;
 	private Long orderId;
 	private String trxMessage;
 	private String trxStatus;
-	private String trxStatusCode;
+	//private String trxStatusCode;
 	private Long netAmountPaid;
 	private String paymentMode;
 	private String custTrxAction;
@@ -50,40 +50,40 @@ public class TransactionResponseForm {
 	/**
 	 * @return the custEmailId
 	 */
-	public String getCustEmailId() {
+	/*public String getCustEmailId() {
 		return custEmailId;
 	}
-	/**
+	*//**
 	 * @param custEmailId the custEmailId to set
-	 */
+	 *//*
 	public void setCustEmailId(String custEmailId) {
 		this.custEmailId = custEmailId;
 	}
-	/**
+	*//**
 	 * @return the custFirstName
-	 */
+	 *//*
 	public String getCustFirstName() {
 		return custFirstName;
 	}
-	/**
+	*//**
 	 * @param custFirstName the custFirstName to set
-	 */
+	 *//*
 	public void setCustFirstName(String custFirstName) {
 		this.custFirstName = custFirstName;
 	}
-	/**
+	*//**
 	 * @return the custLastName
-	 */
+	 *//*
 	public String getCustLastName() {
 		return custLastName;
 	}
-	/**
+	*//**
 	 * @param custLastName the custLastName to set
-	 */
+	 *//*
 	public void setCustLastName(String custLastName) {
 		this.custLastName = custLastName;
 	}
-	/**
+	*//**
 	 * @return the transactonDate
 	 */
 	public Date getTransactonDate() {
@@ -94,18 +94,6 @@ public class TransactionResponseForm {
 	 */
 	public void setTransactonDate(Date transactonDate) {
 		this.transactonDate = transactonDate;
-	}
-	/**
-	 * @return the transactionUpdateDate
-	 */
-	public Date getTransactionUpdateDate() {
-		return transactionUpdateDate;
-	}
-	/**
-	 * @param transactionUpdateDate the transactionUpdateDate to set
-	 */
-	public void setTransactionUpdateDate(Date transactionUpdateDate) {
-		this.transactionUpdateDate = transactionUpdateDate;
 	}
 	/**
 	 * @return the paymentGatewayTrxId
@@ -156,30 +144,6 @@ public class TransactionResponseForm {
 		this.bankCode = bankCode;
 	}
 	/**
-	 * @return the cardNumber
-	 */
-	public String getCardNumber() {
-		return cardNumber;
-	}
-	/**
-	 * @param cardNumber the cardNumber to set
-	 */
-	public void setCardNumber(String cardNumber) {
-		this.cardNumber = cardNumber;
-	}
-	/**
-	 * @return the cardType
-	 */
-	public String getCardType() {
-		return cardType;
-	}
-	/**
-	 * @param cardType the cardType to set
-	 */
-	public void setCardType(String cardType) {
-		this.cardType = cardType;
-	}
-	/**
 	 * @return the discount
 	 */
 	public Double getDiscount() {
@@ -228,30 +192,6 @@ public class TransactionResponseForm {
 		this.errorCode = errorCode;
 	}
 	/**
-	 * @return the successMessage
-	 */
-	public String getSuccessMessage() {
-		return successMessage;
-	}
-	/**
-	 * @param successMessage the successMessage to set
-	 */
-	public void setSuccessMessage(String successMessage) {
-		this.successMessage = successMessage;
-	}
-	/**
-	 * @return the successCode
-	 */
-	public String getSuccessCode() {
-		return successCode;
-	}
-	/**
-	 * @param successCode the successCode to set
-	 */
-	public void setSuccessCode(String successCode) {
-		this.successCode = successCode;
-	}
-	/**
 	 * @return the orderId
 	 */
 	public Long getOrderId() {
@@ -286,18 +226,6 @@ public class TransactionResponseForm {
 	 */
 	public void setTrxStatus(String trxStatus) {
 		this.trxStatus = trxStatus;
-	}
-	/**
-	 * @return the trxStatusCode
-	 */
-	public String getTrxStatusCode() {
-		return trxStatusCode;
-	}
-	/**
-	 * @param trxStatusCode the trxStatusCode to set
-	 */
-	public void setTrxStatusCode(String trxStatusCode) {
-		this.trxStatusCode = trxStatusCode;
 	}
 	/**
 	 * @return the netAmountPaid
