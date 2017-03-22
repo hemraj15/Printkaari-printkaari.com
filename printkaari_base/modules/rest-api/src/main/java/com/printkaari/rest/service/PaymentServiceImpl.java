@@ -73,15 +73,17 @@ public class PaymentServiceImpl implements PaymentService {
 					map.put("customerFirstName", cust.getFirstName());
 					map.put("custLastName", cust.getLastName());
 					map.put("custContactNum", cust.getContactNumber());
-					map.put("orderPrice", ord.getOrderPrice());
+					map.put("orderPrice", ord.getPaidAmount());
 					map.put("orderId", ord.getId());
 
 					trx.setAmountToBePaid(ord.getOrderPrice());
+					//trx.setNetAmountPaid(ord.getPaidAmount());
 					trx.setCustEmailId(cust.getEmail());
 					trx.setCustFirstName(cust.getFirstName());
 					trx.setCustLastName(cust.getLastName());
 					trx.setOrderId(ord.getId());
 					trx.setTrxStatus(CommonStatus.INITIATED.toString());
+					trx.setDiscount(ord.getDiscountAmount());
 
 					LOGGER.info("saving transaction for order id ::" + orderId);
 					trxId = paymentDao.save(trx);
@@ -165,9 +167,9 @@ public class PaymentServiceImpl implements PaymentService {
 				//Date trxDate=dateFormat.parse(completTrxForm.getTransactonDate());
 			//	Date trxDate=DateTimeUtils.getStringFromDate(completTrxForm.getTransactonDate(), "YYYY-MM-DD HH:MM:SS");
 				//trxObj.setTransactonDate(trxDate);
-				trxObj.setDiscount(completTrxForm.getDiscount());
+				//trxObj.setDiscount(completTrxForm.getDiscount());
 				trxObj.setCustTrxAction(completTrxForm.getCustTrxAction());
-				trxObj.setNetAmountPaid(completTrxForm.getNetAmountPaid());
+				//trxObj.setNetAmountPaid(completTrxForm.getNetAmountPaid());
 				trxObj.setPaymentGatewayTrxId(completTrxForm.getPaymentGatewayTrxId());
 				trxObj.setPaymentMode(completTrxForm.getPaymentMode());
 				trxObj.setTrxStatus(completTrxForm.getTrxStatus());

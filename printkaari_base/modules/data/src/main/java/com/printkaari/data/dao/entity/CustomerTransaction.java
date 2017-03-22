@@ -42,6 +42,7 @@ public class CustomerTransaction implements Serializable {
 	//private String cardNumber;
 	//private String cardType;
 	private Double discount;
+	private Double totalAmount;
 	private Long payYouMoneyId;
 	private String errorMessage;
 	private String errorCode;
@@ -247,6 +248,18 @@ public class CustomerTransaction implements Serializable {
 	 */
 	public void setCustTrxAction(String custTrxAction) {
 		this.custTrxAction = custTrxAction;
+	}
+	/**
+	 * @return the totalAmount
+	 */
+	public Double getTotalAmount() {
+		return totalAmount;
+	}
+	/**
+	 * @param totalAmount the totalAmount to set
+	 */
+	public void setTotalAmount(Double totalAmount) {
+		this.totalAmount = totalAmount;
 	}
 	
 	
