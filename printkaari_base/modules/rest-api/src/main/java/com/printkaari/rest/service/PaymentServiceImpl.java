@@ -3,9 +3,10 @@
  */
 package com.printkaari.rest.service;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -13,22 +14,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.printkaari.data.dao.OrderDao;
 import com.printkaari.data.dao.PaymentDao;
+import com.printkaari.data.dao.TransacationOrderDao;
 import com.printkaari.data.dao.entity.Customer;
 import com.printkaari.data.dao.entity.CustomerTransaction;
 import com.printkaari.data.dao.entity.Order;
+import com.printkaari.data.dao.entity.TransacationOrder;
 import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
-import com.printkaari.rest.constant.PaymentConstants;
 import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.InvalidTransactionException;
 import com.printkaari.rest.exception.OrderStatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
+import com.printkaari.rest.form.TransacationOrderForm;
 import com.printkaari.rest.form.TransactionResponseForm;
-import com.printkaari.rest.utils.DateTimeUtils;
 
 /**
  * @author Hemraj
@@ -44,19 +47,40 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Autowired
 	private PaymentDao	paymentDao;
+	
+	@Autowired
+	private TransacationOrderDao trxOrderDao;
 
-	@Override
+	
 	@Transactional
-	public Map<String, Object> initiateTransaction(Long orderId) throws DatabaseException, InstanceNotFoundException,OrderStatusException {
+	public Map<String, Object> initiateCartTrx(Long trxOrderId) throws DatabaseException, InstanceNotFoundException,OrderStatusException {
 
 		Map<String, Object> map = new HashMap<>();
 		Order ord = new Order();
 		Customer cust = null;
-		Long trxId = null;
+		Long trxId=null;
+		TransacationOrder trxOrder=null;
 		CustomerTransaction trx = new CustomerTransaction();
 		try {
 
-			ord = getOrderByOrderId(orderId);
+			trxOrder=getTrxOrderByTrxOrderId(trxOrderId);
+			List<Order> ordList=new ArrayList<>();
+			
+			if(trxOrder !=null){
+				
+				ordList= trxOrder.getOrders() ;
+			
+		
+			
+			if(! CollectionUtils.isEmpty(ordList) ){
+			
+				ord=ordList.get(0);
+				
+			}
+			else{
+				
+				LOGGER.info("There are no orders for the transaction Order id ::"+trxOrderId);
+			}
 
 			if (ord != null) {
 
@@ -73,41 +97,52 @@ public class PaymentServiceImpl implements PaymentService {
 					map.put("customerFirstName", cust.getFirstName());
 					map.put("custLastName", cust.getLastName());
 					map.put("custContactNum", cust.getContactNumber());
-					map.put("orderPrice", ord.getPaidAmount());
-					map.put("orderId", ord.getId());
+					map.put("orderPrice", trxOrder.getOrderValue());
+					map.put("transactionOrderId",trxOrderId);
 
-					trx.setAmountToBePaid(ord.getOrderPrice());
+					trx.setAmountToBePaid( trxOrder.getOrderValue());
 					//trx.setNetAmountPaid(ord.getPaidAmount());
 					trx.setCustEmailId(cust.getEmail());
 					trx.setCustFirstName(cust.getFirstName());
 					trx.setCustLastName(cust.getLastName());
-					trx.setOrderId(ord.getId());
+					trx.setTransactionOrderId(trxOrderId);
 					trx.setTrxStatus(CommonStatus.INITIATED.toString());
-					trx.setDiscount(ord.getDiscountAmount());
+					trx.setDiscount(trxOrder.getDiscAmount());
 
-					LOGGER.info("saving transaction for order id ::" + orderId);
+					LOGGER.info("saving transaction for order id ::" + trxOrderId);
 					trxId = paymentDao.save(trx);
-					LOGGER.info("saved transaction for order id ::" + orderId +" generated transaction id is "+trxId);
+					LOGGER.info("saved transaction for order id ::" + trxOrderId +" generated transaction id is "+trxId);
 
 					map.put("tansactionId", trxId);
 
 				}
 				else{
 					
-					LOGGER.info("Customer not found for the request order id "+orderId);
+					LOGGER.info("Customer not found for the request order id "+trxOrderId);
 					throw new UserNotFoundException("customer not found for the request order id",ErrorCodes.USER_NOT_FOUND_ERROR);
 				}
 
 			}
+			}
+			else {
+				
+				LOGGER.info("Transaction Order is null to initiate transaction ");
+			}
 
 		} catch (Exception e) {
-			LOGGER.error("Error occured while initiating transaction for order " + orderId
+			LOGGER.error("Error occured while initiating transaction for order " + trxOrderId
 			        + " in database", e);
 			throw new DatabaseException("Error occured while initiating transaction",
 			        ErrorCodes.DATABASE_ERROR);
 		}
 
 		return map;
+	}
+
+	@SuppressWarnings("unused")
+	private TransacationOrder getTrxOrderByTrxOrderId(Long trxOrderId) throws InstanceNotFoundException {
+		
+		return trxOrderDao.find(trxOrderId);
 	}
 
 	private Order getOrderByOrderId(Long orderId)
@@ -195,6 +230,61 @@ public class PaymentServiceImpl implements PaymentService {
 			        ErrorCodes.DATABASE_ERROR);
 		}
 		return map;
+	}
+
+	@Override
+	@Transactional
+	public Map<String, Object> initiateCartTransaction(TransacationOrderForm form)
+	        throws DatabaseException, UserNotFoundException, OrderStatusException,
+	        InstanceNotFoundException {
+		
+		 TransacationOrder trxOrder=new TransacationOrder();
+		 List<Order> orders=new ArrayList<>();
+		 List<Long> orderList=new ArrayList<>();
+		 Long trxPrderId;
+		 Order ord=new Order();
+		 Double amount=0.0;
+		 Double discAmoiunt=0.0;
+		 
+		try {
+			
+			if(form !=null && form.getOrderIdList()!=null){
+				
+				orderList=form.getOrderIdList();
+				
+			}
+			
+			Iterator<Long> itr=orderList.iterator();
+			
+			while(itr.hasNext()){
+				
+				ord=getOrderByOrderId(itr.next());
+				amount=amount+ord.getPaidAmount();
+				discAmoiunt=discAmoiunt+ord.getDiscountAmount();
+				orders.add(ord);
+			}
+			
+			trxOrder.setOrders(orders);
+			trxOrder.setOrderValue(amount);
+			
+			trxPrderId=trxOrderDao.save(trxOrder);
+			
+			initiateCartTrx(trxPrderId);
+		} catch (Exception e) {
+			LOGGER.error("Error occured while initiating Order transaction  in database", e);
+			throw new DatabaseException("Error occured while initiating Order transaction  in database",
+			        ErrorCodes.DATABASE_ERROR);
+		}
+		
+		
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> initiateTransaction(Long orderId) throws DatabaseException,
+	        UserNotFoundException, OrderStatusException, InstanceNotFoundException {
+		
+		return null;
 	}
 
 }

@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,7 @@ import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.InvalidTransactionException;
 import com.printkaari.rest.exception.OrderStatusException;
 import com.printkaari.rest.form.SignUpStep1Form;
+import com.printkaari.rest.form.TransacationOrderForm;
 import com.printkaari.rest.form.TransactionResponseForm;
 import com.printkaari.rest.model.ErrorResponse;
 import com.printkaari.rest.service.CustomerService;
@@ -147,6 +149,67 @@ public class PaymentController {
 			((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
 			((ErrorResponse) data).setMessage(e.getMessage());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		catch (Exception e) {
+			data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			data = new ErrorResponse();
+			((ErrorResponse) data).setErrorCode(ErrorCodes.VALIDATION_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage() );
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		}
+		return data;
+		
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/cartTrxInitiate" ,method = RequestMethod.POST,consumes="application/json")
+	public Object initiateTransaction(@RequestBody TransacationOrderForm form ,BindingResult result,   HttpServletResponse response) {
+		
+		Object data=null;
+		if (result.hasErrors()) {
+			String message = ErrorUtils.getTextValidationErrorMessage(result.getAllErrors());
+			data = new ErrorResponse();
+			((ErrorResponse) data).setErrorCode(message);
+			((ErrorResponse) data).setMessage("Form validation failed!");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		    }
+		
+		else{
+		
+		try {
+			
+			LOGGER.info("cart transaction initiate list of orders "+form.getOrderIdList());
+			
+			Map<String ,Object> map=new HashMap<>();
+			
+			map=paymentService.initiateCartTransaction(form);
+			//map.put("test", "test");			
+			data=map;
+			
+		} 
+		
+		catch (DatabaseException e) {
+			data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+          catch (InstanceNotFoundException e) {
+        	  data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			((ErrorResponse) data).setErrorCode(ErrorCodes.ORDER_NOT_FOUND_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		}
+       catch (OrderStatusException e) {
+    	   data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			((ErrorResponse) data).setErrorCode(ErrorCodes.ORDER_STATUS_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_CONFLICT);
 		}
 		catch (Exception e) {
 			data = new ErrorResponse();

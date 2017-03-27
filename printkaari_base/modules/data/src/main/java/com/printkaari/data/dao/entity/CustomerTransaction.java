@@ -48,7 +48,7 @@ public class CustomerTransaction implements Serializable {
 	private String errorCode;
 	//private String successMessage;
 	//private String successCode;
-	private Long orderId;
+	private Long transactionOrderId;
 	private String trxMessage;
 	private String trxStatus;
 	//private String trxStatusCode;
@@ -56,12 +56,7 @@ public class CustomerTransaction implements Serializable {
 	private String paymentMode;
 	private String custTrxAction;
 	
-	public Long getOrderId() {
-		return orderId;
-	}
-	public void setOrderId(Long orderId) {
-		this.orderId = orderId;
-	}
+	
 	public String getErrorMessage() {
 		return errorMessage;
 	}
@@ -260,6 +255,18 @@ public class CustomerTransaction implements Serializable {
 	 */
 	public void setTotalAmount(Double totalAmount) {
 		this.totalAmount = totalAmount;
+	}
+	/**
+	 * @return the transactionOrderId
+	 */
+	public Long getTransactionOrderId() {
+		return transactionOrderId;
+	}
+	/**
+	 * @param transactionOrderId the transactionOrderId to set
+	 */
+	public void setTransactionOrderId(Long transactionOrderId) {
+		this.transactionOrderId = transactionOrderId;
 	}
 	
 	
