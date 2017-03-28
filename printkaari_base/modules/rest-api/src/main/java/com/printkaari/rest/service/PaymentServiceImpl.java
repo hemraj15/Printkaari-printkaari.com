@@ -27,6 +27,7 @@ import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.EmptyListException;
 import com.printkaari.rest.exception.InvalidTransactionException;
 import com.printkaari.rest.exception.OrderStatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
@@ -76,11 +77,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 				ord=ordList.get(0);
 				
-			}
-			else{
-				
-				LOGGER.info("There are no orders for the transaction Order id ::"+trxOrderId);
-			}
+			
 
 			if (ord != null) {
 
@@ -124,6 +121,11 @@ public class PaymentServiceImpl implements PaymentService {
 
 			}
 			}
+			else{
+				
+				LOGGER.info("There are no orders for the transaction Order id ::"+trxOrderId);
+			}
+			}
 			else {
 				
 				LOGGER.info("Transaction Order is null to initiate transaction ");
@@ -139,7 +141,6 @@ public class PaymentServiceImpl implements PaymentService {
 		return map;
 	}
 
-	@SuppressWarnings("unused")
 	private TransacationOrder getTrxOrderByTrxOrderId(Long trxOrderId) throws InstanceNotFoundException {
 		
 		return trxOrderDao.find(trxOrderId);
@@ -180,8 +181,8 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public Map<String, Object> transactionComplete(TransactionResponseForm completTrxForm) throws DatabaseException,InvalidTransactionException,InstanceNotFoundException {
-		 Map<String, Object> map=new HashMap<>();
+	public Long transactionComplete(TransactionResponseForm completTrxForm) throws DatabaseException,InvalidTransactionException,InstanceNotFoundException {
+		 Long trxOrderId=null;
 		 
 		 CustomerTransaction trxObj= new CustomerTransaction();
 		try {
@@ -191,6 +192,7 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			if (trxObj !=null) {
 				
+				trxOrderId=trxObj.getTransactionOrderId();
 				LOGGER.info("transaction found ::"+trxObj.getTransactionNo());
 				trxObj.setBankCode(completTrxForm.getBankCode());
 				trxObj.setBankRefNum(completTrxForm.getBankRefNum());
@@ -216,7 +218,7 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 			else {
 				
-				LOGGER.info("Transaction Object is null for request trx no");
+				LOGGER.info("Transaction Object is null for request trx no "+completTrxForm.getTransactionNo());
 				throw new InvalidTransactionException("Error occured while fetching transaction from database",
 				        ErrorCodes.DATABASE_ERROR);
 			}
@@ -229,30 +231,31 @@ public class PaymentServiceImpl implements PaymentService {
 			throw new DatabaseException("Error occured while fetching transaction from database",
 			        ErrorCodes.DATABASE_ERROR);
 		}
-		return map;
+		return trxOrderId;
 	}
 
 	@Override
 	@Transactional
 	public Map<String, Object> initiateCartTransaction(TransacationOrderForm form)
 	        throws DatabaseException, UserNotFoundException, OrderStatusException,
-	        InstanceNotFoundException {
+	        InstanceNotFoundException,EmptyListException {
 		
 		 TransacationOrder trxOrder=new TransacationOrder();
 		 List<Order> orders=new ArrayList<>();
 		 List<Long> orderList=new ArrayList<>();
-		 Long trxPrderId;
+		 Long trxOrderId;
 		 Order ord=new Order();
 		 Double amount=0.0;
 		 Double discAmoiunt=0.0;
-		 
+		 Map<String, Object> map=new HashMap<>();
 		try {
 			
 			if(form !=null && form.getOrderIdList()!=null){
 				
+				LOGGER.info("request form of ord id not null and order list is -"+form.getOrderIdList());
 				orderList=form.getOrderIdList();
 				
-			}
+			
 			
 			Iterator<Long> itr=orderList.iterator();
 			
@@ -266,10 +269,19 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			trxOrder.setOrders(orders);
 			trxOrder.setOrderValue(amount);
+			trxOrder.setDiscAmount(discAmoiunt);
 			
-			trxPrderId=trxOrderDao.save(trxOrder);
+			trxOrderId=trxOrderDao.save(trxOrder);
 			
-			initiateCartTrx(trxPrderId);
+			map=initiateCartTrx(trxOrderId);
+			
+			}
+			else{
+				
+				LOGGER.info("order list is empty");
+				
+				throw new EmptyListException("Error Occured while initiating transaction - request order list is empty",ErrorCodes.ORDER_LIST_EMPTY_ERROR);
+			}
 		} catch (Exception e) {
 			LOGGER.error("Error occured while initiating Order transaction  in database", e);
 			throw new DatabaseException("Error occured while initiating Order transaction  in database",
@@ -277,7 +289,7 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 		
 		
-		return null;
+		return map;
 	}
 
 	@Override

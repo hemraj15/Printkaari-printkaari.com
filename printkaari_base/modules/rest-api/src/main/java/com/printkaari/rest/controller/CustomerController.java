@@ -447,4 +447,35 @@ public class CustomerController {
 	 * data).setMessage(e.getMessage());
 	 * response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); } } return data; }
 	 */
+	 
+	 @ResponseBody
+		@RequestMapping(value = "/update-trxOrder-status/{trxOrderId}/{ordStatus}", method = RequestMethod.GET)
+		public Object changeTrxOrderStatus(@PathVariable Long trxOrderId, @PathVariable String ordStatus,
+		        HttpServletRequest request, HttpServletResponse response) {
+
+			Map<String, Object> map = new HashMap<>();
+
+			Object data = null;
+
+			try {
+				LOGGER.info("order id to comfirm ::" + trxOrderId);
+				LOGGER.info("Placing order >>");
+				customerService.changetrxOrderStatus(ordStatus, trxOrderId);
+
+				map.put("orderId", trxOrderId);
+				map.put("message", "order has been updated to " + ordStatus + " succssfully !!");
+				data = map;
+				LOGGER.info("order status changed");
+			}
+
+			catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+				data = new ErrorResponse();
+				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+
+			return data;
+		}
 }

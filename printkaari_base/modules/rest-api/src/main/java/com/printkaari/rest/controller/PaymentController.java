@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.printkaari.data.exception.InstanceNotFoundException;
+import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.constant.PaymentConstants;
 import com.printkaari.rest.exception.DatabaseException;
@@ -105,6 +106,7 @@ public class PaymentController {
 	        BindingResult result, HttpServletResponse response) {
 		
 		Object data=null;
+		Long trxOrderId=null;
 		if (result.hasErrors()) {
 			String message = ErrorUtils.getTextValidationErrorMessage(result.getAllErrors());
 			data = new ErrorResponse();
@@ -118,13 +120,14 @@ public class PaymentController {
 			
 			Map<String ,Object> map=new HashMap<>();
 			
-			map=paymentService.transactionComplete(completTrxForm);
-			map.put("message", "payment successfull - transaction completed for order id :"+completTrxForm.getOrderId());
+			trxOrderId=paymentService.transactionComplete(completTrxForm);
+			map.put("transactionId", completTrxForm.getTransactionNo());
+			map.put("message", "payment successfull - transaction completed for transaction order id :"+trxOrderId);
 			
-			LOGGER.info("order id to comfirm ::"+completTrxForm.getOrderId());
+			LOGGER.info("order id to comfirm ::"+trxOrderId);
 			LOGGER.info("Placing order >>");
-		   custService.confirmOrder(completTrxForm.getOrderId(),completTrxForm.getTrxStatus());
-			map.put("orderId", completTrxForm.getOrderId());
+		   custService.confirmOrder(trxOrderId,completTrxForm.getTrxStatus());
+			map.put("transactionOrderId",trxOrderId);
 			map.put("message", "order has been confirmed succssfully !!");
 			data=map;
 			

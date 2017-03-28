@@ -245,4 +245,8 @@ public class ErrorCodes {
 
 	public static final String	INVALID_NUMBER_OF_PAGES							= "invalid_number_of_pages";
 
+	public static final String ORDER_LIST_EMPTY_ERROR = "order_list_empty_error";
+
+	public static final String TRX_ORDER_NOT_FOUND_ERROR = "transaction_order_not_found_error";
+
 }

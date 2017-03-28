@@ -36,4 +36,6 @@ public interface CustomerService {
 
 	void changeOrderStatus(String status, Long orderId) throws DatabaseException;
 
+	void changetrxOrderStatus(String ordStatus, Long trxOrderId)throws DatabaseException;
+
 }
