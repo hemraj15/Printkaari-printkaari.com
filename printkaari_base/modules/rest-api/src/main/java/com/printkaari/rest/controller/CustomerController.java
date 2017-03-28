@@ -218,10 +218,10 @@ public class CustomerController {
 
 	@ResponseBody
 	@RequestMapping(value = "/college-order-upload-files", method = RequestMethod.POST, consumes = "multipart/form-data")
-	public Object uploadCompanyFiles(@RequestParam String fileType,
-	        @RequestParam String bindingType, @RequestParam Integer totalPages,
-	        @RequestParam Integer glossyColorPages, @RequestParam Integer nonGlossyColorPages,
+	public Object uploadProjectFiles(@RequestParam String fileType,
+	        @RequestParam String bindingType, @RequestParam Integer totalPages,   
 	        @RequestParam String anyOtherRequest, @RequestParam MultipartFile file,
+	        @RequestParam Integer totalColorPage,@RequestParam Integer quantity,@RequestParam String colorPages,
 	        HttpServletRequest request, HttpServletResponse response) {
 		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
 		Map<String, Object> map = new HashMap<>();
@@ -237,12 +237,15 @@ public class CustomerController {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		} else {
 			try {
+				
+				Integer glossyColorPages=2;
+			    Integer nonGlossyColorPages=2;
 
 				fileId = printStoreService.uploadFile(fileType, file);
 				LOGGER.info("file saved successfully with file id ::" + fileId);
 				LOGGER.info("Placing order >>");
 				map = customerService.placeOrder(glossyColorPages, nonGlossyColorPages,
-				        anyOtherRequest, totalPages, bindingType, fileId);
+				        anyOtherRequest, totalPages, bindingType, fileId,totalColorPage,quantity,colorPages);
 				map.put("fileId", fileId);
 				map.put("message",
 				        "order ahs been initiated succssfully please make payment to confirm order");
@@ -444,4 +447,35 @@ public class CustomerController {
 	 * data).setMessage(e.getMessage());
 	 * response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); } } return data; }
 	 */
+	 
+	 @ResponseBody
+		@RequestMapping(value = "/update-trxOrder-status/{trxOrderId}/{ordStatus}", method = RequestMethod.GET)
+		public Object changeTrxOrderStatus(@PathVariable Long trxOrderId, @PathVariable String ordStatus,
+		        HttpServletRequest request, HttpServletResponse response) {
+
+			Map<String, Object> map = new HashMap<>();
+
+			Object data = null;
+
+			try {
+				LOGGER.info("order id to comfirm ::" + trxOrderId);
+				LOGGER.info("Placing order >>");
+				customerService.changetrxOrderStatus(ordStatus, trxOrderId);
+
+				map.put("orderId", trxOrderId);
+				map.put("message", "order has been updated to " + ordStatus + " succssfully !!");
+				data = map;
+				LOGGER.info("order status changed");
+			}
+
+			catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+				data = new ErrorResponse();
+				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+
+			return data;
+		}
 }

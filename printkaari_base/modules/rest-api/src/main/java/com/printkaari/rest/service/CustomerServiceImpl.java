@@ -1,7 +1,9 @@
 package com.printkaari.rest.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.prinktaakri.auth.util.AuthorizationUtil;
 import com.printkaari.auth.service.SystemRoles;
@@ -18,11 +21,13 @@ import com.printkaari.data.dao.CustomerDao;
 import com.printkaari.data.dao.CustomerFileDao;
 import com.printkaari.data.dao.OrderDao;
 import com.printkaari.data.dao.ProductDao;
+import com.printkaari.data.dao.TransacationOrderDao;
 import com.printkaari.data.dao.UserDao;
 import com.printkaari.data.dao.entity.Customer;
 import com.printkaari.data.dao.entity.CustomerFiles;
 import com.printkaari.data.dao.entity.Order;
 import com.printkaari.data.dao.entity.Product;
+import com.printkaari.data.dao.entity.TransacationOrder;
 import com.printkaari.data.dao.entity.User;
 import com.printkaari.data.dto.CustomerDto;
 import com.printkaari.data.exception.InstanceNotFoundException;
@@ -35,34 +40,40 @@ import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.constant.ProductCodes;
 import com.printkaari.rest.constant.UserTypes;
 import com.printkaari.rest.exception.DatabaseException;
+import com.printkaari.rest.exception.InvalidNumberOfPagesException;
 import com.printkaari.rest.exception.InvalidProductException;
+import com.printkaari.rest.exception.InvalidQuantiryException;
 import com.printkaari.rest.exception.MailNotSendException;
 import com.printkaari.rest.exception.ProductNotFoundException;
 import com.printkaari.rest.exception.StatusException;
+import com.printkaari.rest.exception.TransactionOrderNotFoundException;
 import com.printkaari.rest.exception.UserNotFoundException;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-	private Logger			LOGGER	= LoggerFactory.getLogger(CustomerServiceImpl.class);
+	private Logger					LOGGER	= LoggerFactory.getLogger(CustomerServiceImpl.class);
 
 	@Autowired
-	private UserDao			userDao;
+	private UserDao					userDao;
 
 	@Autowired
-	private ProductDao		prodDao;
+	private ProductDao				prodDao;
 
 	@Autowired
-	private OrderDao		ordDao;
+	private OrderDao				ordDao;
 
 	@Autowired
-	private CustomerFileDao	custFileDao;
+	private CustomerFileDao			custFileDao;
 
 	@Autowired
-	private CustomerDao		custDao;
+	private CustomerDao				custDao;
 
 	@Autowired
-	private MailService		mailService;
+	private MailService				mailService;
+
+	@Autowired
+	private TransacationOrderDao	trxOrderDao;
 
 	@Override
 	@Transactional
@@ -228,8 +239,10 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	@Transactional
 	public Map<String, Object> placeOrder(Integer glossyColorPages, Integer nonGlossyColorPages,
-	        String anyOtherRequest, Integer totalPages, String bindingType, Long fileId)
-	        throws DatabaseException, InvalidProductException, MailNotSendException {
+	        String anyOtherRequest, Integer totalPages, String bindingType, Long fileId,
+	        Integer totalColorPages, Integer quantity, String colorPages)
+	        throws DatabaseException, InvalidProductException, MailNotSendException,
+	        InvalidNumberOfPagesException, InvalidQuantiryException {
 		Long orderId = null;
 		String productCode = null;
 		Order order = new Order();
@@ -237,15 +250,34 @@ public class CustomerServiceImpl implements CustomerService {
 		User user = null;
 		Customer cust = null;
 		Double basePrice = 0.0;
+		Double discountAmount = 0.0;
+		Double amountToBePaid = 0.0;
+		Integer discount = 0;
 		Map<String, Object> map = new HashMap<>();
-		Integer blackPage = totalPages - (glossyColorPages + nonGlossyColorPages);
+		Integer blackPage = totalPages - totalColorPages;
 		try {
 
+			if (totalPages < totalColorPages) {
+
+				throw new InvalidNumberOfPagesException(
+				        "total pages can not be less than color pages ",
+				        ErrorCodes.INVALID_NUMBER_OF_PAGES);
+			}
+
+			if (quantity < 2 && quantity >= 0) {
+				discount = 5;
+			} else if (quantity >= 2) {
+				discount = 20;
+			} else {
+
+				throw new InvalidQuantiryException("Invalid print quantity supplied ",
+				        ErrorCodes.INVALID_PRINT_QUANTITY);
+			}
 			LOGGER.info("Place Order Customer Service Impl");
 			LOGGER.info("Place Order for Bindig type ::" + bindingType);
 			if (bindingType.equalsIgnoreCase("hard")) {
 				productCode = ProductCodes.hard_binding.toString();
-				basePrice = CostConstant.hard_binnding_base_tate;
+				basePrice = CostConstant.hard_binnding_base_rate;
 			} else if (bindingType.equalsIgnoreCase("spiral")) {
 				productCode = ProductCodes.spiral_binding.toString();
 				basePrice = CostConstant.spiral_binding_base_rate;
@@ -271,16 +303,26 @@ public class CustomerServiceImpl implements CustomerService {
 					Double totalPrice = basePrice
 					        + (glossyColorPages * CostConstant.color_glossy_page)
 					        + (nonGlossyColorPages * CostConstant.color_non_glossy_page)
-					        + (blackPage * CostConstant.simple_black_page);
+					        + (blackPage * CostConstant.simple_black_page)
+					        + ((totalColorPages - (glossyColorPages + nonGlossyColorPages))
+					                * CostConstant.color_page_simple);
 
 					product = fetchProductCodeFromDB(productCode);
 
 					if (product == null) {
 
 						LOGGER.info("no product found for product code " + productCode);
-						 throw new ProductNotFoundException("Product not found in the data base while placing order ",ErrorCodes.PRODUCT_NOT_FOUND_IN_DATABASE);
-						
+						throw new ProductNotFoundException(
+						        "Product not found in the data base while placing order ",
+						        ErrorCodes.PRODUCT_NOT_FOUND_IN_DATABASE);
+
 					} else {
+
+						discountAmount = totalPrice * (discount / 100.0);
+						System.out.println("discount  :" + discount);
+						System.out.println("discount amount :" + discountAmount);
+						amountToBePaid = totalPrice - discountAmount;
+						System.out.println("Amount to be paid :" + amountToBePaid);
 
 						order.setCustomer(cust);
 						order.setDescription(anyOtherRequest);
@@ -289,6 +331,13 @@ public class CustomerServiceImpl implements CustomerService {
 						sets.add(product);
 						order.setProducts(sets);
 						order.setOrderPrice(totalPrice);
+						order.setPaidAmount(amountToBePaid);
+						order.setDiscountAmount(discountAmount);
+						order.setDiscount(discount);
+						order.setColorPages(colorPages);
+						order.setPrintQuantity(quantity);
+						order.setTotalColorPages(totalColorPages);
+						order.setTotalPages(totalPages);
 
 						Set<CustomerFiles> fileSet = new HashSet<>();
 
@@ -299,8 +348,8 @@ public class CustomerServiceImpl implements CustomerService {
 						order.setCreatedBy(cust.getFirstName());
 
 						orderId = ordDao.save(order);
-						map.put("order_id", orderId);
-						map.put("total_price", order.getOrderPrice());
+						map.put("orderId", orderId);
+						map.put("amountToBePaid", order.getPaidAmount());
 
 						LOGGER.info("OrderDao Save Order --> initiated with Order Id " + orderId);
 
@@ -309,13 +358,14 @@ public class CustomerServiceImpl implements CustomerService {
 
 					}
 
-					
+				} else {
+					LOGGER.info(
+					        "Customer object  is null or is not a customer  while placing order ");
 				}
+			} else {
 
-				LOGGER.info("Customer object  is null or is not a customer  while placing order ");
+				LOGGER.info("User is null or is not a customer  while placing order ");
 			}
-
-			LOGGER.info("User is null or is not a customer  while placing order ");
 		} catch (Exception e) {
 			LOGGER.error("Error occured while getting candidate list through database", e);
 			e.printStackTrace();
@@ -333,8 +383,7 @@ public class CustomerServiceImpl implements CustomerService {
 	 */
 	private Product fetchProductCodeFromDB(String productCode) throws InstanceNotFoundException {
 		Product product;
-		product = (Product) prodDao
-		        .getByCriteria(prodDao.getByProductCode(productCode));
+		product = (Product) prodDao.getByCriteria(prodDao.getByProductCode(productCode));
 		return product;
 	}
 
@@ -391,35 +440,78 @@ public class CustomerServiceImpl implements CustomerService {
 		return user;
 	}
 
+	private TransacationOrder getTrxOrderByTrxOrderId(Long trxOrderId)
+	        throws InstanceNotFoundException {
+
+		return trxOrderDao.find(trxOrderId);
+	}
+
 	@Override
 	@Transactional
-	public void confirmOrder(Long orderId , String successCode) throws DatabaseException {
+	public void confirmOrder(Long trxOrderId, String successCode) throws DatabaseException {
+
+		List<Order> orders = new ArrayList<>();
+		Long orderId = null;
+		TransacationOrder trxOrder = null;
 		try {
-			LOGGER.info("Order about to confirm :" + orderId);
-			LOGGER.info("Success Code to confirm order :" + successCode);
-			Order ord = getOrderByOrderId(orderId);
-			if (ord != null && successCode !=null) {
-				LOGGER.info("Order " + orderId + " found");
-				ord.setStatus(CommonStatus.ACTIVE.toString());
-				ordDao.update(ord);
-				LOGGER.info("Order " + orderId + " is confirmed ");
-				Customer cust = ord.getCustomer();
-				if (cust != null) {
-					LOGGER.error("Customer associated with Order " + orderId
-					        + " is found >> sending mails");
-					sendOrderStatusMailToCustomer(ord.getId(), CommonStatus.ACTIVE.toString(),
-					        cust);
-					sendOrderStatusMailToAdmin(ord.getId(), cust);
-					LOGGER.error("Mail sent to customer and admin ");
-				} else {
-					LOGGER.error("Customer associated with Order " + orderId + " is null");
+
+			trxOrder = getTrxOrderByTrxOrderId(trxOrderId);
+
+			if (trxOrder != null && successCode != null) {
+
+				orders = trxOrder.getOrders();
+				trxOrder.setStatus(CommonStatus.ACTIVE.toString());
+				trxOrderDao.update(trxOrder);
+				Iterator<Order> itr = orders.iterator();
+				while (itr.hasNext()) {
+					Order ord = itr.next();
+					orderId = ord.getId();
+
+					LOGGER.info("Order " + orderId + " found");
+					ord.setStatus(CommonStatus.ACTIVE.toString());
+					ordDao.update(ord);
+					LOGGER.info("Order " + orderId + " is confirmed ");
+					Customer cust = ord.getCustomer();
+					if (cust != null) {
+						LOGGER.error("Customer associated with Order " + orderId
+						        + " is found >> sending mails");
+						sendOrderStatusMailToCustomer(ord.getId(), CommonStatus.ACTIVE.toString(),
+						        cust);
+						sendOrderStatusMailToAdmin(ord.getId(), cust);
+						LOGGER.error("Mail sent to customer and admin ");
+					} else {
+						LOGGER.error("Customer associated with Order " + orderId + " is null");
+					}
+
 				}
 
+			} else {
+
+				LOGGER.info("transaction order not found for " + trxOrderId);
+				LOGGER.error("Error occured while updating order in database");
+				throw new TransactionOrderNotFoundException(
+				        "Error occured while updating order in database",
+				        ErrorCodes.TRX_ORDER_NOT_FOUND_ERROR);
+
 			}
-			else{
-				LOGGER.error(" Success Code is null !!");
-			}
-			
+			/*
+			 * 
+			 * 
+			 * LOGGER.info("Order about to confirm :" + orderId); LOGGER.info(
+			 * "Success Code to confirm order :" + successCode); Order ord =
+			 * getOrderByOrderId(orderId); if (ord != null && successCode !=null) { LOGGER.info(
+			 * "Order " + orderId + " found"); ord.setStatus(CommonStatus.ACTIVE.toString());
+			 * ordDao.update(ord); LOGGER.info("Order " + orderId + " is confirmed "); Customer cust
+			 * = ord.getCustomer(); if (cust != null) { LOGGER.error(
+			 * "Customer associated with Order " + orderId + " is found >> sending mails");
+			 * sendOrderStatusMailToCustomer(ord.getId(), CommonStatus.ACTIVE.toString(), cust);
+			 * sendOrderStatusMailToAdmin(ord.getId(), cust); LOGGER.error(
+			 * "Mail sent to customer and admin "); } else { LOGGER.error(
+			 * "Customer associated with Order " + orderId + " is null"); }
+			 * 
+			 * } else{ LOGGER.error(" Success Code is null !!"); }
+			 */
+
 		} catch (Exception e) {
 			LOGGER.error("Error occured while updating order in database", e);
 			e.printStackTrace();
@@ -465,6 +557,35 @@ public class CustomerServiceImpl implements CustomerService {
 			        ErrorCodes.DATABASE_ERROR);
 		}
 
+	}
+
+	@Override
+	@Transactional
+	public void changetrxOrderStatus(String ordStatus, Long trxOrderId) throws DatabaseException {
+		try {
+			LOGGER.info("Order status about to change :" + trxOrderId);
+			TransacationOrder ord = getTrxOrderByTrxOrderId(trxOrderId);
+			if (ord != null) {
+				ord.setStatus(ordStatus);
+				trxOrderDao.update(ord);
+				LOGGER.info("Status of Order " + trxOrderId + " is updated to  " + ordStatus);
+
+				Customer cust = !(CollectionUtils.isEmpty(ord.getOrders())) ? ord.getOrders().get(0).getCustomer() :null;
+				if (cust != null) {
+					sendOrderStatusMailToCustomer(ord.getId(), ordStatus, cust);
+					sendOrderStatusMailToAdmin(ord.getId(), cust);
+				}
+
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error occured while getting candidate list through database", e);
+			e.printStackTrace();
+			throw new DatabaseException(
+			        "Error occured while getting all orders for a customer through database",
+			        ErrorCodes.DATABASE_ERROR);
+		}
+
+		
 	}
 
 }

@@ -35,10 +35,16 @@ public class Order extends PrintkaariBaseEntity implements Serializable {
 	private static final long serialVersionUID = -8995896702674504742L;
 	
 	private Double orderPrice;
+	private Double paidAmount;
 	private Set<Product> products=new HashSet<>();
 	private Customer customer;
 	private Set<CustomerFiles> fileId;
-
+	private String colorPages;
+	private Integer totalPages;
+	private Integer totalColorPages;
+    private Integer printQuantity;
+    private Integer discount;
+    private Double discountAmount;
 //@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER,targetEntity=Product.class)
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -85,5 +91,63 @@ public class Order extends PrintkaariBaseEntity implements Serializable {
 	public void setFileId(Set<CustomerFiles> fileId) {
 		this.fileId = fileId;
 	}
+
+	public String getColorPages() {
+		return colorPages;
+	}
+
+	public void setColorPages(String colorPages) {
+		this.colorPages = colorPages;
+	}
+
+	public Integer getTotalPages() {
+		return totalPages;
+	}
+
+	public void setTotalPages(Integer totalPages) {
+		this.totalPages = totalPages;
+	}
+
+	public Integer getTotalColorPages() {
+		return totalColorPages;
+	}
+
+	public void setTotalColorPages(Integer totalColorPages) {
+		this.totalColorPages = totalColorPages;
+	}
+
+	public Integer getPrintQuantity() {
+		return printQuantity;
+	}
+
+	public void setPrintQuantity(Integer printQuantity) {
+		this.printQuantity = printQuantity;
+	}
+
+	public Integer getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(Integer discount) {
+		this.discount = discount;
+	}
+
+	public Double getPaidAmount() {
+		return paidAmount;
+	}
+
+	public void setPaidAmount(Double paidAmount) {
+		this.paidAmount = paidAmount;
+	}
+
+	public Double getDiscountAmount() {
+		return discountAmount;
+	}
+
+	public void setDiscountAmount(Double discountAmount) {
+		this.discountAmount = discountAmount;
+	}
+
+	
 
 }

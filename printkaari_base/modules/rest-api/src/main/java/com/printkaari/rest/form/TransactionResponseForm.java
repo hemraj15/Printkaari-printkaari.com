@@ -27,7 +27,7 @@ public class TransactionResponseForm {
 	private String errorCode;
 	//private String successMessage;
 	//private String successCode;
-	private Long orderId;
+	//private Long transactionOrderId;
 	private String trxMessage;
 	private String trxStatus;
 	//private String trxStatusCode;
@@ -190,18 +190,7 @@ public class TransactionResponseForm {
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
-	/**
-	 * @return the orderId
-	 */
-	public Long getOrderId() {
-		return orderId;
-	}
-	/**
-	 * @param orderId the orderId to set
-	 */
-	public void setOrderId(Long orderId) {
-		this.orderId = orderId;
-	}
+	
 	/**
 	 * @return the trxMessage
 	 */
@@ -262,6 +251,18 @@ public class TransactionResponseForm {
 	public void setCustTrxAction(String custTrxAction) {
 		this.custTrxAction = custTrxAction;
 	}
+	/**
+	 * @return the transactionOrderId
+	 */
+	/*public Long getTransactionOrderId() {
+		return transactionOrderId;
+	}
+	*//**
+	 * @param transactionOrderId the transactionOrderId to set
+	 *//*
+	public void setTransactionOrderId(Long transactionOrderId) {
+		this.transactionOrderId = transactionOrderId;
+	}*/
 	
 	
 }
