@@ -368,15 +368,14 @@ public class CustomerController {
 		try {
 
 			// fileId=printStoreService.uploadFile( fileType, file);
-			LOGGER.info("file saved successfully with file id ::" + fileId);
+			LOGGER.info("file ownload for order id  ::" + order_id);
 			LOGGER.info("Placing order >>");
 			map = printStoreService.downloadCollegeProjectFiles(order_id);
 			
-			map.put("fileId", fileId);
-			map.put("message",
-			        "order ahs been initiated succssfully please make payment to confirm order");
+			//map.put("fileId", fileId);
+			map.put("message","file to download ");
 			data = map;
-			LOGGER.info("order initiated");
+			LOGGER.info("file download section");
 		} catch (FileDownloadException e) {
 			data = new ErrorResponse();
 			((ErrorResponse) data).setErrorCode(e.getErrorCode());
