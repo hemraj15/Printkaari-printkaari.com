@@ -463,15 +463,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 			trxOrder = getTrxOrderByTrxOrderId(trxOrderId);
 			orders = trxOrder != null ? trxOrder.getOrders() : orders;
-			
-			if (orders.size()>0) {
-				
-				cust=orders.get(0).getCustomer();
-				sendPaymentConfirmationMailToAdmin(trxOrder.getId(), cust, successCode);
-				sendPaymentConfirmationMailToCustomer(trxOrder.getId(), cust, successCode);
-				LOGGER.error("Payment Confirmation Mail sent to customer and admin ");
-			}
-			
+
 			Iterator<Order> itr = orders.iterator();
 			if (trxOrder != null && successCode != null
 			        && successCode.equalsIgnoreCase("success")) {
@@ -479,9 +471,10 @@ public class CustomerServiceImpl implements CustomerService {
 				trxOrder.setStatus(CommonStatus.ACTIVE.toString());
 				trxOrderDao.update(trxOrder);
 
-				while (itr.hasNext()) {
+				for (Order ord : orders) {
+
 					counter++;
-					Order ord = itr.next();
+					// Order ord = itr.next();
 					orderId = ord.getId();
 
 					LOGGER.info("Order " + orderId + " found");
@@ -501,9 +494,8 @@ public class CustomerServiceImpl implements CustomerService {
 					}
 
 				}
+			}
 
-			} 
-			
 			else {
 
 				LOGGER.info("transaction order not found for " + trxOrderId);
@@ -513,7 +505,15 @@ public class CustomerServiceImpl implements CustomerService {
 				        ErrorCodes.TRX_ORDER_NOT_FOUND_ERROR);
 
 			}
-			
+
+			if (orders.size() > 0) {
+
+				cust = orders.get(0).getCustomer();
+				sendPaymentConfirmationMailToAdmin(trxOrder.getId(), cust, successCode);
+				sendPaymentConfirmationMailToCustomer(trxOrder.getId(), cust, successCode);
+				LOGGER.error("Payment Confirmation Mail sent to customer and admin ");
+			}
+
 			/*
 			 * 
 			 * 
