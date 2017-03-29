@@ -214,6 +214,9 @@ public class PaymentServiceImpl implements PaymentService {
 				trxObj.setTrxMessage(completTrxForm.getTrxMessage());
 				trxObj.setNetAmountPaid(completTrxForm.getNetAmountPaid());
 			
+				paymentDao.saveOrUpdate(trxObj);
+				
+				
 				
 			}
 			else {
@@ -223,7 +226,7 @@ public class PaymentServiceImpl implements PaymentService {
 				        ErrorCodes.DATABASE_ERROR);
 			}
 			
-			paymentDao.saveOrUpdate(trxObj);
+			
 			
 		} catch (Exception e) {
 			LOGGER.error("Error occured while updating transaction for transaction ::"
