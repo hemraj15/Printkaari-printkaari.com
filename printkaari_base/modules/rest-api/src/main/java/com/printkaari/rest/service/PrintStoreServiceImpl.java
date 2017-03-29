@@ -535,7 +535,10 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 			
 			for (CustomerFiles custFile :custFiles) {
 				
-				map.put(str, custFile.getFilaPath());
+				map.put(str, BASE_UPLOAD_PATH+File.separator+custFile.getFilaPath());
+				map.put("file path ", BASE_UPLOAD_PATH+File.separator+custFile.getFilaPath());
+				
+				LOGGER.info("file path "+custFile.getFilaPath());
 				
 				Integer pathNo=Integer.parseInt(str);
 				pathNo=pathNo+1;
@@ -547,9 +550,9 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			throw new FileDownloadException("Some error occurred while downloading file !",
-			        ErrorCodes.CUSTOMER_FILE_UPLOAD_ERROR);
+			        ErrorCodes.CUSTOMER_FILE_DOWNLOAD_ERROR);
 		}
-		return null;
+		return map;
 	}
 
 	
