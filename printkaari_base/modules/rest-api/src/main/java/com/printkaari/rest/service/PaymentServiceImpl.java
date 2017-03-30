@@ -192,7 +192,6 @@ public class PaymentServiceImpl implements PaymentService {
 			
 			if (trxObj !=null) {
 				
-				trxOrderId=trxObj.getTransactionOrderId();
 				LOGGER.info("transaction found ::"+trxObj.getTransactionNo());
 				trxObj.setBankCode(completTrxForm.getBankCode());
 				trxObj.setBankRefNum(completTrxForm.getBankRefNum());
@@ -214,7 +213,10 @@ public class PaymentServiceImpl implements PaymentService {
 				trxObj.setTrxMessage(completTrxForm.getTrxMessage());
 				trxObj.setNetAmountPaid(completTrxForm.getNetAmountPaid());
 			
+				paymentDao.saveOrUpdate(trxObj);		
+				trxOrderId=trxObj.getTransactionOrderId();
 				
+				LOGGER.info("Transaction updated successfully :: "+trxOrderId);
 			}
 			else {
 				
@@ -223,7 +225,7 @@ public class PaymentServiceImpl implements PaymentService {
 				        ErrorCodes.DATABASE_ERROR);
 			}
 			
-			paymentDao.saveOrUpdate(trxObj);
+			
 			
 		} catch (Exception e) {
 			LOGGER.error("Error occured while updating transaction for transaction ::"
@@ -231,6 +233,7 @@ public class PaymentServiceImpl implements PaymentService {
 			throw new DatabaseException("Error occured while fetching transaction from database",
 			        ErrorCodes.DATABASE_ERROR);
 		}
+		LOGGER.error("Returning transaction order id ::"+trxOrderId);
 		return trxOrderId;
 	}
 

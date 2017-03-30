@@ -226,7 +226,6 @@ public class CustomerController {
 		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
 		Map<String, Object> map = new HashMap<>();
 		Long fileId = null;
-		Long orderId = null;
 
 		Object data = null;
 		if (!isMultipart || fileType == null) {
@@ -248,7 +247,7 @@ public class CustomerController {
 				        anyOtherRequest, totalPages, bindingType, fileId,totalColorPage,quantity,colorPages);
 				map.put("fileId", fileId);
 				map.put("message",
-				        "order ahs been initiated succssfully please make payment to confirm order");
+				        "order has been initiated succssfully please make payment to confirm order");
 				data = map;
 				LOGGER.info("order initiated");
 			} catch (FileUploadException e) {
@@ -310,7 +309,7 @@ public class CustomerController {
 			map.put("orderId", orderId);
 			map.put("message", "order has been confirmed succssfully !!");
 			data = map;
-			LOGGER.info("order initiated");
+			LOGGER.info("order confirmed");
 		}
 
 		catch (Exception e) {
@@ -341,7 +340,7 @@ public class CustomerController {
 			map.put("orderId", orderId);
 			map.put("message", "order has been updated to " + ordStatus + " succssfully !!");
 			data = map;
-			LOGGER.info("order initiated");
+			LOGGER.info("order tatus changed");
 		}
 
 		catch (Exception e) {
@@ -444,7 +443,7 @@ public class CustomerController {
 	 * e) { LOGGER.error(e.getMessage(), e); data = new ErrorResponse(); ((ErrorResponse)
 	 * data).setErrorCode(ErrorCodes.SERVER_ERROR); ((ErrorResponse)
 	 * data).setMessage(e.getMessage());
-	 * response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); } } return data; }
+	 * response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); } }RPaymetC return data; }
 	 */
 	 
 	 @ResponseBody

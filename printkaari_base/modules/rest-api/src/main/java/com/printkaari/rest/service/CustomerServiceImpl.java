@@ -350,6 +350,8 @@ public class CustomerServiceImpl implements CustomerService {
 						orderId = ordDao.save(order);
 						map.put("orderId", orderId);
 						map.put("amountToBePaid", order.getPaidAmount());
+						map.put("Discount", discountAmount);
+						map.put("Amount", order.getPaidAmount() + discountAmount);
 
 						LOGGER.info("OrderDao Save Order --> initiated with Order Id " + orderId);
 
@@ -393,7 +395,8 @@ public class CustomerServiceImpl implements CustomerService {
 		String email = cust.getEmail();
 		mailHtmlMessage.setSubject("Your Order Status here  !! ");
 		mailHtmlMessage.setContent("<h2>Hello " + cust.getFirstName() + " " + cust.getLastName()
-		        + "!</h2><h3>Your Order Status is " + ordStatus + " you can track your order  "
+		        + "!</h2><h3>Your Order Number -" + orderId + " Status is " + ordStatus
+		        + " you can track your order  "
 		        + "<a href=www.printkaari.com/#!/auth/login > here  </a></h3>");
 		mailHtmlMessage.setToAddresses(new String[] { email });
 		try {
@@ -415,10 +418,11 @@ public class CustomerServiceImpl implements CustomerService {
 			String email = user.getEmailId();
 			MailMessage mailHtmlMessage = new MailMessage();
 			mailHtmlMessage.setSubject("Order Status mail !! ");
-			mailHtmlMessage.setContent("<h2>Hello " + user.getFirstName()
-			        + "</h2> <h3>One of customer " + cust.getFirstName() + " " + cust.getLastName()
-			        + " has updated/placed order track order  "
-			        + " <a href=www.printkaari.com/#!/auth/login >here</a> </h3>");
+			mailHtmlMessage.setContent(
+			        "<h2>Hello " + user.getFirstName() + "</h2> <h3>Customer " + cust.getFirstName()
+			                + " " + cust.getLastName() + "Customer ID :" + cust.getId()
+			                + " has updated/placed order  number - " + orderId + " track order  "
+			                + " <a href=www.printkaari.com/#!/auth/login >here</a> </h3>");
 			mailHtmlMessage.setToAddresses(new String[] { email });
 
 			mailService.sendHtmlMail(mailHtmlMessage);
@@ -453,25 +457,31 @@ public class CustomerServiceImpl implements CustomerService {
 		List<Order> orders = new ArrayList<>();
 		Long orderId = null;
 		TransacationOrder trxOrder = null;
+		Customer cust = null;
+		int counter = 0;
 		try {
 
 			trxOrder = getTrxOrderByTrxOrderId(trxOrderId);
+			orders = trxOrder != null ? trxOrder.getOrders() : orders;
 
-			if (trxOrder != null && successCode != null) {
+			Iterator<Order> itr = orders.iterator();
+			if (trxOrder != null && successCode != null
+			        && successCode.equalsIgnoreCase("success")) {
 
-				orders = trxOrder.getOrders();
 				trxOrder.setStatus(CommonStatus.ACTIVE.toString());
 				trxOrderDao.update(trxOrder);
-				Iterator<Order> itr = orders.iterator();
-				while (itr.hasNext()) {
-					Order ord = itr.next();
+
+				for (Order ord : orders) {
+
+					counter++;
+					// Order ord = itr.next();
 					orderId = ord.getId();
 
 					LOGGER.info("Order " + orderId + " found");
 					ord.setStatus(CommonStatus.ACTIVE.toString());
 					ordDao.update(ord);
 					LOGGER.info("Order " + orderId + " is confirmed ");
-					Customer cust = ord.getCustomer();
+					cust = ord.getCustomer();
 					if (cust != null) {
 						LOGGER.error("Customer associated with Order " + orderId
 						        + " is found >> sending mails");
@@ -484,16 +494,26 @@ public class CustomerServiceImpl implements CustomerService {
 					}
 
 				}
+			}
 
-			} else {
+			else {
 
 				LOGGER.info("transaction order not found for " + trxOrderId);
 				LOGGER.error("Error occured while updating order in database");
 				throw new TransactionOrderNotFoundException(
-				        "Error occured while updating order in database",
+				        "Error occured while updating order in database - trx status is not success ",
 				        ErrorCodes.TRX_ORDER_NOT_FOUND_ERROR);
 
 			}
+
+			if (orders.size() > 0) {
+
+				cust = orders.get(0).getCustomer();
+				sendPaymentConfirmationMailToAdmin(trxOrder.getId(), cust, successCode);
+				sendPaymentConfirmationMailToCustomer(trxOrder.getId(), cust, successCode);
+				LOGGER.error("Payment Confirmation Mail sent to customer and admin ");
+			}
+
 			/*
 			 * 
 			 * 
@@ -518,6 +538,52 @@ public class CustomerServiceImpl implements CustomerService {
 			throw new DatabaseException("Error occured while updating order in database",
 			        ErrorCodes.DATABASE_ERROR);
 		}
+
+	}
+
+	private void sendPaymentConfirmationMailToCustomer(Long trxOrderId, Customer cust,
+	        String successCode) throws MailNotSendException {
+		MailMessage mailHtmlMessage = new MailMessage();
+		String email = cust.getEmail();
+		mailHtmlMessage.setSubject("Payment Confirmation   !! ");
+		mailHtmlMessage.setContent("<h2>Hello " + cust.getFirstName() + " " + cust.getLastName()
+		        + "!</h2><h3>Payment status for transaction order id " + trxOrderId + " is "
+		        + successCode
+		        + " , keep this as reference for payment related query , for more details click  "
+		        + "<a href=www.printkaari.com/#!/auth/login > here  </a></h3>");
+		mailHtmlMessage.setToAddresses(new String[] { email });
+		try {
+			mailService.sendHtmlMail(mailHtmlMessage);
+		} catch (MailNotSentException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new MailNotSendException("Error occurred while sending Order Status Email!",
+			        ErrorCodes.EMAIL_ERROR);
+		}
+		LOGGER.info("HTML Email Sent to Customer");
+
+	}
+
+	private void sendPaymentConfirmationMailToAdmin(Long trxOrderId, Customer cust,
+	        String successCode) throws InstanceNotFoundException, MailNotSendException {
+		try {
+			User user = getAdminUser();
+			String email = user.getEmailId();
+			MailMessage mailHtmlMessage = new MailMessage();
+			mailHtmlMessage.setSubject("Payment status mail !! ");
+			mailHtmlMessage.setContent("<h2>Hello " + user.getFirstName() + "</h2> <h3>Customer "
+			        + cust.getFirstName() + " " + cust.getLastName() + "Customer ID :"
+			        + cust.getId() + " has made payment , payment status is " + successCode
+			        + " for transaction order id - " + trxOrderId + " track order  "
+			        + " <a href=www.printkaari.com/#!/auth/login >here</a> </h3>");
+			mailHtmlMessage.setToAddresses(new String[] { email });
+
+			mailService.sendHtmlMail(mailHtmlMessage);
+		} catch (MailNotSentException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new MailNotSendException("Error occurred while sending order Status Email!",
+			        ErrorCodes.EMAIL_ERROR);
+		}
+		LOGGER.info("HTML Email Sent to ADMIN");
 
 	}
 
@@ -570,7 +636,8 @@ public class CustomerServiceImpl implements CustomerService {
 				trxOrderDao.update(ord);
 				LOGGER.info("Status of Order " + trxOrderId + " is updated to  " + ordStatus);
 
-				Customer cust = !(CollectionUtils.isEmpty(ord.getOrders())) ? ord.getOrders().get(0).getCustomer() :null;
+				Customer cust = !(CollectionUtils.isEmpty(ord.getOrders()))
+				        ? ord.getOrders().get(0).getCustomer() : null;
 				if (cust != null) {
 					sendOrderStatusMailToCustomer(ord.getId(), ordStatus, cust);
 					sendOrderStatusMailToAdmin(ord.getId(), cust);
@@ -585,7 +652,6 @@ public class CustomerServiceImpl implements CustomerService {
 			        ErrorCodes.DATABASE_ERROR);
 		}
 
-		
 	}
 
 }
