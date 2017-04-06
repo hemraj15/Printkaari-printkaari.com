@@ -352,6 +352,10 @@ public class CustomerServiceImpl implements CustomerService {
 						map.put("amountToBePaid", order.getPaidAmount());
 						map.put("Discount", discountAmount);
 						map.put("Amount", order.getPaidAmount() + discountAmount);
+						map.put("productSample", product.getSampleFileId());
+						map.put("productCode", product.getProductCode());
+						map.put("productName", product.getName());
+						map.put("productId", product.getId());
 
 						LOGGER.info("OrderDao Save Order --> initiated with Order Id " + orderId);
 
