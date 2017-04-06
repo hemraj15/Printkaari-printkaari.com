@@ -16,6 +16,8 @@ public interface ProductCategaryDao extends GenericDao<ProductCatagory, Long> {
 
 	//List<ProductCategoryDto> fetchAllProductsByCategoryStatus(String status);
 
-	List<ProductCategoryDto> fetchAllProductsCategories(String status);
+	List<ProductCatagory> fetchAllProductsCategories(String status);
+
+	List<ProductCategoryDto> fetchAllProductsCategoriesByStatus(String status);
 
 }

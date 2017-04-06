@@ -16,6 +16,8 @@ public interface ProductService {
 
 	Object fetchAllProductsByCategoryId(Long catId)throws DatabaseException ,EmptyListException;
 
+	Object fetchAllProductsWithCatagory(String status) throws EmptyListException;
+
 	
 
 	//List<ProductCategoryDto> fetchAllProductsByCategoryIdNew(Long catId) throws DatabaseException, EmptyListException;

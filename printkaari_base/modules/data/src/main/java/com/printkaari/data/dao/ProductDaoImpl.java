@@ -3,7 +3,9 @@
  */
 package com.printkaari.data.dao;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
@@ -26,16 +28,16 @@ public class ProductDaoImpl extends GenericDaoImpl<Product, Long> implements Pro
 	
 	
 	@Override
-	public List<ProductDto> fetchAllProducts(String status) {
+	public List<Product> fetchAllProducts(String status) {
 		LOGGER.info("ProductDaoImpl fetchAllProducts <<<");
-		List<ProductDto> prodDtos=null;
+		List<Product> prodDtos=null;
 		LOGGER.info("ProductDaoImpl status : "+status);
 	
-		Criteria crit=getCriteria().add(Restrictions.eq("status", status))
-				      .setProjection(Projections.projectionList().add(Projections.property("id"),"id")
+		Criteria crit=getCriteria().add(Restrictions.eq("status", status));
+				     /* .setProjection(Projections.projectionList().add(Projections.property("id"),"id")
 				      .add(Projections.property("name"),"name")
 				      .add(Projections.property("status"),"status"))
-				      .setResultTransformer(Transformers.aliasToBean(ProductDto.class));
+				      .setResultTransformer(Transformers.aliasToBean(ProductDto.class));*/
 		prodDtos = crit.list();
 				
 		LOGGER.info("ProductDaoImpl prodDtos : "+prodDtos.size());
@@ -55,6 +57,16 @@ public class ProductDaoImpl extends GenericDaoImpl<Product, Long> implements Pro
 		prodDtos = crit.list();
 				
 		LOGGER.info("ProductDaoImpl prodDtos size : "+prodDtos.size());
+		/*for (ProductDto prod : prodDtos){
+			Product product=new Product();
+			product.setId(prod.getId());
+			product.setName(prod.getName());
+			product.setStatus(prod.getStatus());
+			
+			set.add(product);
+		
+		}
+		*/
 		return prodDtos;
 	}
 	@Override
@@ -63,6 +75,14 @@ public class ProductDaoImpl extends GenericDaoImpl<Product, Long> implements Pro
 		
 		Criteria crit=getCriteria().add(Restrictions.eq("productCode", productCode));
 		return crit;
+	}
+	@Override
+	public List<Product> fetchAllProductsWithCatagory(String status) {
+		List<Product> list=null;
+		
+		Criteria crit=getCriteria().add(Restrictions.eq("status", status));
+		list=crit.list();
+		return list;
 	}
 
 }

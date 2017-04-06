@@ -245,8 +245,14 @@ public class ErrorCodes {
 
 	public static final String	INVALID_NUMBER_OF_PAGES							= "invalid_number_of_pages";
 
-	public static final String ORDER_LIST_EMPTY_ERROR = "order_list_empty_error";
+	public static final String	ORDER_LIST_EMPTY_ERROR							= "order_list_empty_error";
 
-	public static final String TRX_ORDER_NOT_FOUND_ERROR = "transaction_order_not_found_error";
+	public static final String	TRX_ORDER_NOT_FOUND_ERROR						= "transaction_order_not_found_error";
+
+	public static final String	FILE_ID_NULL_ERROR								= "file_id_null_error";
+
+	public static final String	SAMPLE_FILE_UPLOAD_ERROR						= "sample_file_upload_error";
+
+	public static final String	PRODUCT_SAMPLE_FILE_NOT_MULTIPART				= "product_sample_file_not_multipart";
 
 }

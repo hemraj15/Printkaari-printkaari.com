@@ -3,6 +3,7 @@
  */
 package com.printkaari.rest.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.printkaari.data.dao.ProductCategaryDao;
 import com.printkaari.data.dao.ProductDao;
+import com.printkaari.data.dao.entity.Product;
 import com.printkaari.data.dto.ProductDto;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
@@ -36,9 +38,9 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Override
 	@Transactional
-	public List<ProductDto> fetchAllProducts(String status) throws DatabaseException, EmptyListException {
+	public List<Product> fetchAllProducts(String status) throws DatabaseException, EmptyListException {
 	
-		List<ProductDto> dtos=null;
+		List<Product> dtos=null;
 		try {
 			LOGGER.info("fetchingAllProducts <<");
 			dtos = prodDao.fetchAllProducts(status);
@@ -84,6 +86,23 @@ public class ProductServiceImpl implements ProductService {
 		LOGGER.info("fetchAllProductsByCategoryId <<");
 				
 		return prodDtos;
+	}
+
+
+	@Override
+	@Transactional
+	public Object fetchAllProductsWithCatagory(String status) throws EmptyListException {
+		List<Product> list=new ArrayList<>();
+		
+		try {
+			
+			list=prodDao.fetchAllProductsWithCatagory( status);
+		} catch (Exception e) {
+			LOGGER.error("Error occured while getting Product list through database", e);
+			throw new EmptyListException("Error occured while getting Product list through database",
+			        ErrorCodes.DATABASE_ERROR);
+		}
+		return list;
 	}
 	
 	

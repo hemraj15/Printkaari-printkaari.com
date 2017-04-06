@@ -238,7 +238,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	@Transactional
-	public Map<String, Object> placeOrder(Integer glossyColorPages, Integer nonGlossyColorPages,
+	public Map<String, Object> placeCollegeOrder(Integer glossyColorPages, Integer nonGlossyColorPages,
 	        String anyOtherRequest, Integer totalPages, String bindingType, Long fileId,
 	        Integer totalColorPages, Integer quantity, String colorPages)
 	        throws DatabaseException, InvalidProductException, MailNotSendException,
@@ -276,10 +276,10 @@ public class CustomerServiceImpl implements CustomerService {
 			LOGGER.info("Place Order Customer Service Impl");
 			LOGGER.info("Place Order for Bindig type ::" + bindingType);
 			if (bindingType.equalsIgnoreCase("hard")) {
-				productCode = ProductCodes.hard_binding.toString();
+				productCode = ProductCodes.HARD_BINDING.toString();
 				basePrice = CostConstant.hard_binnding_base_rate;
 			} else if (bindingType.equalsIgnoreCase("spiral")) {
-				productCode = ProductCodes.spiral_binding.toString();
+				productCode = ProductCodes.SPIRAL_BINDING.toString();
 				basePrice = CostConstant.spiral_binding_base_rate;
 			} else {
 
@@ -395,7 +395,7 @@ public class CustomerServiceImpl implements CustomerService {
 		String email = cust.getEmail();
 		mailHtmlMessage.setSubject("Your Order Status here  !! ");
 		mailHtmlMessage.setContent("<h2>Hello " + cust.getFirstName() + " " + cust.getLastName()
-		        + "!</h2><h3>Your Order Number -" + orderId + " Status is " + ordStatus
+		        + "!</h2><h3> Your Order Number - " + orderId + " Status is " + ordStatus
 		        + " you can track your order  "
 		        + "<a href=www.printkaari.com/#!/auth/login > here  </a></h3>");
 		mailHtmlMessage.setToAddresses(new String[] { email });
@@ -418,11 +418,11 @@ public class CustomerServiceImpl implements CustomerService {
 			String email = user.getEmailId();
 			MailMessage mailHtmlMessage = new MailMessage();
 			mailHtmlMessage.setSubject("Order Status mail !! ");
-			mailHtmlMessage.setContent(
-			        "<h2>Hello " + user.getFirstName() + "</h2> <h3>Customer " + cust.getFirstName()
-			                + " " + cust.getLastName() + "Customer ID :" + cust.getId()
-			                + " has updated/placed order  number - " + orderId + " track order  "
-			                + " <a href=www.printkaari.com/#!/auth/login >here</a> </h3>");
+			mailHtmlMessage.setContent("<h2>Hello " + user.getFirstName() + "</h2> <h3> Customer "
+			        + cust.getFirstName() + "  " + cust.getLastName() + " Customer ID : "
+			        + cust.getId() + " has updated/placed order  number - " + orderId
+			        + " track order  "
+			        + " <a href=www.printkaari.com/#!/auth/login >here</a> </h3>");
 			mailHtmlMessage.setToAddresses(new String[] { email });
 
 			mailService.sendHtmlMail(mailHtmlMessage);
@@ -547,7 +547,7 @@ public class CustomerServiceImpl implements CustomerService {
 		String email = cust.getEmail();
 		mailHtmlMessage.setSubject("Payment Confirmation   !! ");
 		mailHtmlMessage.setContent("<h2>Hello " + cust.getFirstName() + " " + cust.getLastName()
-		        + "!</h2><h3>Payment status for transaction order id " + trxOrderId + " is "
+		        + "! </h2><h3> Payment status for transaction order id " + trxOrderId + " is "
 		        + successCode
 		        + " , keep this as reference for payment related query , for more details click  "
 		        + "<a href=www.printkaari.com/#!/auth/login > here  </a></h3>");
@@ -570,8 +570,8 @@ public class CustomerServiceImpl implements CustomerService {
 			String email = user.getEmailId();
 			MailMessage mailHtmlMessage = new MailMessage();
 			mailHtmlMessage.setSubject("Payment status mail !! ");
-			mailHtmlMessage.setContent("<h2>Hello " + user.getFirstName() + "</h2> <h3>Customer "
-			        + cust.getFirstName() + " " + cust.getLastName() + "Customer ID :"
+			mailHtmlMessage.setContent("<h2> Hello " + user.getFirstName() + "</h2> <h3> Customer "
+			        + cust.getFirstName() + " " + cust.getLastName() + " Customer ID : "
 			        + cust.getId() + " has made payment , payment status is " + successCode
 			        + " for transaction order id - " + trxOrderId + " track order  "
 			        + " <a href=www.printkaari.com/#!/auth/login >here</a> </h3>");

@@ -30,7 +30,7 @@ public interface CustomerService {
 
 	Object fetchAllActiveOrdersByCustomerId(String string2, String string)throws DatabaseException;
 
-	Map<String,Object> placeOrder(Integer glossyColorPages, Integer nonGlossyColorPages, String anyOtherRequest, Integer totalPages, String bindingType,Long fileId, Integer totalColorPage, Integer quantity, String colorPages)throws DatabaseException,InvalidProductException, MailNotSendException, InvalidNumberOfPagesException, InvalidQuantiryException;
+	Map<String,Object> placeCollegeOrder(Integer glossyColorPages, Integer nonGlossyColorPages, String anyOtherRequest, Integer totalPages, String bindingType,Long fileId, Integer totalColorPage, Integer quantity, String colorPages)throws DatabaseException,InvalidProductException, MailNotSendException, InvalidNumberOfPagesException, InvalidQuantiryException;
 
 	void confirmOrder(Long orderId, String string)throws DatabaseException;
 

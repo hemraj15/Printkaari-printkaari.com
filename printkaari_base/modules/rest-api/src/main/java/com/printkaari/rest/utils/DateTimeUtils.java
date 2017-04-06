@@ -73,6 +73,11 @@ public class DateTimeUtils {
 		System.out.println(daysBetween(calendar.getTime(), new Date()));
 		System.out.println(daysBetween(new Date(), new Date()));
 		// System.out.println(getNextDate(new Date(), -1));
+		
+		System.out.println(" testing dates");
+		System.out.println("");
+		
+		//System.out.println("date :"+getDateFromString(SimpleDateFormat("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", true));
 
 	}
 
@@ -93,4 +98,5 @@ public class DateTimeUtils {
 		String dateStr = simpleDateFormat.format(date);
 		return dateStr;
 	}
+	
 }

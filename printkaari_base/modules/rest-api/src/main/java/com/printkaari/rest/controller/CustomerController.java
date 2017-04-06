@@ -242,13 +242,27 @@ public class CustomerController {
 
 				fileId = printStoreService.uploadFile(fileType, file);
 				LOGGER.info("file saved successfully with file id ::" + fileId);
-				LOGGER.info("Placing order >>");
-				map = customerService.placeOrder(glossyColorPages, nonGlossyColorPages,
-				        anyOtherRequest, totalPages, bindingType, fileId,totalColorPage,quantity,colorPages);
-				map.put("fileId", fileId);
-				map.put("message",
-				        "order has been initiated succssfully please make payment to confirm order");
-				data = map;
+				if(fileId !=null){
+					
+					LOGGER.info("Placing order >>");
+					map = customerService.placeCollegeOrder(glossyColorPages, nonGlossyColorPages,
+					        anyOtherRequest, totalPages, bindingType, fileId,totalColorPage,quantity,colorPages);
+					map.put("fileId", fileId);
+					map.put("message",
+					        "order has been initiated succssfully please make payment to confirm order");
+					data = map;
+				}
+				else{
+					
+					data = new ErrorResponse();
+					LOGGER.error("Could not uploaded File ");
+					((ErrorResponse) data).setErrorCode(ErrorCodes.FILE_ID_NULL_ERROR);
+					((ErrorResponse) data).setMessage("File uploaded returned Null File Id");
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+					
+				}
+				
+				
 				LOGGER.info("order initiated");
 			} catch (FileUploadException e) {
 				data = new ErrorResponse();

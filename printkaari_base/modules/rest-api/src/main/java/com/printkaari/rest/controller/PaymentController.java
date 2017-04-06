@@ -125,7 +125,7 @@ public class PaymentController {
 			map.put("transactioOrderId", trxOrderId);
 			map.put("transactioMessage", "payment successfull - transaction completed for transaction order id :"+trxOrderId);
 			
-			LOGGER.info("order id to comfirm ::"+trxOrderId);
+			LOGGER.info("transaction order id to confirm ::"+trxOrderId);
 			LOGGER.info("Placing order >>");
 		   custService.confirmOrder(trxOrderId,completTrxForm.getTrxStatus());
 	
