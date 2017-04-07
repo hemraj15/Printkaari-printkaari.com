@@ -255,4 +255,8 @@ public class ErrorCodes {
 
 	public static final String	PRODUCT_SAMPLE_FILE_NOT_MULTIPART				= "product_sample_file_not_multipart";
 
+	public static final String	INVALID_PAGENUM_OR_COUNT						= "invalid_pagenum_or_count";
+
+	public static final String	TRANSACTION_ORDER_LIST_EMPTY					= "transaction_order_list_empty";
+
 }

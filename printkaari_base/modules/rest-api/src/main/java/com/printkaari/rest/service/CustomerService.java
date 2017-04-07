@@ -38,4 +38,6 @@ public interface CustomerService {
 
 	void changetrxOrderStatus(String ordStatus, Long trxOrderId)throws DatabaseException;
 
+	void updateCustomerStatus(String status, Long customerId)throws DatabaseException, InstanceNotFoundException ,MailNotSendException;
+
 }

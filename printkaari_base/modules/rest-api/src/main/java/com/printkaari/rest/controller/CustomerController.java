@@ -490,4 +490,47 @@ public class CustomerController {
 
 			return data;
 		}
+	 
+	    @ResponseBody
+	    //@Secured
+	    @RequestMapping(value = "/{customerId}/update-status/{status}", method = RequestMethod.GET)
+		public Object updateCustomerStatus(@PathVariable String status,	@PathVariable Long customerId ,	        
+		        HttpServletRequest request, HttpServletResponse response) {
+			LOGGER.info(">> fetchAllCustomerByModifyDate");
+			Object data = null;
+			Map<String,Object> map=new HashMap<>();
+			try {
+			
+				 customerService.updateCustomerStatus(status,customerId);
+				 map.put("message", "Costomer "+customerId +" status changed to "+status);
+				 data=map;
+			} catch (InstanceNotFoundException e) {
+				data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.USER_NOT_FOUND_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+			}catch (MailNotSendException e) {
+				data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.MAIL_NOT_SENT_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			}catch (DatabaseException e) {
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+
+			catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+			return data;
+		}
+	 
 }

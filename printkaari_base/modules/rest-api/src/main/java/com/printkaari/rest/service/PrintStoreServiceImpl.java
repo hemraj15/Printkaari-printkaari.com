@@ -44,7 +44,7 @@ import com.printkaari.data.dao.entity.Country;
 import com.printkaari.data.dao.entity.Customer;
 import com.printkaari.data.dao.entity.CustomerFiles;
 import com.printkaari.data.dao.entity.Employee;
-import com.printkaari.data.dao.entity.Order;
+import com.printkaari.data.dao.entity.CustOrder;
 import com.printkaari.data.dao.entity.Product;
 import com.printkaari.data.dao.entity.ProductSamples;
 import com.printkaari.data.dao.entity.Role;
@@ -538,7 +538,7 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 	public Map<String, Object> downloadCollegeProjectFiles(Long order_id)
 	        throws DatabaseException, FileDownloadException {
 
-		Order ord = null;
+		CustOrder ord = null;
 		Map<String, Object> map = new LinkedHashMap<>();
 		Set<CustomerFiles> custFiles = new HashSet<>();
 		String fileLocation = null;
