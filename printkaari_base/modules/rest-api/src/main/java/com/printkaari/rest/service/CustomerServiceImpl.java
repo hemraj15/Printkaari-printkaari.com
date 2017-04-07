@@ -1,11 +1,13 @@
 package com.printkaari.rest.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -34,6 +36,7 @@ import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.message.exception.MailNotSentException;
 import com.printkaari.message.model.MailMessage;
 import com.printkaari.message.service.MailService;
+import com.printkaari.message.utils.ReadConfigurationFile;
 import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.CostConstant;
 import com.printkaari.rest.constant.ErrorCodes;
@@ -52,7 +55,10 @@ import com.printkaari.rest.exception.UserNotFoundException;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
-	private Logger					LOGGER	= LoggerFactory.getLogger(CustomerServiceImpl.class);
+	private Logger					LOGGER				= LoggerFactory
+	        .getLogger(CustomerServiceImpl.class);
+
+	private static String			BASE_UPLOAD_PATH	= "";
 
 	@Autowired
 	private UserDao					userDao;
@@ -75,6 +81,11 @@ public class CustomerServiceImpl implements CustomerService {
 	@Autowired
 	private TransacationOrderDao	trxOrderDao;
 
+	static {
+		Properties props = ReadConfigurationFile.getProperties("file-upload.properties");
+		BASE_UPLOAD_PATH = props.getProperty("base_upload_path");
+	}
+
 	@Override
 	@Transactional
 	public List<CustomerDto> fetchAllCustomerByModifyDate(Integer records)
@@ -87,9 +98,9 @@ public class CustomerServiceImpl implements CustomerService {
 			        CommonStatus.ACTIVE.toString());
 
 		} catch (Exception e) {
-			LOGGER.error("Error occured while getting candidate list through database", e);
+			LOGGER.error("Error occured while getting fetchAllCustomerByModifyDate list through database", e);
 			throw new DatabaseException(
-			        "Error occured while getting candidate list through database",
+			        "Error occured while getting fetchAllCustomerByModifyDate through database",
 			        ErrorCodes.DATABASE_ERROR);
 		}
 		return customerDtos;
@@ -117,7 +128,7 @@ public class CustomerServiceImpl implements CustomerService {
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("Error occured while getting candidate list through database", e);
+			LOGGER.error("Error occured while gettingfetchAllOrdersByCustomerId through database", e);
 			e.printStackTrace();
 			throw new DatabaseException(
 			        "Error occured while getting all orders for a customer through database",
@@ -226,7 +237,7 @@ public class CustomerServiceImpl implements CustomerService {
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("Error occured while getting candidate list through database", e);
+			LOGGER.error("Error occured while fetchAllActiveOrdersByCustomerId through database", e);
 			e.printStackTrace();
 			throw new DatabaseException(
 			        "Error occured while getting all orders for a customer through database",
@@ -238,11 +249,11 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	@Transactional
-	public Map<String, Object> placeCollegeOrder(Integer glossyColorPages, Integer nonGlossyColorPages,
-	        String anyOtherRequest, Integer totalPages, String bindingType, Long fileId,
-	        Integer totalColorPages, Integer quantity, String colorPages)
-	        throws DatabaseException, InvalidProductException, MailNotSendException,
-	        InvalidNumberOfPagesException, InvalidQuantiryException {
+	public Map<String, Object> placeCollegeOrder(Integer glossyColorPages,
+	        Integer nonGlossyColorPages, String anyOtherRequest, Integer totalPages,
+	        String bindingType, Long fileId, Integer totalColorPages, Integer quantity,
+	        String colorPages) throws DatabaseException, InvalidProductException,
+	        MailNotSendException, InvalidNumberOfPagesException, InvalidQuantiryException {
 		Long orderId = null;
 		String productCode = null;
 		Order order = new Order();
@@ -298,8 +309,8 @@ public class CustomerServiceImpl implements CustomerService {
 				cust = getCustomerByEmailId(user.getEmailId().trim());
 				if (cust != null) {
 
-					LOGGER.info("Initiate order customer is " + cust.getFirstName() + " user id  "
-					        + cust.getId());
+					LOGGER.info("Initiate order customer is " + cust.getFirstName()
+					        + " customer id  " + cust.getId());
 					Double totalPrice = basePrice
 					        + (glossyColorPages * CostConstant.color_glossy_page)
 					        + (nonGlossyColorPages * CostConstant.color_non_glossy_page)
@@ -317,6 +328,13 @@ public class CustomerServiceImpl implements CustomerService {
 						        ErrorCodes.PRODUCT_NOT_FOUND_IN_DATABASE);
 
 					} else {
+						LOGGER.info(
+						        "Product found for product code :: " + product.getProductCode());
+						LOGGER.info("Product id :: " + product.getId());
+						LOGGER.info(
+						        "Product sample file id  :: " + product.getSampleFileId().getId());
+						LOGGER.info("Product sample file path  :: "
+						        + product.getSampleFileId().getFilePath());
 
 						discountAmount = totalPrice * (discount / 100.0);
 						System.out.println("discount  :" + discount);
@@ -352,7 +370,8 @@ public class CustomerServiceImpl implements CustomerService {
 						map.put("amountToBePaid", order.getPaidAmount());
 						map.put("Discount", discountAmount);
 						map.put("Amount", order.getPaidAmount() + discountAmount);
-						map.put("productSample", product.getSampleFileId());
+						map.put("productSample", BASE_UPLOAD_PATH + File.separator
+						        + product.getSampleFileId().getFilePath());
 						map.put("productCode", product.getProductCode());
 						map.put("productName", product.getName());
 						map.put("productId", product.getId());
@@ -373,7 +392,7 @@ public class CustomerServiceImpl implements CustomerService {
 				LOGGER.info("User is null or is not a customer  while placing order ");
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error occured while getting candidate list through database", e);
+			LOGGER.error("Error occured while executing placeCollegeOrder in  database", e);
 			e.printStackTrace();
 			throw new DatabaseException(
 			        "Error occured while getting all orders for a customer through database",
@@ -620,7 +639,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error occured while getting candidate list through database", e);
+			LOGGER.error("Error occured changeOrderStatus through database", e);
 			e.printStackTrace();
 			throw new DatabaseException(
 			        "Error occured while getting all orders for a customer through database",
@@ -649,7 +668,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error occured while getting candidate list through database", e);
+			LOGGER.error("Error occured while changetrxOrderStatus through database", e);
 			e.printStackTrace();
 			throw new DatabaseException(
 			        "Error occured while getting all orders for a customer through database",

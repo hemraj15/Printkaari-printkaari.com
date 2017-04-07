@@ -465,12 +465,12 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 					String custFormatterName = cust.getFirstName().trim();
 					String custFileRelativePath = "printkaari_files" + File.separator
 					        + "customer_data" + File.separator + "customer_" + cust.getId();
-					String outPutFileName = custFileName.substring(0, custFileName.lastIndexOf("."))
-					        + "_" + new Date() + "-" + new Date().getTime()
+					String outPutFileName = custFileName; /*.substring(0, custFileName.lastIndexOf("."))+
+					        "-" + new Date().getTime()
 					        + custFileName.substring(custFileName.lastIndexOf("."));
-
-					LOGGER.debug("companyRelativePath : " + custFileRelativePath);
-					LOGGER.debug("logoOutputFileName : " + outPutFileName);
+*/
+					LOGGER.debug("custFileRelativePath : " + custFileRelativePath);
+					LOGGER.debug("outPutFileName : " + outPutFileName);
 
 					FileUtils.uploadFile(BASE_UPLOAD_PATH + File.separator + custFileRelativePath
 					        + File.separator, outPutFileName, file);

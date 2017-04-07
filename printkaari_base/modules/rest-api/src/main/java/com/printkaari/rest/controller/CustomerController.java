@@ -53,10 +53,10 @@ public class CustomerController {
 	public Object fetchAllCustomerByModifyDate(
 	        @RequestParam(value = "records", required = true) Integer records,
 	        HttpServletRequest request, HttpServletResponse response) {
-		LOGGER.info(">> fetchAllCandidatesByModifiedDate");
+		LOGGER.info(">> fetchAllCustomerByModifyDate");
 		Object data = null;
 		try {
-			LOGGER.info("fetchCandidates <<");
+		
 			data = customerService.fetchAllCustomerByModifyDate(records);
 		} catch (DatabaseException e) {
 			LOGGER.error(e.getMessage(), e);
