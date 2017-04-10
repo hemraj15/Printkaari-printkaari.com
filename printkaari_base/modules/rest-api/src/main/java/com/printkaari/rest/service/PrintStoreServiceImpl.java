@@ -599,7 +599,7 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 				String sampleFileName = file.getOriginalFilename();
 				String sampleFileFormatterName = prod.getName().trim();
 				String sampleFileRelativePath = "printkaari_files" + File.separator + "product_data"
-				        + File.separator + "product " + prod.getId();
+				        + File.separator + "product-" + prod.getId();
 				String outPutFileName = sampleFileName ;
 						/*.substring(0, sampleFileName.lastIndexOf("."))
 				        + "_" + dateStr + sampleFileName.substring(sampleFileName.lastIndexOf("."));*/
