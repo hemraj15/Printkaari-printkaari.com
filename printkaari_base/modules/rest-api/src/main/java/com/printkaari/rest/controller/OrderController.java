@@ -185,7 +185,7 @@ public class OrderController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/all-orders-by-status", method = RequestMethod.POST)
+	@RequestMapping(value = "/all-trxOrders-by-status", method = RequestMethod.POST)
 	public Object fetchAllTrxOrdersByStatus(@RequestParam(value = "pageno", defaultValue = "1") int pageNum,
 	        @RequestParam(value = "count", defaultValue = "10") int count,
 	        @RequestParam(value = "sortfield", defaultValue = "dateUpdated") String sortField,
