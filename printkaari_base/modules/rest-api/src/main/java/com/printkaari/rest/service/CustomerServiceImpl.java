@@ -317,7 +317,12 @@ public class CustomerServiceImpl implements CustomerService {
 					        + (blackPage * CostConstant.simple_black_page)
 					        + ((totalColorPages - (glossyColorPages + nonGlossyColorPages))
 					                * CostConstant.color_page_simple);
+					
+					System.out.println("totalPrice before round off :" + totalPrice);
+					totalPrice=Math.round(totalPrice*100)/100D;
+					totalPrice=totalPrice*quantity;
 
+					System.out.println("totalPrice after round off :" + totalPrice);
 					product = fetchProductCodeFromDB(productCode);
 
 					if (product == null) {
@@ -335,10 +340,11 @@ public class CustomerServiceImpl implements CustomerService {
 						        "Product sample file id  :: " + product.getSampleFileId().getId());
 						LOGGER.info("Product sample file path  :: "
 						        + product.getSampleFileId().getFilePath());
-
-						discountAmount = totalPrice * (discount / 100.0);
+						discountAmount=totalPrice * (discount / 100.0);
+						System.out.println("discount amount before round off :" + discountAmount);
+						discountAmount = Math.round(discountAmount*100)/100D;
 						System.out.println("discount  :" + discount);
-						System.out.println("discount amount :" + discountAmount);
+						System.out.println("discount amount after round off :" + discountAmount);
 						amountToBePaid = totalPrice - discountAmount;
 						System.out.println("Amount to be paid :" + amountToBePaid);
 
@@ -375,6 +381,7 @@ public class CustomerServiceImpl implements CustomerService {
 						map.put("productCode", product.getProductCode());
 						map.put("productName", product.getName());
 						map.put("productId", product.getId());
+						map.put("quantity", quantity);
 
 						LOGGER.info("OrderDao Save CustOrder --> initiated with CustOrder Id " + orderId);
 
