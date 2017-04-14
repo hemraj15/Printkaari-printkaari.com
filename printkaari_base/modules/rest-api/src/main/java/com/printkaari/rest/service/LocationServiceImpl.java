@@ -98,8 +98,8 @@ public class LocationServiceImpl implements LocationService {
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("Error occured while getting job list through database", e);
-			throw new DatabaseException("Error occured while getting job list through database",
+			LOGGER.error("Error occured while getting country list through database", e);
+			throw new DatabaseException("Error occured while getting country list through database",
 			        ErrorCodes.DATABASE_ERROR);
 		}
 
