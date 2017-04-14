@@ -319,8 +319,9 @@ public class CustomerServiceImpl implements CustomerService {
 					                * CostConstant.color_page_simple);
 					
 					System.out.println("totalPrice before round off :" + totalPrice);
-					totalPrice=Math.round(totalPrice*100)/100D;
 					totalPrice=totalPrice*quantity;
+					totalPrice=Math.round(totalPrice*100)/100D;
+					
 
 					System.out.println("totalPrice after round off :" + totalPrice);
 					product = fetchProductCodeFromDB(productCode);
