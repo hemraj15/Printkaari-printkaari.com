@@ -9,7 +9,7 @@ package com.printkaari.rest.constant;
  */
 public class CostConstant {
 	
-	public static final Double simple_black_page=3.0;
+	public static final Double simple_black_page=2.5;
 	public static final Double color_glossy_page=12.0;
 	public static final Double color_non_glossy_page=8.0;
 	public static final Double color_page_simple=8.0;

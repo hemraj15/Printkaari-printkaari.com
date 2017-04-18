@@ -266,6 +266,7 @@ public class CustomerServiceImpl implements CustomerService {
 		Integer discount = 0;
 		Map<String, Object> map = new HashMap<>();
 		Integer blackPage = totalPages - totalColorPages;
+		Integer otherColorPages= totalColorPages-(glossyColorPages+nonGlossyColorPages)>0?totalColorPages-(glossyColorPages+nonGlossyColorPages):0;
 		try {
 
 			if (totalPages < totalColorPages) {
@@ -276,9 +277,9 @@ public class CustomerServiceImpl implements CustomerService {
 			}
 
 			if (quantity < 2 && quantity >= 0) {
-				discount = 5;
+				discount = 15;
 			} else if (quantity >= 2) {
-				discount = 20;
+				discount = 25;
 			} else {
 
 				throw new InvalidQuantiryException("Invalid print quantity supplied ",
@@ -315,8 +316,7 @@ public class CustomerServiceImpl implements CustomerService {
 					        + (glossyColorPages * CostConstant.color_glossy_page)
 					        + (nonGlossyColorPages * CostConstant.color_non_glossy_page)
 					        + (blackPage * CostConstant.simple_black_page)
-					        + ((totalColorPages - (glossyColorPages + nonGlossyColorPages))
-					                * CostConstant.color_page_simple);
+					        + (otherColorPages* CostConstant.color_page_simple);
 					
 					System.out.println("totalPrice before round off :" + totalPrice);
 					totalPrice=totalPrice*quantity;
