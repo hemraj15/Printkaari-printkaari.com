@@ -4,10 +4,13 @@
 package com.printkaari.rest.service;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -17,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.printkaari.auth.service.SystemRoles;
@@ -27,7 +31,10 @@ import com.printkaari.data.dao.CustomerFileDao;
 import com.printkaari.data.dao.EmployeeDao;
 import com.printkaari.data.dao.OrderDao;
 import com.printkaari.data.dao.PrintStoreDao;
+import com.printkaari.data.dao.ProductDao;
+import com.printkaari.data.dao.ProductSampleDao;
 import com.printkaari.data.dao.RoleDao;
+import com.printkaari.data.dao.SampleFileRecordDao;
 import com.printkaari.data.dao.StateDao;
 import com.printkaari.data.dao.UrlTypeDao;
 import com.printkaari.data.dao.UserDao;
@@ -37,8 +44,11 @@ import com.printkaari.data.dao.entity.Country;
 import com.printkaari.data.dao.entity.Customer;
 import com.printkaari.data.dao.entity.CustomerFiles;
 import com.printkaari.data.dao.entity.Employee;
-import com.printkaari.data.dao.entity.Order;
+import com.printkaari.data.dao.entity.CustOrder;
+import com.printkaari.data.dao.entity.Product;
+import com.printkaari.data.dao.entity.ProductSamples;
 import com.printkaari.data.dao.entity.Role;
+import com.printkaari.data.dao.entity.SampleFileRecord;
 import com.printkaari.data.dao.entity.State;
 import com.printkaari.data.dao.entity.User;
 import com.printkaari.data.exception.InstanceNotFoundException;
@@ -52,6 +62,7 @@ import com.printkaari.rest.exception.FileDownloadException;
 import com.printkaari.rest.exception.FileUploadException;
 import com.printkaari.rest.exception.InvalidFieldLengthException;
 import com.printkaari.rest.exception.InvalidUserTypeException;
+import com.printkaari.rest.exception.ProductNotFoundException;
 import com.printkaari.rest.exception.SignUpException;
 import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.SignUpStep2Form;
@@ -67,43 +78,52 @@ import com.printkaari.rest.utils.ValidationUtils;
 @Service
 public class PrintStoreServiceImpl implements PrintStoreService {
 
-	private static String	BASE_UPLOAD_PATH	= "";
+	private static String		BASE_UPLOAD_PATH	= "";
 
-	private Logger			LOGGER				= LoggerFactory
+	private Logger				LOGGER				= LoggerFactory
 	        .getLogger(PrintStoreServiceImpl.class);
 
 	@Autowired
-	private UserDao			userDao;
+	private UserDao				userDao;
 
 	@Autowired
-	private UrlTypeDao		urlTypeDao;
+	private UrlTypeDao			urlTypeDao;
 
 	@Autowired
-	private RoleDao			roleDao;
+	private RoleDao				roleDao;
 
 	@Autowired
-	private CityDao			cityDao;
+	private CityDao				cityDao;
 
 	@Autowired
-	private StateDao		stateDao;
+	private StateDao			stateDao;
 
 	@Autowired
-	private CountryDao		countryDao;
+	private CountryDao			countryDao;
 
 	@Autowired
-	private EmployeeDao		empDao;
+	private EmployeeDao			empDao;
 
 	@Autowired
-	private CustomerDao		custDao;
+	private CustomerDao			custDao;
 
 	@Autowired
-	private CustomerService	customerService;
+	private CustomerService		customerService;
 
 	@Autowired
-	private CustomerFileDao	custFileDao;
-	
+	private CustomerFileDao		custFileDao;
+
 	@Autowired
-	private OrderDao ordDao;
+	private OrderDao			ordDao;
+
+	@Autowired
+	private ProductDao			prodDao;
+
+	@Autowired
+	private SampleFileRecordDao	sapleFileRecDao;
+
+	@Autowired
+	private ProductSampleDao	sampleDao;
 
 	static {
 		Properties props = ReadConfigurationFile.getProperties("file-upload.properties");
@@ -173,26 +193,24 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 			// Updating User
 			Set<Role> roles = new HashSet<>();
-			
-			if(user.getUserType().equals(UserTypes.ADMIN.toString())){
+
+			if (user.getUserType().equals(UserTypes.ADMIN.toString())) {
 				roles.add((Role) roleDao
 				        .getByCriteria(roleDao.getFindByNameCriteria(SystemRoles.ADMIN)));
 
-			}
-			else if (user.getUserType().equals(UserTypes.EMPLOYEE.toString())) {
+			} else if (user.getUserType().equals(UserTypes.EMPLOYEE.toString())) {
 				roles.add((Role) roleDao
 				        .getByCriteria(roleDao.getFindByNameCriteria(SystemRoles.EMPLOYEE)));
-			}
-			else if(user.getUserType().equals(UserTypes.HR.toString())){
-				
+			} else if (user.getUserType().equals(UserTypes.HR.toString())) {
+
 				roles.add((Role) roleDao
 				        .getByCriteria(roleDao.getFindByNameCriteria(SystemRoles.HR)));
+			} else {
+
+				throw new InvalidUserTypeException("Invalid User Type in the request ",
+				        ErrorCodes.INVALID_USER_TYPE_ERROR);
 			}
-			else{
-				
-				throw new InvalidUserTypeException("Invalid User Type in the request ",ErrorCodes.INVALID_USER_TYPE_ERROR);
-			}
-			
+
 			/*
 			 * roles.add((Role) roleDao
 			 * .getByCriteria(roleDao.getFindByNameCriteria(SystemRoles.ADMIN)));
@@ -436,8 +454,8 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 			user = (User) customerService.getLoggedinUser();
 
 			if (user != null && user.getUserType().equals(UserTypes.CUSTOMER.toString())) {
-                 LOGGER.info("user found which is customer");
-				
+				LOGGER.info("user found which is customer");
+
 				cust = (Customer) custDao
 				        .getByCriteria(custDao.getFindByEmailCriteria(user.getEmailId()));
 
@@ -447,10 +465,12 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 					String custFormatterName = cust.getFirstName().trim();
 					String custFileRelativePath = "printkaari_files" + File.separator
 					        + "customer_data" + File.separator + "customer_" + cust.getId();
-					String outPutFileName = custFileName.substring(0, custFileName.lastIndexOf("."))+"_"+new Date().getTime()+custFileName.substring(custFileName.lastIndexOf("."));
-
-					LOGGER.debug("companyRelativePath : " + custFileRelativePath);
-					LOGGER.debug("logoOutputFileName : " + outPutFileName);
+					String outPutFileName = custFileName; /*.substring(0, custFileName.lastIndexOf("."))+
+					        "-" + new Date().getTime()
+					        + custFileName.substring(custFileName.lastIndexOf("."));
+*/
+					LOGGER.debug("custFileRelativePath : " + custFileRelativePath);
+					LOGGER.debug("outPutFileName : " + outPutFileName);
 
 					FileUtils.uploadFile(BASE_UPLOAD_PATH + File.separator + custFileRelativePath
 					        + File.separator, outPutFileName, file);
@@ -517,36 +537,35 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 	@Transactional
 	public Map<String, Object> downloadCollegeProjectFiles(Long order_id)
 	        throws DatabaseException, FileDownloadException {
-		
-		Order ord=null;
-		Map<String, Object> map=new LinkedHashMap<>();
-		Set<CustomerFiles> custFiles=new HashSet<>();
-		String fileLocation=null;
-		
-		CustomerFiles file=null;
-		
-		String str="1";
-		
+
+		CustOrder ord = null;
+		Map<String, Object> map = new LinkedHashMap<>();
+		Set<CustomerFiles> custFiles = new HashSet<>();
+		String fileLocation = null;
+
+		CustomerFiles file = null;
+
+		String str = "1";
+
 		try {
-			
-			ord=ordDao.find(order_id);
-			
-			custFiles=ord.getFileId();			
-			
-			for (CustomerFiles custFile :custFiles) {
-				
-				map.put(str, BASE_UPLOAD_PATH+File.separator+custFile.getFilaPath());
-				map.put("file path ", BASE_UPLOAD_PATH+File.separator+custFile.getFilaPath());
-				
-				LOGGER.info("file path "+custFile.getFilaPath());
-				
-				Integer pathNo=Integer.parseInt(str);
-				pathNo=pathNo+1;
+
+			ord = ordDao.find(order_id);
+
+			custFiles = ord.getFileId();
+
+			for (CustomerFiles custFile : custFiles) {
+
+				map.put(str, BASE_UPLOAD_PATH + File.separator + custFile.getFilaPath());
+				map.put("file path ", BASE_UPLOAD_PATH + File.separator + custFile.getFilaPath());
+
+				LOGGER.info("file path " + custFile.getFilaPath());
+
+				Integer pathNo = Integer.parseInt(str);
+				pathNo = pathNo + 1;
 				pathNo.toString();
-				
-			}			
-			
-			
+
+			}
+
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			throw new FileDownloadException("Some error occurred while downloading file !",
@@ -555,5 +574,97 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 		return map;
 	}
 
-	
+	@Override
+	@Transactional
+	public Map<String, Object> uploadProductSampleFile(String fileType, MultipartFile file, Long productId)
+	        throws FileUploadException, ProductNotFoundException {
+		Product prod = null;
+		Map<String, Object> map = new HashMap<>();
+		Long sampleFileId = null;
+		try {
+			DateTimeFormatter format1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			//
+			System.out.println("date :" + format1);
+
+			LocalDateTime date = LocalDateTime.now();
+
+			System.out.println("Date before format  :" + date);
+			String dateStr = date.format(format1);
+			LOGGER.debug("Loading Product for id  : " + productId);
+			prod = prodDao.find(productId);
+
+			if (prod != null) {
+        
+				
+				String sampleFileName = file.getOriginalFilename();
+				String sampleFileFormatterName = prod.getName().trim();
+				String sampleFileRelativePath = "printkaari_files" + File.separator + "product_data"
+				        + File.separator + "product-" + prod.getId();
+				String outPutFileName = sampleFileName ;
+						/*.substring(0, sampleFileName.lastIndexOf("."))
+				        + "_" + dateStr + sampleFileName.substring(sampleFileName.lastIndexOf("."));*/
+
+				LOGGER.debug("sample relative path : " + sampleFileRelativePath);
+				LOGGER.debug("sample OutputFileName : " + outPutFileName);
+
+				FileUtils.uploadFile(
+				        BASE_UPLOAD_PATH + File.separator + sampleFileRelativePath + File.separator,
+				        outPutFileName, file);
+				String filePath = sampleFileRelativePath + File.separator + outPutFileName;
+
+				SampleFileRecord sampleFile = new SampleFileRecord();
+
+				sampleFile.setName(prod.getName());
+				sampleFile.setStatus("ACTIVE");
+				sampleFile.setFilePath(filePath);
+
+				sampleFileId = sapleFileRecDao.save(sampleFile);
+				sampleFile = sapleFileRecDao.find(sampleFileId);
+				
+				prod.setSampleFileId(sampleFile);
+				prodDao.saveOrUpdate(prod);
+ 
+				List<ProductSamples> sampleList = null;
+				sampleList = sampleDao.getSampleRecordByProductId(prod.getId());
+
+				if (!CollectionUtils.isEmpty(sampleList) && sampleList.size() == 1) {
+					ProductSamples sample = null;
+					sample = sampleList.get(0);
+					sample.setSampleFileId(sampleFile);
+					sampleDao.saveOrUpdate(sample);
+				} else if (!CollectionUtils.isEmpty(sampleList) && sampleList.size() > 1) {
+
+					for (ProductSamples sample1 : sampleList) {
+
+						sample1.setSampleFileId(sampleFile);
+						sampleDao.saveOrUpdate(sample1);
+					}
+
+				} else {
+					ProductSamples sample = new ProductSamples();
+					sample.setName(prod.getName());
+					sample.setProduct(prod);
+					sample.setSampleFileId(sampleFile);
+					Long sampleId = sampleDao.save(sample);
+				}
+
+			} else {
+
+				LOGGER.info("Product Not found for " + productId);
+
+				throw new ProductNotFoundException(
+				        "Some error occured while getting product from DB for sampel file upload",
+				        ErrorCodes.PRODUCT_NOT_FOUND_IN_DATABASE);
+
+			}
+
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new FileUploadException("Some error occurred while uploading sample file !",
+			        ErrorCodes.SAMPLE_FILE_UPLOAD_ERROR);
+		}
+
+		return map;
+	}
+
 }

@@ -3,7 +3,9 @@
  */
 package com.printkaari.rest.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.printkaari.data.dao.ProductCategaryDao;
 import com.printkaari.data.dao.ProductDao;
+import com.printkaari.data.dao.entity.Product;
 import com.printkaari.data.dto.ProductDto;
+import com.printkaari.message.utils.ReadConfigurationFile;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.EmptyListException;
@@ -26,6 +30,7 @@ import com.printkaari.rest.exception.EmptyListException;
 public class ProductServiceImpl implements ProductService {
 
 	private Logger				LOGGER	= LoggerFactory.getLogger(ProductServiceImpl.class);
+	private static String		BASE_UPLOAD_PATH	= "";
 	
 	@Autowired
 	private ProductDao prodDao;
@@ -33,12 +38,16 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired
 	private ProductCategaryDao prodCatDao;
 	
+	static {
+		Properties props = ReadConfigurationFile.getProperties("file-upload.properties");
+		BASE_UPLOAD_PATH = props.getProperty("base_upload_path");
+	}
 	
 	@Override
 	@Transactional
-	public List<ProductDto> fetchAllProducts(String status) throws DatabaseException, EmptyListException {
+	public List<Product> fetchAllProducts(String status) throws DatabaseException, EmptyListException {
 	
-		List<ProductDto> dtos=null;
+		List<Product> dtos=null;
 		try {
 			LOGGER.info("fetchingAllProducts <<");
 			dtos = prodDao.fetchAllProducts(status);
@@ -84,6 +93,23 @@ public class ProductServiceImpl implements ProductService {
 		LOGGER.info("fetchAllProductsByCategoryId <<");
 				
 		return prodDtos;
+	}
+
+
+	@Override
+	@Transactional
+	public Object fetchAllProductsWithCatagory(String status) throws EmptyListException {
+		List<Product> list=new ArrayList<>();
+		
+		try {
+			
+			list=prodDao.fetchAllProductsWithCatagory( status);
+		} catch (Exception e) {
+			LOGGER.error("Error occured while getting Product list through database", e);
+			throw new EmptyListException("Error occured while getting Product list through database",
+			        ErrorCodes.DATABASE_ERROR);
+		}
+		return list;
 	}
 	
 	

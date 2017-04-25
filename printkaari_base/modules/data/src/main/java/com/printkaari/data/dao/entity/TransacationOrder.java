@@ -24,25 +24,25 @@ public class TransacationOrder extends PrintkaariBaseEntity implements Serializa
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private List<Order> orders=new ArrayList<>();
+	private List<CustOrder> custOrders=new ArrayList<>();
 	
 	private Double orderValue;
 	
 	private Double discAmount;
 
 	/**
-	 * @return the orders
+	 * @return the custOrders
 	 */
-	@OneToMany(cascade = CascadeType.ALL,targetEntity=Order.class, fetch=FetchType.EAGER)
-	public List<Order> getOrders() {
-		return orders;
+	@OneToMany(cascade = CascadeType.ALL,targetEntity=CustOrder.class, fetch=FetchType.EAGER)
+	public List<CustOrder> getOrders() {
+		return custOrders;
 	}
 
 	/**
-	 * @param orders the orders to set
+	 * @param custOrders the custOrders to set
 	 */
-	public void setOrders(List<Order> orders) {
-		this.orders = orders;
+	public void setOrders(List<CustOrder> custOrders) {
+		this.custOrders = custOrders;
 	}
 
 	/**

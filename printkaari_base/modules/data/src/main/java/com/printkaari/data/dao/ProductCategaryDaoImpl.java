@@ -25,7 +25,7 @@ public class ProductCategaryDaoImpl extends GenericDaoImpl<ProductCatagory, Long
 	private Logger				LOGGER	= LoggerFactory.getLogger(ProductCategaryDaoImpl.class);
 	
 	@Override
-	public List<ProductCategoryDto> fetchAllProductsCategories(String status) {
+	public List<ProductCategoryDto> fetchAllProductsCategoriesByStatus(String status) {
 		List<ProductCategoryDto> prodCatDtos=null;
 		
 	
@@ -40,4 +40,17 @@ public class ProductCategaryDaoImpl extends GenericDaoImpl<ProductCatagory, Long
 		return prodCatDtos;
 	}
 
+	@Override
+	public List<ProductCatagory> fetchAllProductsCategories(String status) {
+		List<ProductCatagory> prodCatDtos=null;
+		
+	
+				LOGGER.info(">> getStateDaoList");
+	
+		Criteria criteria = getCriteria().add(Restrictions.eq("status", status));
+		       
+		prodCatDtos = criteria.list();
+		LOGGER.debug("<< getStateDaoList" + prodCatDtos.toString());
+		return prodCatDtos;
+	}
 }

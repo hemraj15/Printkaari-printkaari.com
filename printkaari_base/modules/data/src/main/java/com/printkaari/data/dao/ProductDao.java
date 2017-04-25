@@ -16,10 +16,12 @@ import com.printkaari.data.dto.ProductDto;
  */
 public interface ProductDao extends GenericDao<Product, Long>{
 
-	List<ProductDto> fetchAllProducts(String status);
+	List<Product> fetchAllProducts(String status);
 
 	List<ProductDto> fetchAllProductsByCategoryId(Long catId);
 
 	Criteria getByProductCode(String productCode);
+
+	List<Product> fetchAllProductsWithCatagory(String status);
 
 }

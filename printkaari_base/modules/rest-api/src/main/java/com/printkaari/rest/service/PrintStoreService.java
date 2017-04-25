@@ -11,6 +11,7 @@ import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.FileDownloadException;
 import com.printkaari.rest.exception.FileUploadException;
 import com.printkaari.rest.exception.InvalidFieldLengthException;
+import com.printkaari.rest.exception.ProductNotFoundException;
 import com.printkaari.rest.exception.SignUpException;
 import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.form.SignUpStep2Form;
@@ -27,5 +28,7 @@ public interface PrintStoreService {
 	        throws FileUploadException, UserNotFoundException;
 
 	Map<String, Object> downloadCollegeProjectFiles(Long order_id) throws DatabaseException ,FileDownloadException;
+
+	Map<String, Object> uploadProductSampleFile(String fileType, MultipartFile file, Long productId) throws FileUploadException, ProductNotFoundException;
 
 }

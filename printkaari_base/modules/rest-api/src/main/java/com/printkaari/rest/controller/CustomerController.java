@@ -53,10 +53,10 @@ public class CustomerController {
 	public Object fetchAllCustomerByModifyDate(
 	        @RequestParam(value = "records", required = true) Integer records,
 	        HttpServletRequest request, HttpServletResponse response) {
-		LOGGER.info(">> fetchAllCandidatesByModifiedDate");
+		LOGGER.info(">> fetchAllCustomerByModifyDate");
 		Object data = null;
 		try {
-			LOGGER.info("fetchCandidates <<");
+		
 			data = customerService.fetchAllCustomerByModifyDate(records);
 		} catch (DatabaseException e) {
 			LOGGER.error(e.getMessage(), e);
@@ -242,13 +242,27 @@ public class CustomerController {
 
 				fileId = printStoreService.uploadFile(fileType, file);
 				LOGGER.info("file saved successfully with file id ::" + fileId);
-				LOGGER.info("Placing order >>");
-				map = customerService.placeOrder(glossyColorPages, nonGlossyColorPages,
-				        anyOtherRequest, totalPages, bindingType, fileId,totalColorPage,quantity,colorPages);
-				map.put("fileId", fileId);
-				map.put("message",
-				        "order has been initiated succssfully please make payment to confirm order");
-				data = map;
+				if(fileId !=null){
+					
+					LOGGER.info("Placing order >>");
+					map = customerService.placeCollegeOrder(glossyColorPages, nonGlossyColorPages,
+					        anyOtherRequest, totalPages, bindingType, fileId,totalColorPage,quantity,colorPages);
+					map.put("fileId", fileId);
+					map.put("message",
+					        "order has been initiated succssfully please make payment to confirm order");
+					data = map;
+				}
+				else{
+					
+					data = new ErrorResponse();
+					LOGGER.error("Could not uploaded File ");
+					((ErrorResponse) data).setErrorCode(ErrorCodes.FILE_ID_NULL_ERROR);
+					((ErrorResponse) data).setMessage("File uploaded returned Null File Id");
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+					
+				}
+				
+				
 				LOGGER.info("order initiated");
 			} catch (FileUploadException e) {
 				data = new ErrorResponse();
@@ -476,4 +490,47 @@ public class CustomerController {
 
 			return data;
 		}
+	 
+	    @ResponseBody
+	    //@Secured
+	    @RequestMapping(value = "/{customerId}/update-status/{status}", method = RequestMethod.GET)
+		public Object updateCustomerStatus(@PathVariable String status,	@PathVariable Long customerId ,	        
+		        HttpServletRequest request, HttpServletResponse response) {
+			LOGGER.info(">> fetchAllCustomerByModifyDate");
+			Object data = null;
+			Map<String,Object> map=new HashMap<>();
+			try {
+			
+				 customerService.updateCustomerStatus(status,customerId);
+				 map.put("message", "Costomer "+customerId +" status changed to "+status);
+				 data=map;
+			} catch (InstanceNotFoundException e) {
+				data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.USER_NOT_FOUND_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+			}catch (MailNotSendException e) {
+				data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.MAIL_NOT_SENT_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			}catch (DatabaseException e) {
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+
+			catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+			return data;
+		}
+	 
 }

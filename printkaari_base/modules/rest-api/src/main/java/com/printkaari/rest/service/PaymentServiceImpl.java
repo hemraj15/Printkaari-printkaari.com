@@ -21,7 +21,7 @@ import com.printkaari.data.dao.PaymentDao;
 import com.printkaari.data.dao.TransacationOrderDao;
 import com.printkaari.data.dao.entity.Customer;
 import com.printkaari.data.dao.entity.CustomerTransaction;
-import com.printkaari.data.dao.entity.Order;
+import com.printkaari.data.dao.entity.CustOrder;
 import com.printkaari.data.dao.entity.TransacationOrder;
 import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.CommonStatus;
@@ -57,7 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
 	public Map<String, Object> initiateCartTrx(Long trxOrderId) throws DatabaseException, InstanceNotFoundException,OrderStatusException {
 
 		Map<String, Object> map = new HashMap<>();
-		Order ord = new Order();
+		CustOrder ord = new CustOrder();
 		Customer cust = null;
 		Long trxId=null;
 		TransacationOrder trxOrder=null;
@@ -65,7 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
 		try {
 
 			trxOrder=getTrxOrderByTrxOrderId(trxOrderId);
-			List<Order> ordList=new ArrayList<>();
+			List<CustOrder> ordList=new ArrayList<>();
 			
 			if(trxOrder !=null){
 				
@@ -123,12 +123,12 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 			else{
 				
-				LOGGER.info("There are no orders for the transaction Order id ::"+trxOrderId);
+				LOGGER.info("There are no orders for the transaction CustOrder id ::"+trxOrderId);
 			}
 			}
 			else {
 				
-				LOGGER.info("Transaction Order is null to initiate transaction ");
+				LOGGER.info("Transaction CustOrder is null to initiate transaction ");
 			}
 
 		} catch (Exception e) {
@@ -146,9 +146,9 @@ public class PaymentServiceImpl implements PaymentService {
 		return trxOrderDao.find(trxOrderId);
 	}
 
-	private Order getOrderByOrderId(Long orderId)
+	private CustOrder getOrderByOrderId(Long orderId)
 	        throws DatabaseException, InstanceNotFoundException,OrderStatusException {
-		Order ord = null;
+		CustOrder ord = null;
 		try {
 
 			ord = ordDao.find(orderId);
@@ -157,7 +157,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 				if (!ord.getStatus().equalsIgnoreCase(CommonStatus.INITIATED.toString())) {
 
-					throw new OrderStatusException("Order status in not initiated ",
+					throw new OrderStatusException("CustOrder status in not initiated ",
 					        ErrorCodes.INVALID_ORDER_STATUS);
 
 				}
@@ -168,7 +168,7 @@ public class PaymentServiceImpl implements PaymentService {
 			LOGGER.info("fetch order to initiate transaction >> instance not found for order id ::"
 			        + orderId);
 
-			throw new InstanceNotFoundException("Order Not Found to initiate transaction",
+			throw new InstanceNotFoundException("CustOrder Not Found to initiate transaction",
 			        ErrorCodes.ORDER_NOT_FOUND_ERROR);
 		} catch (Exception e) {
 			LOGGER.error("Error occured while fetching order for initiating transaction for order"
@@ -244,10 +244,10 @@ public class PaymentServiceImpl implements PaymentService {
 	        InstanceNotFoundException,EmptyListException {
 		
 		 TransacationOrder trxOrder=new TransacationOrder();
-		 List<Order> orders=new ArrayList<>();
+		 List<CustOrder> custOrders=new ArrayList<>();
 		 List<Long> orderList=new ArrayList<>();
 		 Long trxOrderId;
-		 Order ord=new Order();
+		 CustOrder ord=new CustOrder();
 		 Double amount=0.0;
 		 Double discAmoiunt=0.0;
 		 Map<String, Object> map=new HashMap<>();
@@ -267,10 +267,10 @@ public class PaymentServiceImpl implements PaymentService {
 				ord=getOrderByOrderId(itr.next());
 				amount=amount+ord.getPaidAmount();
 				discAmoiunt=discAmoiunt+ord.getDiscountAmount();
-				orders.add(ord);
+				custOrders.add(ord);
 			}
 			
-			trxOrder.setOrders(orders);
+			trxOrder.setOrders(custOrders);
 			trxOrder.setOrderValue(amount);
 			trxOrder.setDiscAmount(discAmoiunt);
 			
@@ -286,8 +286,8 @@ public class PaymentServiceImpl implements PaymentService {
 				throw new EmptyListException("Error Occured while initiating transaction - request order list is empty",ErrorCodes.ORDER_LIST_EMPTY_ERROR);
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error occured while initiating Order transaction  in database", e);
-			throw new DatabaseException("Error occured while initiating Order transaction  in database",
+			LOGGER.error("Error occured while initiating CustOrder transaction  in database", e);
+			throw new DatabaseException("Error occured while initiating CustOrder transaction  in database",
 			        ErrorCodes.DATABASE_ERROR);
 		}
 		

@@ -3,7 +3,12 @@
  */
 package com.printkaari.rest.service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.printkaari.data.dao.ProductCategaryDao;
 import com.printkaari.data.dao.ProductCategaryDaoImpl;
+import com.printkaari.data.dao.ProductDao;
+import com.printkaari.data.dao.entity.Product;
+import com.printkaari.data.dao.entity.ProductCatagory;
 import com.printkaari.data.dto.ProductCategoryDto;
 import com.printkaari.data.dto.ProductDto;
 import com.printkaari.rest.constant.ErrorCodes;
@@ -31,16 +39,38 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 	
     @Autowired	
 	private ProductCategaryDao prodCatDao;
+    
+    @Autowired
+    private ProductDao prodDao;
 	
 	@Override
 	@Transactional
-	public List<ProductCategoryDto> fetchAllProductsCategories(String status) throws DatabaseException, EmptyListException {
+	public List<ProductCatagory> fetchAllProductsCategories(String status) throws DatabaseException, EmptyListException {
 		 
 		List<ProductCategoryDto> prodCatDtos=null;
+		List<ProductCatagory> prodCat=null;
+		List<ProductCatagory> prodCat1=new ArrayList<>();
+		Set<Product> set=new LinkedHashSet<>();
 		try {
 
-			prodCatDtos = prodCatDao.fetchAllProductsCategories(status);
+			//prodCatDtos = prodCatDao.fetchAllProductsCategoriesByStatus(status);
+			prodCat=prodCatDao.fetchAllProductsCategories(status);
+			LOGGER.info("Product categories : "+prodCat);
+			Map<String,Object> map=new LinkedHashMap<>();
 			
+			
+			for (ProductCatagory cat1 :prodCat) {
+				ProductCatagory cat=new ProductCatagory();
+				cat.setId(cat1.getId());
+				cat.setName(cat1.getName());
+				cat.setStatus(cat1.getStatus());
+				//set=prodDao.fetchAllProductsByCategoryId(cat1.getId());
+				LOGGER.info("Set of Products for "+cat1.getId()+" are : "+set.size());
+				cat.setProducts(set);
+				
+				prodCat1.add(cat);
+				
+			}
 			
 
 		} catch (Exception e) {
@@ -49,13 +79,13 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 			        ErrorCodes.DATABASE_ERROR);
 		}
 
-		if (prodCatDtos == null || prodCatDtos.isEmpty()) {
+		if (prodCat == null || prodCat.isEmpty()) {
 			throw new EmptyListException("ProductCategoryDto List is empty  ", ErrorCodes.PRODUCT_LIST_EMPTY);
 		}
 
-		LOGGER.info("fetchAllProductsCategories <<"+prodCatDtos.toString());
+		
 				
-		return prodCatDtos;
+		return prodCat;
 	}
 /*	@Override
 	public List<ProductCategoryDto> fetchAllProductsCategories(String status)

@@ -9,8 +9,32 @@ package com.printkaari.rest.constant;
  */
 public enum ProductCodes {
 	
-	hard_binding,spiral_binding,letter_head,college_project,prscpt_pad,bsns_card,
-	fldr_file,pamphlet,refrl_pad,envelop,broucher,opd_reg,t_shirt,bag,cup,poster,	
-	multi_clr_pmplt,leaf_let,glow_shine_board,receipt_book,i_card,folder,multi_color_file
+	HARD_BINDING,
+	SPIRAL_BINDING,	
+	COLLEGE_PROJECTS,
+	HS_PRISCRIPTION_PAD,
+	HS_BUSINESS_CARD,
+	HS_FOLDER_FILE,
+	HS_PAMPHLET,
+	HS_REFERRAL_PAD,
+	HS_ENVELOP,
+	HS_BROUCHER,
+	HS_OPD_REGISTER,
+	CUSTOM_T_SHIRT,
+	CUSTOM_BAG,
+	CUSTOM_CUP,
+	MKTNG_POSTER,	
+	MKTNG_MULYI_CLR_PAMPHLET,
+	MKTNG_LEAF_LET,
+	MKTNG_BROUCHER,
+	MKTNG_GLOW_SHINE_BOARD,
+	OFFICE_LETTER_HEAD,
+	OFFICE_BUSINESS_CARD,
+	OFFICE_BROUCHER,
+	OFFICE_ENVELOP,	
+	OFFICE_RECEIPT_BOOK,
+	OFFICE_FOLDER,
+	OFFICE_I_CARD,
+	OFFICE_MULTI_COLOR_FILE
 	
 }
