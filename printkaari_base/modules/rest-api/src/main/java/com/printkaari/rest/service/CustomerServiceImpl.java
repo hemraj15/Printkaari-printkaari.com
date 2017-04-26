@@ -51,6 +51,7 @@ import com.printkaari.rest.exception.ProductNotFoundException;
 import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.TransactionOrderNotFoundException;
 import com.printkaari.rest.exception.UserNotFoundException;
+import com.printkaari.rest.form.ContactUSForm;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -760,5 +761,27 @@ public class CustomerServiceImpl implements CustomerService {
 		Customer cust=custDao.find(customerId);
 		return cust;
 	}
-	
+	@Override
+	public void sendMailToAdmin(ContactUSForm form) throws InstanceNotFoundException, MailNotSendException {
+		try {
+			User user = getAdminUser();
+			String email = user.getEmailId();
+			MailMessage mailHtmlMessage = new MailMessage();
+			mailHtmlMessage.setSubject("Customer Enquiry  Mail !! ");
+			mailHtmlMessage.setContent("<h2> Hello " + user.getFirstName() + "</h2> <h3> Customer "
+			        + form.getName()  + " Customer email id : "
+			        + form.getEmail() + " has submitted Query - (" + form.getSubjectMatter()
+			        + " ) for details click  - "
+			        + " <a href=www.printkaari.com/#!/auth/login >here</a> </h3>");
+			mailHtmlMessage.setToAddresses(new String[] { email });
+
+			mailService.sendHtmlMail(mailHtmlMessage);
+		} catch (MailNotSentException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new MailNotSendException("Error occurred while sending order Status Email!",
+			        ErrorCodes.EMAIL_ERROR);
+		}
+		LOGGER.info("HTML Email Sent to ADMIN");
+
+	}
 }

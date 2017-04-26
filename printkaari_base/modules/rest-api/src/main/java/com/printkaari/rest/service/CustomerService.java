@@ -13,6 +13,7 @@ import com.printkaari.rest.exception.InvalidQuantiryException;
 import com.printkaari.rest.exception.MailNotSendException;
 import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
+import com.printkaari.rest.form.ContactUSForm;
 
 public interface CustomerService {
 
@@ -39,5 +40,7 @@ public interface CustomerService {
 	void changetrxOrderStatus(String ordStatus, Long trxOrderId)throws DatabaseException;
 
 	void updateCustomerStatus(String status, Long customerId)throws DatabaseException, InstanceNotFoundException ,MailNotSendException;
+
+	void sendMailToAdmin(ContactUSForm form) throws InstanceNotFoundException, MailNotSendException;
 
 }

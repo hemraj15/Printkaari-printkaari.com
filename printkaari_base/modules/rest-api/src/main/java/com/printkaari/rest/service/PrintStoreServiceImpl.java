@@ -52,6 +52,8 @@ import com.printkaari.data.dao.entity.SampleFileRecord;
 import com.printkaari.data.dao.entity.State;
 import com.printkaari.data.dao.entity.User;
 import com.printkaari.data.exception.InstanceNotFoundException;
+import com.printkaari.message.exception.MailNotSentException;
+import com.printkaari.message.model.MailMessage;
 import com.printkaari.message.utils.ReadConfigurationFile;
 import com.printkaari.rest.constant.CommonStatus;
 import com.printkaari.rest.constant.ErrorCodes;
@@ -62,9 +64,11 @@ import com.printkaari.rest.exception.FileDownloadException;
 import com.printkaari.rest.exception.FileUploadException;
 import com.printkaari.rest.exception.InvalidFieldLengthException;
 import com.printkaari.rest.exception.InvalidUserTypeException;
+import com.printkaari.rest.exception.MailNotSendException;
 import com.printkaari.rest.exception.ProductNotFoundException;
 import com.printkaari.rest.exception.SignUpException;
 import com.printkaari.rest.exception.UserNotFoundException;
+import com.printkaari.rest.form.ContactUSForm;
 import com.printkaari.rest.form.SignUpStep2Form;
 import com.printkaari.rest.utils.FileUtils;
 import com.printkaari.rest.utils.PasswordUtils;
@@ -666,5 +670,33 @@ public class PrintStoreServiceImpl implements PrintStoreService {
 
 		return map;
 	}
+
+	@Override
+	@Transactional
+	public Object contactUS(ContactUSForm contactUsForm) throws  MailNotSendException, DatabaseException, UserNotFoundException {
+		try {
+			customerService.sendMailToAdmin(contactUsForm);
+		}
+		
+catch (InstanceNotFoundException e) {
+	throw new UserNotFoundException(
+	        " Customer not found Error occured while getting admin through database",
+	        ErrorCodes.DATABASE_ERROR);
+		}
+catch (MailNotSendException e) {
+	throw new MailNotSendException("Error occurred while sending query  Email!",
+	        ErrorCodes.EMAIL_ERROR);
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occured while sending query email through database", e);
+			e.printStackTrace();
+			throw new DatabaseException(
+			        "Error occured while sending query email ",
+			        ErrorCodes.DATABASE_ERROR);
+		}
+		return null;
+	}
+	
+	
 
 }

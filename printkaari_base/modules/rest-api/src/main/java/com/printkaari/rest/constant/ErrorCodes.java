@@ -259,4 +259,10 @@ public class ErrorCodes {
 
 	public static final String	TRANSACTION_ORDER_LIST_EMPTY					= "transaction_order_list_empty";
 
+	public static final String	ENQUIRY_USER_ID_NULL							= "enquiry_user_id_null";
+
+	public static final String	ENQUIRY_USER_ID_EMPTY							= "enquiry_user_id_empty";
+
+	public static final String	ENQUIRY_EMAIL_INVALID							= "enquiry_email_id_invalid";
+
 }

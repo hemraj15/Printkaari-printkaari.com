@@ -5,13 +5,16 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,11 +33,16 @@ import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.FileDownloadException;
 import com.printkaari.rest.exception.InvalidProductException;
 import com.printkaari.rest.exception.MailNotSendException;
+import com.printkaari.rest.exception.PasswordException;
 import com.printkaari.rest.exception.StatusException;
 import com.printkaari.rest.exception.UserNotFoundException;
+import com.printkaari.rest.form.ContactUSForm;
+import com.printkaari.rest.form.LoginForm;
 import com.printkaari.rest.model.ErrorResponse;
 import com.printkaari.rest.service.CustomerService;
 import com.printkaari.rest.service.PrintStoreService;
+import com.printkaari.rest.utils.ErrorUtils;
+import com.printkaari.rest.utils.PasswordUtils;
 
 @RestController
 @RequestMapping(value = "/customers")
@@ -519,6 +527,7 @@ public class CustomerController {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			}catch (DatabaseException e) {
 				LOGGER.error(e.getMessage(), e);
+				data = new ErrorResponse();
 				((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
 				((ErrorResponse) data).setMessage(e.getMessage());
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -526,11 +535,74 @@ public class CustomerController {
 
 			catch (Exception e) {
 				LOGGER.error(e.getMessage(), e);
+				data = new ErrorResponse();
 				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
 				((ErrorResponse) data).setMessage(e.getMessage());
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 			return data;
 		}
-	 
+
+	    @ResponseBody
+		@RequestMapping(value = "/contact-us", method = RequestMethod.POST, consumes = "application/json")
+		public Object contactUs(@RequestBody @Valid ContactUSForm contactUsForm, BindingResult result,
+		        HttpServletResponse response) {
+			LOGGER.info("Contact Us !!");
+			Map<String ,Object> map=new HashMap<>();
+			Object data;
+			if (result.hasErrors()) {
+				String message = ErrorUtils.getTextValidationErrorMessage(result.getAllErrors());
+				data = new ErrorResponse();
+				((ErrorResponse) data).setErrorCode(message);
+				((ErrorResponse) data).setMessage("Form validation failed!");
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+			}
+			try {
+				/*
+				 * String pwd=request.getParameter("passowrd"); String
+				 * userId=request.getParameter("userName");
+				 */
+				LOGGER.info("email entered :" + contactUsForm.getEmail());
+				LOGGER.info("user Name :" + contactUsForm.getName());
+
+				data = printStoreService.contactUS(contactUsForm);
+				
+				map.put("message", "Mail sent successfully to admin ");
+				  data=map;     
+				LOGGER.info("Contact us query data response :" + data);
+			}
+
+			catch (UserNotFoundException e) {
+				data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.USER_NOT_FOUND_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}
+			catch (DatabaseException e) {
+				LOGGER.error(e.getMessage(), e);
+				data = new ErrorResponse();
+				((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+		
+			catch (MailNotSendException e) {
+				data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.MAIL_NOT_SENT_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			}
+			 catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+				data = new ErrorResponse();
+				((ErrorResponse) data).setErrorCode(ErrorCodes.PASSWORD_INVALID);
+				((ErrorResponse) data).setMessage(e.getMessage() + " - " + "Invalid Password");
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+			return data;
+
+		}
 }
