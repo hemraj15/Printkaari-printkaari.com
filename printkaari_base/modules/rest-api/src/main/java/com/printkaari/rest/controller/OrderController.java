@@ -234,7 +234,7 @@ public class OrderController {
 		return data;
 	}
 	@ResponseBody
-	@RequestMapping(value = "/order-by-id/{orderId}", method = RequestMethod.POST)
+	@RequestMapping(value = "/order-by-id/{orderId}", method = RequestMethod.GET)
 	public Object fetchOrdersByOrderId(@PathVariable Long orderId,
 	        
 	        HttpServletResponse response) {
