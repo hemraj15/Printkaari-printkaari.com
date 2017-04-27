@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.printkaari.auth.service.SystemRoles;
 import com.printkaari.data.dao.entity.User;
+import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.EmptyListException;
+import com.printkaari.rest.exception.UserNotFoundException;
 import com.printkaari.rest.exception.VaidationException;
 import com.printkaari.rest.model.ErrorResponse;
 import com.printkaari.rest.service.OrderService;
@@ -230,5 +233,42 @@ public class OrderController {
 		}
 		return data;
 	}
+	@ResponseBody
+	@RequestMapping(value = "/order-by-id/{orderId}", method = RequestMethod.POST)
+	public Object fetchOrdersByOrderId(@PathVariable Long orderId,
+	        
+	        HttpServletResponse response) {
+		LOGGER.info(">> fetchAllOrdersByStatus");
 
+		Object data = null;
+
+		try {
+
+			LOGGER.info(">> fetchAllOrdersByStatus ");
+			data = ordService.fetchOrdersByOrderId(orderId);
+		} 
+		catch (InstanceNotFoundException e) {
+			data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			((ErrorResponse) data).setErrorCode(ErrorCodes.ORDER_NOT_FOUND_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		}
+		catch (DatabaseException e) {
+			data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		} 
+
+		catch (Exception e) {
+			data = new ErrorResponse();
+			LOGGER.error(e.getMessage(), e);
+			((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
+			((ErrorResponse) data).setMessage(e.getMessage());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		return data;
+	}
 }

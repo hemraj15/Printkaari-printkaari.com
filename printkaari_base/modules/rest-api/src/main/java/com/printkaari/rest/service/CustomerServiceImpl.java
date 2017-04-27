@@ -784,4 +784,26 @@ public class CustomerServiceImpl implements CustomerService {
 		LOGGER.info("HTML Email Sent to ADMIN");
 
 	}
+
+	@Override
+	public Object fetchCustomerByCustomerId(Long custId) throws UserNotFoundException, DatabaseException {
+		Customer cust=null;
+		try {
+			
+			cust=custDao.find(custId);
+			
+		}catch(InstanceNotFoundException e){
+			
+			throw new UserNotFoundException("Customer not found for cust id "+custId,ErrorCodes.USER_NOT_FOUND_ERROR);
+		}
+		
+		catch (Exception e) {
+			LOGGER.error("Error occured while changetrxOrderStatus through database", e);
+			e.printStackTrace();
+			throw new DatabaseException(
+			        "Error occured while getting all orders for a customer through database",
+			        ErrorCodes.DATABASE_ERROR);
+		}
+		return cust;
+	}
 }

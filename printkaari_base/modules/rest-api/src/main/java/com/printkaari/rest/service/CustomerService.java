@@ -43,4 +43,6 @@ public interface CustomerService {
 
 	void sendMailToAdmin(ContactUSForm form) throws InstanceNotFoundException, MailNotSendException;
 
+	Object fetchCustomerByCustomerId(Long custIid) throws UserNotFoundException, DatabaseException;
+
 }

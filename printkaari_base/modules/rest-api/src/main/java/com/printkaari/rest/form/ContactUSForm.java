@@ -23,7 +23,7 @@ public class ContactUSForm {
 	@NotEmpty(message = ErrorCodes.ENQUIRY_USER_ID_EMPTY)
 	@Email(message = ErrorCodes.ENQUIRY_EMAIL_INVALID, regexp = ValidationUtils.EMAIL_PATTERN)
 	private String email;
-	private String adress;
+	private String address;
 	private String subjectMatter;
 	/**
 	 * @return the name
@@ -50,16 +50,16 @@ public class ContactUSForm {
 		this.email = email;
 	}
 	/**
-	 * @return the adress
+	 * @return the address
 	 */
-	public String getAdress() {
-		return adress;
+	public String getAddress() {
+		return address;
 	}
 	/**
-	 * @param adress the adress to set
+	 * @param address the address to set
 	 */
-	public void setAdress(String adress) {
-		this.adress = adress;
+	public void setAddress(String adress) {
+		this.address = adress;
 	}
 	/**
 	 * @return the subjectMatter

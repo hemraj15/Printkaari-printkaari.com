@@ -57,9 +57,9 @@ public class CustomerController {
 	private PrintStoreService	printStoreService;
 
 	// @Secured(value = { SystemRoles.ADMIN})
-	@RequestMapping(value = "/recent", method = RequestMethod.GET)
+	@RequestMapping(value = "/recent", method = RequestMethod.POST, consumes = "application/json")
 	public Object fetchAllCustomerByModifyDate(
-	        @RequestParam(value = "records", required = true) Integer records,
+	        @RequestParam(value = "records", required = true,defaultValue="5") Integer records,
 	        HttpServletRequest request, HttpServletResponse response) {
 		LOGGER.info(">> fetchAllCustomerByModifyDate");
 		Object data = null;
@@ -68,6 +68,7 @@ public class CustomerController {
 			data = customerService.fetchAllCustomerByModifyDate(records);
 		} catch (DatabaseException e) {
 			LOGGER.error(e.getMessage(), e);
+			data = new ErrorResponse();
 			((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
 			((ErrorResponse) data).setMessage(e.getMessage());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -75,6 +76,7 @@ public class CustomerController {
 
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
+			data=new ErrorResponse();
 			((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
 			((ErrorResponse) data).setMessage(e.getMessage());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -604,5 +606,39 @@ public class CustomerController {
 			}
 			return data;
 
+		}
+	    
+	    @RequestMapping(value = "/customer-id/{custIid}", method = RequestMethod.GET)
+		public Object fetchCustomerByCustomerId(
+		        @PathVariable Long custIid,
+		        HttpServletRequest request, HttpServletResponse response) {
+			LOGGER.info(">> fetchCustomerByCustomerId");
+			Object data = null;
+			try {
+			
+				data = customerService.fetchCustomerByCustomerId(custIid);
+			}
+			catch (UserNotFoundException e) {
+				data = new ErrorResponse();
+				LOGGER.error(e.getMessage(), e);
+				((ErrorResponse) data).setErrorCode(ErrorCodes.USER_NOT_FOUND_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}catch (DatabaseException e) {
+				LOGGER.error(e.getMessage(), e);
+				data = new ErrorResponse();
+				((ErrorResponse) data).setErrorCode(ErrorCodes.DATABASE_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+
+			catch (Exception e) {
+				LOGGER.error(e.getMessage(), e);
+				data = new ErrorResponse();
+				((ErrorResponse) data).setErrorCode(ErrorCodes.SERVER_ERROR);
+				((ErrorResponse) data).setMessage(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+			return data;
 		}
 }

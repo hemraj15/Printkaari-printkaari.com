@@ -16,6 +16,7 @@ import com.printkaari.data.dao.OrderDao;
 import com.printkaari.data.dao.entity.CustOrder;
 import com.printkaari.data.dao.entity.TransacationOrder;
 import com.printkaari.data.dto.GenericDTO;
+import com.printkaari.data.exception.InstanceNotFoundException;
 import com.printkaari.rest.constant.ErrorCodes;
 import com.printkaari.rest.exception.DatabaseException;
 import com.printkaari.rest.exception.EmptyListException;
@@ -89,6 +90,29 @@ public class OrderServiceImpl implements OrderService {
 
 		LOGGER.info("OrderServiceImpl.fetchAllOrders <<");
 		return result;
+	}
+
+	@Override
+	public Object fetchOrdersByOrderId(Long orderId) throws InstanceNotFoundException, DatabaseException {
+		CustOrder ord=null;
+		try {
+			
+			ord=ordDao.find(orderId);
+		} 
+		
+		catch(InstanceNotFoundException e){
+			
+			LOGGER.info(" order id "+orderId+" not found in the data base");
+			throw new InstanceNotFoundException("Error occured while geting order "+orderId +" from database", ErrorCodes.ORDER_NOT_FOUND_ERROR);
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occured while getting order "+orderId+" through database", e);
+			e.printStackTrace();
+			throw new DatabaseException(
+			        "Error occured while getting  order through database",
+			        ErrorCodes.DATABASE_ERROR);
+		}
+		return ord;
 	}
 
 }

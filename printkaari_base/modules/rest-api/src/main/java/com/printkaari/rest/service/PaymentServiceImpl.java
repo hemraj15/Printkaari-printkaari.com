@@ -5,9 +5,12 @@ package com.printkaari.rest.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,6 +152,16 @@ public class PaymentServiceImpl implements PaymentService {
 	private CustOrder getOrderByOrderId(Long orderId)
 	        throws DatabaseException, InstanceNotFoundException,OrderStatusException {
 		CustOrder ord = null;
+		Map map =null;
+		HashMap map1=null;
+		Set set=null;
+		HashSet set1=null;
+		List list=null;
+		ArrayList list1=null;
+		LinkedList list2=null;
+		
+		
+		
 		try {
 
 			ord = ordDao.find(orderId);
